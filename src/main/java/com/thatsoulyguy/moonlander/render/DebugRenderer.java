@@ -196,6 +196,8 @@ public class DebugRenderer //TODO: Restructure this entire disaster
         shaderProgram.unbind();
 
         linesToRender.clear();
+
+        GL41.glGetError();
     }
 
     public static class Line

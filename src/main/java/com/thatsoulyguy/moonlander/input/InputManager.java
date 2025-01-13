@@ -85,10 +85,16 @@ public class InputManager
             @Override
             public void invoke(long windowHandle, double xpos, double ypos)
             {
+                float[] xScale = new float[1];
+                float[] yScale = new float[1];
+
+                GLFW.glfwGetWindowContentScale(windowHandle, xScale, yScale);
+
                 lastMousePosition.set(mousePosition);
 
-                mousePosition.set((float) xpos, (float) ypos);
-                mouseDelta.set((float) xpos, (float) ypos).sub(lastMousePosition);
+                mousePosition.set((float) xpos * xScale[0], (float) ypos * yScale[0]);
+
+                mouseDelta.set(mousePosition).sub(lastMousePosition);
             }
         };
 

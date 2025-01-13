@@ -100,14 +100,14 @@ public class Window
 
     public static @NotNull Vector2i getDimensions()
     {
-        try (MemoryStack stack = MemoryStack.stackPush())
+        try (MemoryStack memoryStack = MemoryStack.stackPush())
         {
-            IntBuffer width = stack.mallocInt(1);
-            IntBuffer height = stack.mallocInt(1);
+            IntBuffer framebufferWidth = memoryStack.mallocInt(1);
+            IntBuffer framebufferHeight = memoryStack.mallocInt(1);
 
-            GLFW.glfwGetWindowSize(handle, width, height);
+            GLFW.glfwGetFramebufferSize(handle, framebufferWidth, framebufferHeight);
 
-            return new Vector2i(width.get(), height.get());
+            return new Vector2i(framebufferWidth.get(0), framebufferHeight.get(0));
         }
     }
 

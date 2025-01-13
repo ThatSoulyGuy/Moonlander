@@ -181,6 +181,11 @@ public class GameObjectManager
             passList.forEach(pass -> pass.render(camera));
 
             DebugRenderer.render(camera);
+
+            int error = GL41.glGetError();
+
+            if (error != GL41.GL_NO_ERROR)
+                System.err.println("OpenGL Error (GameObjectManager::renderDefault): " + error);
         }
         else
             gameObjectMap.values().forEach(gameObject -> gameObject.renderDefault(camera));

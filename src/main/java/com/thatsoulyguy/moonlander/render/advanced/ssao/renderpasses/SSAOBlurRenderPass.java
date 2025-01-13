@@ -38,8 +38,8 @@ public class SSAOBlurRenderPass implements RenderPass
 
         ssaoBlurBuffer.bind();
 
-        Vector2i dims = Window.getDimensions();
-        GL41.glViewport(0, 0, dims.x, dims.y);
+        Vector2i dimensions = Window.getDimensions();
+        GL41.glViewport(0, 0, dimensions.x, dimensions.y);
         GL41.glClear(GL41.GL_COLOR_BUFFER_BIT);
 
         blurShader.bind();
