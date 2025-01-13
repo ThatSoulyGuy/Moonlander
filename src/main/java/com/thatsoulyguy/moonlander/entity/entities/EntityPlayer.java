@@ -547,13 +547,13 @@ public class EntityPlayer extends Entity
     @Override
     public float getWalkingSpeed()
     {
-        return 50.0f;
+        return 30.0f;
     }
 
     @Override
     public float getRunningSpeed()
     {
-        return 65.0f;
+        return 35.0f;
     }
 
     @Override
