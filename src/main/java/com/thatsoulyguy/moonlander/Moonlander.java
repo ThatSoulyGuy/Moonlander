@@ -48,6 +48,7 @@ import org.lwjgl.glfw.GLFWVidMode;
 
 import javax.swing.*;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -88,6 +89,7 @@ public class Moonlander
         ShaderManager.register(Shader.create("ssao.default", AssetPath.create("moonlander", "shader/ssao/default")));
         ShaderManager.register(Shader.create("ssao.blur", AssetPath.create("moonlander", "shader/ssao/blur")));
         ShaderManager.register(Shader.create("ssao.conclusion", AssetPath.create("moonlander", "shader/ssao/conclusion")));
+        ShaderManager.register(Shader.create("skybox", AssetPath.create("moonlander", "shader/skybox")));
 
         TextureManager.register(Texture.create("debug", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/debug.png")));
         TextureManager.register(Texture.create("error", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/error.png")));
@@ -108,6 +110,16 @@ public class Moonlander
         MenuManager.register(Menu.create(CraftingTableMenu.class));
         MenuManager.register(Menu.create(InventoryMenu.class));
         MenuManager.register(Menu.create(PauseMenu.class));
+
+        Skybox.CURRENT_SKYBOX = Skybox.create(Texture.createCubeMap("skybox", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, List.of
+        (
+            AssetPath.create("moonlander", "texture/skybox/stars-panel.png"),
+            AssetPath.create("moonlander", "texture/skybox/earth-panel.png"),
+            AssetPath.create("moonlander", "texture/skybox/stars-panel.png"),
+            AssetPath.create("moonlander", "texture/skybox/stars-panel.png"),
+            AssetPath.create("moonlander", "texture/skybox/stars-panel.png"),
+            AssetPath.create("moonlander", "texture/skybox/stars-panel.png")
+        )));
 
 
         LevelRenderPass levelRenderPass = new LevelRenderPass();
@@ -342,6 +354,9 @@ public class Moonlander
     public void uninitialize()
     {
         LevelManager.saveLevel("overworld", FileHelper.getPersistentDataPath("Invasion2"));
+
+        if (Skybox.CURRENT_SKYBOX != null)
+            Skybox.CURRENT_SKYBOX.uninitialize();
 
         GameObjectManager.uninitialize();
 

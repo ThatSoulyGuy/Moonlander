@@ -86,7 +86,7 @@ public class PassthroughRenderPass implements RenderPass
         GL41.glActiveTexture(GL41.GL_TEXTURE0);
         GL41.glBindTexture(GL41.GL_TEXTURE_2D, sceneColorTex);
 
-        shader.setShaderUniform("sceneTexture", 0);
+        shader.setUniform("sceneTexture", 0);
 
         Framebuffer.renderFullscreenQuadrilateral();
 

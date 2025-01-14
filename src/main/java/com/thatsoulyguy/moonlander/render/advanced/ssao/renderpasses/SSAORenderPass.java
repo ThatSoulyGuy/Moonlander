@@ -103,24 +103,24 @@ public class SSAORenderPass implements RenderPass
         ssaoShader.bind();
 
         for (int i = 0; i < 64; i++)
-            ssaoShader.setShaderUniform("samples[" + i + "]", ssaoKernel.get(i));
+            ssaoShader.setUniform("samples[" + i + "]", ssaoKernel.get(i));
 
-        ssaoShader.setShaderUniform("windowWidth", (float) Window.getDimensions().x);
-        ssaoShader.setShaderUniform("windowHeight", (float) Window.getDimensions().y);
+        ssaoShader.setUniform("windowWidth", (float) Window.getDimensions().x);
+        ssaoShader.setUniform("windowHeight", (float) Window.getDimensions().y);
 
-        ssaoShader.setShaderUniform("projection", camera.getProjectionMatrix());
+        ssaoShader.setUniform("projection", camera.getProjectionMatrix());
 
         GL41.glActiveTexture(GL41.GL_TEXTURE0);
         GL41.glBindTexture(GL41.GL_TEXTURE_2D, positionTex);
-        ssaoShader.setShaderUniform("gPosition", 0);
+        ssaoShader.setUniform("gPosition", 0);
 
         GL41.glActiveTexture(GL41.GL_TEXTURE1);
         GL41.glBindTexture(GL41.GL_TEXTURE_2D, normalTex);
-        ssaoShader.setShaderUniform("gNormal", 1);
+        ssaoShader.setUniform("gNormal", 1);
 
         GL41.glActiveTexture(GL41.GL_TEXTURE2);
         GL41.glBindTexture(GL41.GL_TEXTURE_2D, noiseTexture);
-        ssaoShader.setShaderUniform("texNoise", 2);
+        ssaoShader.setUniform("texNoise", 2);
 
         Framebuffer.renderFullscreenQuadrilateral();
 

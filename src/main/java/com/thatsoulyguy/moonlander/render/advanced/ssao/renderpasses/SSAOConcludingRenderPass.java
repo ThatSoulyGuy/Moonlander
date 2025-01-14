@@ -47,19 +47,19 @@ public class SSAOConcludingRenderPass implements RenderPass
 
         GL41.glActiveTexture(GL41.GL_TEXTURE0);
         GL41.glBindTexture(GL41.GL_TEXTURE_2D, gPosition);
-        conclusionShader.setShaderUniform("gPosition", 0);
+        conclusionShader.setUniform("gPosition", 0);
 
         GL41.glActiveTexture(GL41.GL_TEXTURE1);
         GL41.glBindTexture(GL41.GL_TEXTURE_2D, gNormal);
-        conclusionShader.setShaderUniform("gNormal", 1);
+        conclusionShader.setUniform("gNormal", 1);
 
         GL41.glActiveTexture(GL41.GL_TEXTURE2);
         GL41.glBindTexture(GL41.GL_TEXTURE_2D, gAlbedo);
-        conclusionShader.setShaderUniform("gAlbedo", 2);
+        conclusionShader.setUniform("gAlbedo", 2);
 
         GL41.glActiveTexture(GL41.GL_TEXTURE3);
         GL41.glBindTexture(GL41.GL_TEXTURE_2D, ssaoBlur);
-        conclusionShader.setShaderUniform("ssao", 3);
+        conclusionShader.setUniform("ssao", 3);
 
         Framebuffer.renderFullscreenQuadrilateral();
 

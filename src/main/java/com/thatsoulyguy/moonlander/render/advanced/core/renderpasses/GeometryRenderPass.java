@@ -4,6 +4,7 @@ import com.thatsoulyguy.moonlander.core.Window;
 import com.thatsoulyguy.moonlander.render.Camera;
 import com.thatsoulyguy.moonlander.render.Shader;
 import com.thatsoulyguy.moonlander.render.ShaderManager;
+import com.thatsoulyguy.moonlander.render.Skybox;
 import com.thatsoulyguy.moonlander.render.advanced.core.Framebuffer;
 import com.thatsoulyguy.moonlander.render.advanced.core.RenderPass;
 import com.thatsoulyguy.moonlander.render.advanced.core.framebuffers.GeometryFrameBuffer;

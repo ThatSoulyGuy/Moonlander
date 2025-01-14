@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.List;
 
 @CustomConstructor("create")
 public class Texture extends Component implements ManagerLinkedClass
@@ -45,6 +46,18 @@ public class Texture extends Component implements ManagerLinkedClass
 
         GL41.glActiveTexture(GL41.GL_TEXTURE0 + slot);
         GL41.glBindTexture(GL41.GL_TEXTURE_2D, textureId);
+    }
+
+    public void bindCubeMap(int slot)
+    {
+        if (textureId == -1)
+        {
+            System.err.println("Texture '" + name + "' is invalid!");
+            return;
+        }
+
+        GL41.glActiveTexture(GL41.GL_TEXTURE0 + slot);
+        GL41.glBindTexture(GL41.GL_TEXTURE_CUBE_MAP, textureId);
     }
 
     public void unbind()
@@ -278,6 +291,62 @@ public class Texture extends Component implements ManagerLinkedClass
 
         return result;
     }
+
+    public static @NotNull Texture createCubeMap(@NotNull String name, @NotNull Filter filter, @NotNull Wrapping wrapping, @NotNull List<AssetPath> facePaths)
+    {
+        if (facePaths.size() != 6)
+            throw new IllegalArgumentException("CubeMap requires exactly 6 face paths.");
+
+        Texture result = new Texture();
+
+        result.setName(name);
+
+        result.filter = filter;
+        result.wrapping = wrapping;
+        result.textureId = GL41.glGenTextures();
+        result.loadedFromMemory = true;
+
+        GL41.glBindTexture(GL41.GL_TEXTURE_CUBE_MAP, result.textureId);
+
+        try (MemoryStack stack = MemoryStack.stackPush())
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                IntBuffer widthBuffer = stack.mallocInt(1);
+                IntBuffer heightBuffer = stack.mallocInt(1);
+                IntBuffer channelsBuffer = stack.mallocInt(1);
+
+                String fullPath = facePaths.get(i).getFullPath();
+                ByteBuffer rawImage = result.loadImageAsByteBuffer(fullPath);
+
+                if (rawImage == null)
+                    throw new RuntimeException("Failed to load cubemap face: " + fullPath);
+
+                ByteBuffer image = STBImage.stbi_load_from_memory(rawImage, widthBuffer, heightBuffer, channelsBuffer, 4);
+
+                if (image == null)
+                    throw new RuntimeException("Failed to decode cubemap face: " + fullPath + " " + STBImage.stbi_failure_reason());
+
+                int width = widthBuffer.get();
+                int height = heightBuffer.get();
+
+                GL41.glTexImage2D(GL41.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL41.GL_RGBA, width, height, 0, GL41.GL_RGBA, GL41.GL_UNSIGNED_BYTE, image);
+
+                STBImage.stbi_image_free(image);
+            }
+        }
+
+        GL41.glTexParameteri(GL41.GL_TEXTURE_CUBE_MAP, GL41.GL_TEXTURE_WRAP_S, wrapping.getValue());
+        GL41.glTexParameteri(GL41.GL_TEXTURE_CUBE_MAP, GL41.GL_TEXTURE_WRAP_T, wrapping.getValue());
+        GL41.glTexParameteri(GL41.GL_TEXTURE_CUBE_MAP, GL41.GL_TEXTURE_WRAP_R, wrapping.getValue());
+        GL41.glTexParameteri(GL41.GL_TEXTURE_CUBE_MAP, GL41.GL_TEXTURE_MIN_FILTER, filter.getValue());
+        GL41.glTexParameteri(GL41.GL_TEXTURE_CUBE_MAP, GL41.GL_TEXTURE_MAG_FILTER, filter.getValue());
+
+        GL41.glBindTexture(GL41.GL_TEXTURE_CUBE_MAP, 0);
+
+        return result;
+    }
+
 
     public enum Filter
     {

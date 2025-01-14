@@ -6,6 +6,7 @@ import com.thatsoulyguy.moonlander.core.Settings;
 import com.thatsoulyguy.moonlander.render.Camera;
 import com.thatsoulyguy.moonlander.render.DebugRenderer;
 import com.thatsoulyguy.moonlander.render.Mesh;
+import com.thatsoulyguy.moonlander.render.Skybox;
 import com.thatsoulyguy.moonlander.render.advanced.RenderPassManager;
 import com.thatsoulyguy.moonlander.render.advanced.core.RenderPass;
 import com.thatsoulyguy.moonlander.render.advanced.core.renderpasses.GeometryRenderPass;
@@ -149,6 +150,9 @@ public class GameObjectManager
             if (geometryRenderPass != null)
                 geometryRenderPass.render(camera);
 
+            if (Skybox.CURRENT_SKYBOX != null)
+                Skybox.CURRENT_SKYBOX.render(camera);
+
             List<GameObject> transparentGameObjects = new ArrayList<>();
 
             for (GameObject gameObject : gameObjectMap.values())
@@ -188,7 +192,19 @@ public class GameObjectManager
                 System.err.println("OpenGL Error (GameObjectManager::renderDefault): " + error);
         }
         else
+        {
+            if (Skybox.CURRENT_SKYBOX != null)
+                Skybox.CURRENT_SKYBOX.render(camera);
+
             gameObjectMap.values().forEach(gameObject -> gameObject.renderDefault(camera));
+
+            DebugRenderer.render(camera);
+
+            int error = GL41.glGetError();
+
+            if (error != GL41.GL_NO_ERROR)
+                System.err.println("OpenGL Error (GameObjectManager::renderDefault): " + error);
+        }
     }
 
     public static void renderUI()

@@ -44,32 +44,32 @@ public class Shader extends Component implements ManagerLinkedClass
         GL41.glUseProgram(0);
     }
 
-    public void setShaderUniform(@NotNull String name, int value)
+    public void setUniform(@NotNull String name, int value)
     {
         GL41.glUniform1i(GL41.glGetUniformLocation(program, name), value);
     }
 
-    public void setShaderUniform(@NotNull String name, float value)
+    public void setUniform(@NotNull String name, float value)
     {
         GL41.glUniform1f(GL41.glGetUniformLocation(program, name), value);
     }
 
-    public void setShaderUniform(@NotNull String name, @NotNull Vector2f value)
+    public void setUniform(@NotNull String name, @NotNull Vector2f value)
     {
         GL41.glUniform2f(GL41.glGetUniformLocation(program, name), value.x, value.y);
     }
 
-    public void setShaderUniform(@NotNull String name, @NotNull Vector3f value)
+    public void setUniform(@NotNull String name, @NotNull Vector3f value)
     {
         GL41.glUniform3f(GL41.glGetUniformLocation(program, name), value.x, value.y, value.z);
     }
 
-    public void setShaderUniform(@NotNull String name, @NotNull Vector4f value)
+    public void setUniform(@NotNull String name, @NotNull Vector4f value)
     {
         GL41.glUniform4f(GL41.glGetUniformLocation(program, name), value.x, value.y, value.z, value.w);
     }
 
-    public void setShaderUniform(@NotNull String name, @NotNull Matrix4f value)
+    public void setUniform(@NotNull String name, @NotNull Matrix4f value)
     {
         int location = GL41.glGetUniformLocation(program, name);
 

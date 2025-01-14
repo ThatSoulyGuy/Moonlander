@@ -47,7 +47,7 @@ public class SSAOBlurRenderPass implements RenderPass
         GL41.glActiveTexture(GL41.GL_TEXTURE0);
         GL41.glBindTexture(GL41.GL_TEXTURE_2D, ssaoColor);
 
-        blurShader.setShaderUniform("ssaoInput", 0);
+        blurShader.setUniform("ssaoInput", 0);
 
         Framebuffer.renderFullscreenQuadrilateral();
 

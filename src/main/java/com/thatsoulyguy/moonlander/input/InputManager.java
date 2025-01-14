@@ -1,5 +1,6 @@
 package com.thatsoulyguy.moonlander.input;
 
+import com.sun.jna.Platform;
 import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
 import com.thatsoulyguy.moonlander.annotation.Static;
 import com.thatsoulyguy.moonlander.core.Window;
@@ -88,7 +89,13 @@ public class InputManager
                 float[] xScale = new float[1];
                 float[] yScale = new float[1];
 
-                GLFW.glfwGetWindowContentScale(windowHandle, xScale, yScale);
+                if (!Platform.isWindows())
+                    GLFW.glfwGetWindowContentScale(windowHandle, xScale, yScale);
+                else
+                {
+                    xScale[0] = 1.0f;
+                    yScale[0] = 1.0f;
+                } //TODO: Find a proper fix
 
                 lastMousePosition.set(mousePosition);
 

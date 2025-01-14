@@ -117,11 +117,11 @@ public class Mesh extends Component
         texture.bind(0);
         shader.bind();
 
-        shader.setShaderUniform("diffuseTexture", 0);
-        shader.setShaderUniform("projection", camera.getProjectionMatrix());
-        shader.setShaderUniform("view", camera.getViewMatrix());
+        shader.setUniform("diffuseTexture", 0);
+        shader.setUniform("projection", camera.getProjectionMatrix());
+        shader.setUniform("view", camera.getViewMatrix());
 
-        shader.setShaderUniform("model", getGameObject().getTransform().getModelMatrix());
+        shader.setUniform("model", getGameObject().getTransform().getModelMatrix());
 
         GL41.glDrawElements(GL41.GL_TRIANGLES, indices.size(), GL41.GL_UNSIGNED_INT, 0);
 
@@ -185,10 +185,10 @@ public class Mesh extends Component
         texture.bind(0);
         shader.bind();
 
-        shader.setShaderUniform("diffuse", 0);
-        shader.setShaderUniform("projection", projectionMatrix);
+        shader.setUniform("diffuse", 0);
+        shader.setUniform("projection", projectionMatrix);
 
-        shader.setShaderUniform("model", getGameObject().getTransform().getModelMatrix());
+        shader.setUniform("model", getGameObject().getTransform().getModelMatrix());
 
         GL41.glDrawElements(GL41.GL_TRIANGLES, indices.size(), GL41.GL_UNSIGNED_INT, 0);
 
