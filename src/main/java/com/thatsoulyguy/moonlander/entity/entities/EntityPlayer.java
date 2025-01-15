@@ -1,5 +1,6 @@
 package com.thatsoulyguy.moonlander.entity.entities;
 
+import com.thatsoulyguy.moonlander.annotation.CustomConstructor;
 import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
 import com.thatsoulyguy.moonlander.block.BlockRegistry;
 import com.thatsoulyguy.moonlander.collider.Collider;
@@ -16,6 +17,7 @@ import com.thatsoulyguy.moonlander.math.Rigidbody;
 import com.thatsoulyguy.moonlander.render.*;
 import com.thatsoulyguy.moonlander.system.GameObject;
 import com.thatsoulyguy.moonlander.system.Layer;
+import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
 import com.thatsoulyguy.moonlander.ui.MenuManager;
 import com.thatsoulyguy.moonlander.ui.menus.CraftingTableMenu;
 import com.thatsoulyguy.moonlander.ui.menus.InventoryMenu;
@@ -24,19 +26,25 @@ import com.thatsoulyguy.moonlander.util.CoordinateHelper;
 import com.thatsoulyguy.moonlander.world.TextureAtlasManager;
 import com.thatsoulyguy.moonlander.world.World;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2f;
-import org.joml.Vector2i;
-import org.joml.Vector3f;
-import org.joml.Vector3i;
+import org.jetbrains.annotations.Nullable;
+import org.joml.*;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL41;
 
+import java.lang.Math;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class EntityPlayer extends Entity
 {
     private @EffectivelyNotNull Camera camera;
 
     private @EffectivelyNotNull Mesh blockBreakageMesh;
+
+    private @EffectivelyNotNull SelectorMesh selectorMesh;
 
     private @EffectivelyNotNull Vector3i breakingBlockCoordinates;
 
@@ -61,6 +69,8 @@ public class EntityPlayer extends Entity
 
         initializeCamera();
         initializeUI();
+
+        selectorMesh = SelectorMesh.create();
 
         GameObject blockBreakageObject = GameObject.create("block_breakage", Layer.DEFAULT);
 
@@ -151,6 +161,13 @@ public class EntityPlayer extends Entity
         blockBreakCooldownTimer -= Time.getDeltaTime();
     }
 
+    @Override
+    public void renderDefault(@Nullable Camera camera)
+    {
+        if (camera != null)
+            selectorMesh.render(camera);
+    }
+
     private void initializeCamera()
     {
         jumpCooldownTimer = jumpCooldownTimerStart;
@@ -208,6 +225,12 @@ public class EntityPlayer extends Entity
 
         if (InputManager.getKeyState(KeyCode.K, KeyState.PRESSED))
             setCraftingTableMenuActive(true);
+
+        if (InputManager.getKeyState(KeyCode.LEFT, KeyState.PRESSED))
+            inventoryMenu.currentSlotSelected--;
+
+        if (InputManager.getKeyState(KeyCode.RIGHT, KeyState.PRESSED))
+            inventoryMenu.currentSlotSelected++;
 
         if (InputManager.getKeyState(KeyCode.E, KeyState.PRESSED) && !pauseMenu.getActive() && !craftingTableMenu.isActive())
         {
@@ -274,7 +297,7 @@ public class EntityPlayer extends Entity
                     Vector3f selectorMin = selectorPosition.sub(selectorSize.mul(0.5f, new Vector3f()), new Vector3f());
                     Vector3f selectorMax = selectorPosition.add(selectorSize.mul(0.5f, new Vector3f()), new Vector3f());
 
-                    DebugRenderer.addBox(selectorMin, selectorMax, new Vector3f(0.0f, 0.0f, 0.0f));
+                    selectorMesh.position = selectorPosition;
                 }
                 else
                     blockBreakageMesh.getGameObject().setActive(false);
@@ -598,5 +621,150 @@ public class EntityPlayer extends Entity
     public boolean isCraftingTableMenuActive()
     {
         return craftingTableMenu.isActive();
+    }
+
+    @Override
+    public void uninitialize()
+    {
+        selectorMesh.uninitialize();
+    }
+
+    @CustomConstructor("create")
+    public static class SelectorMesh
+    {
+        private static final float[] BOX_VERTICES =
+        {
+            -0.5f, -0.5f, -0.5f,   0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,   0.5f,  0.5f, -0.5f,
+            0.5f,  0.5f, -0.5f,  -0.5f,  0.5f, -0.5f,
+            -0.5f,  0.5f, -0.5f,  -0.5f, -0.5f, -0.5f,
+
+            -0.5f, -0.5f,  0.5f,   0.5f, -0.5f,  0.5f,
+            0.5f, -0.5f,  0.5f,   0.5f,  0.5f,  0.5f,
+            0.5f,  0.5f,  0.5f,  -0.5f,  0.5f,  0.5f,
+            -0.5f,  0.5f,  0.5f,  -0.5f, -0.5f,  0.5f,
+
+            -0.5f, -0.5f, -0.5f,  -0.5f, -0.5f,  0.5f,
+            0.5f, -0.5f, -0.5f,   0.5f, -0.5f,  0.5f,
+            0.5f,  0.5f, -0.5f,   0.5f,  0.5f,  0.5f,
+            -0.5f,  0.5f, -0.5f,  -0.5f,  0.5f,  0.5f,
+        };
+
+        private final List<Vector3f> vertices = new CopyOnWriteArrayList<>();
+
+        private @NotNull Vector3f position = new Vector3f(0.0f, 0.0f, 0.0f);
+
+        private transient int vao, vbo, ibo;
+
+        private SelectorMesh() { }
+
+        private void generate()
+        {
+            for (int i = 0; i < BOX_VERTICES.length; i += 3)
+                vertices.add(new Vector3f(BOX_VERTICES[i], BOX_VERTICES[i + 1], BOX_VERTICES[i + 2]));
+
+            vao = GL41.glGenVertexArrays();
+            GL41.glBindVertexArray(vao);
+
+            FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(vertices.size() * 3);
+
+            for (Vector3f vertex : vertices)
+                vertexBuffer.put(vertex.x).put(vertex.y).put(vertex.z);
+
+            vertexBuffer.flip();
+
+            vbo = GL41.glGenBuffers();
+            GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, vbo);
+            GL41.glBufferData(GL41.GL_ARRAY_BUFFER, vertexBuffer, GL41.GL_DYNAMIC_DRAW);
+            GL41.glVertexAttribPointer(0, 3, GL41.GL_FLOAT, false, 0, 0);
+            GL41.glEnableVertexAttribArray(0);
+
+            GL41.glBindVertexArray(0);
+        }
+
+        public void render(@Nullable Camera camera)
+        {
+            if (camera == null)
+                return;
+
+            Shader shader = Objects.requireNonNull(ShaderManager.get("selector_box"));
+
+            GL41.glBindVertexArray(vao);
+            GL41.glEnableVertexAttribArray(0);
+
+            int error = GL41.glGetError();
+
+            if (error != GL41.GL_NO_ERROR)
+                System.err.println("OpenGL Error after binding of VAO + enabling of vertex attribute arrays (SelectorBox::render): " + error);
+
+            shader.bind();
+
+            error = GL41.glGetError();
+
+            if (error != GL41.GL_NO_ERROR)
+                System.err.println("OpenGL Error after binding shader (SelectorBox::render): " + error);
+
+            Matrix4f localMatrix = new Matrix4f()
+                    .identity()
+                    .translate(position)
+                    .rotateY(0.0f)
+                    .rotateX(0.0f)
+                    .rotateZ(0.0f)
+                    .scale(1.0f);
+
+            shader.setUniform("projection", camera.getProjectionMatrix());
+            shader.setUniform("view", camera.getViewMatrix());
+            shader.setUniform("model", localMatrix);
+
+            error = GL41.glGetError();
+
+            if (error != GL41.GL_NO_ERROR)
+                System.err.println("OpenGL Error after setting shader uniforms (SelectorBox::render): " + error);
+
+            GL41.glDrawArrays(GL41.GL_LINES, 0, BOX_VERTICES.length / 3);
+
+            error = GL41.glGetError();
+
+            if (error != GL41.GL_NO_ERROR)
+                System.err.println("OpenGL Error after rendering objects (SelectorBox::render): " + error);
+
+            shader.unbind();
+
+            error = GL41.glGetError();
+
+            if (error != GL41.GL_NO_ERROR)
+                System.err.println("OpenGL Error after unbinding shader (SelectorBox::render): " + error);
+
+            GL41.glDisableVertexAttribArray(0);
+            GL41.glBindVertexArray(0);
+
+            error = GL41.glGetError();
+
+            if (error != GL41.GL_NO_ERROR)
+                System.err.println("OpenGL Error after unbinding of VAO + disabling of vertex attribute arrays (SelectorBox::render): " + error);
+        }
+
+        public void uninitialize()
+        {
+            MainThreadExecutor.submit(() ->
+            {
+                GL41.glDeleteVertexArrays(vao);
+                GL41.glDeleteBuffers(vbo);
+                GL41.glDeleteBuffers(ibo);
+            });
+        }
+
+        public static @NotNull SelectorMesh create()
+        {
+            SelectorMesh result = new SelectorMesh();
+
+            result.vao = -1;
+            result.vbo = -1;
+            result.ibo = -1;
+
+            result.generate();
+
+            return result;
+        }
     }
 }

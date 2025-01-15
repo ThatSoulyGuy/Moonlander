@@ -44,6 +44,7 @@ import com.thatsoulyguy.moonlander.world.terraingenerators.GroundTerrainGenerato
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 
 import javax.swing.*;
@@ -60,6 +61,8 @@ public class Moonlander
 
         if(!GLFW.glfwInit())
             throw new IllegalStateException("Failed to initialize GLFW");
+
+        GLFW.glfwSetErrorCallback((error, description) -> System.err.println("GLFW Error " + error + ": " + GLFWErrorCallback.getDescription(description)));
 
         long primaryMonitor = GLFW.glfwGetPrimaryMonitor();
 
@@ -90,6 +93,7 @@ public class Moonlander
         ShaderManager.register(Shader.create("ssao.blur", AssetPath.create("moonlander", "shader/ssao/blur")));
         ShaderManager.register(Shader.create("ssao.conclusion", AssetPath.create("moonlander", "shader/ssao/conclusion")));
         ShaderManager.register(Shader.create("skybox", AssetPath.create("moonlander", "shader/skybox")));
+        ShaderManager.register(Shader.create("selector_box", AssetPath.create("moonlander", "shader/selectorBox")));
 
         TextureManager.register(Texture.create("debug", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/debug.png")));
         TextureManager.register(Texture.create("error", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/error.png")));
