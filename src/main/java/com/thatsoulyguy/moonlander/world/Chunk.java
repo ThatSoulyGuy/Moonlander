@@ -79,15 +79,18 @@ public class Chunk extends Component
 
         if (!vertices.isEmpty() && !indices.isEmpty())
         {
-            MainThreadExecutor.submit(() ->
+            mesh.modify((verticesIn ->
             {
-                mesh.setVertices(vertices);
-                mesh.setIndices(indices);
+                verticesIn.clear();
+                verticesIn.addAll(vertices);
+            }),
+            (indicesIn) ->
+            {
+                indicesIn.clear();
+                indicesIn.addAll(indices);
             });
 
             collider.setVoxels(renderingVoxelPositions);
-
-            mesh.onLoad();
         }
     }
 

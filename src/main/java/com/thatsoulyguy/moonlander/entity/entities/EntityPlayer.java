@@ -31,6 +31,7 @@ import org.joml.*;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL41;
 
+import java.io.Serializable;
 import java.lang.Math;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -286,21 +287,22 @@ public class EntityPlayer extends Entity
 
                 if (block != BlockRegistry.BLOCK_AIR.getId() && block != -1)
                 {
+                    selectorMesh.active = true;
+
                     Vector3i blockCoordinates = CoordinateHelper.worldToBlockCoordinates(point);
                     Vector3i chunkCoordinates = CoordinateHelper.worldToChunkCoordinates(point);
 
-                    Vector3f selectorSize = new Vector3f(1.0f);
                     Vector3f selectorPosition = CoordinateHelper.blockToWorldCoordinates(blockCoordinates, chunkCoordinates).add(new Vector3f(0.5f));
 
                     blockBreakageMesh.getGameObject().getTransform().setLocalPosition(selectorPosition);
 
-                    Vector3f selectorMin = selectorPosition.sub(selectorSize.mul(0.5f, new Vector3f()), new Vector3f());
-                    Vector3f selectorMax = selectorPosition.add(selectorSize.mul(0.5f, new Vector3f()), new Vector3f());
-
                     selectorMesh.position = selectorPosition;
                 }
                 else
+                {
                     blockBreakageMesh.getGameObject().setActive(false);
+                    selectorMesh.active = false;
+                }
             }
 
             if (InputManager.getMouseState(MouseCode.MOUSE_LEFT, MouseState.HELD))
@@ -402,6 +404,7 @@ public class EntityPlayer extends Entity
             breakingProgress = 0;
             updateDestroyStages(0);
             blockBreakageMesh.getGameObject().setActive(false);
+            selectorMesh.active = false;
         }
 
         if (InputManager.getScrollDelta() > 0)
@@ -630,7 +633,7 @@ public class EntityPlayer extends Entity
     }
 
     @CustomConstructor("create")
-    public static class SelectorMesh
+    public static class SelectorMesh implements Serializable
     {
         private static final float[] BOX_VERTICES =
         {
@@ -653,6 +656,8 @@ public class EntityPlayer extends Entity
         private final List<Vector3f> vertices = new CopyOnWriteArrayList<>();
 
         private @NotNull Vector3f position = new Vector3f(0.0f, 0.0f, 0.0f);
+
+        private boolean active;
 
         private transient int vao, vbo, ibo;
 
@@ -684,7 +689,7 @@ public class EntityPlayer extends Entity
 
         public void render(@Nullable Camera camera)
         {
-            if (camera == null)
+            if (camera == null || !active)
                 return;
 
             Shader shader = Objects.requireNonNull(ShaderManager.get("selector_box"));

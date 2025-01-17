@@ -11,12 +11,14 @@ import com.thatsoulyguy.moonlander.item.ItemRegistry;
 import com.thatsoulyguy.moonlander.render.Texture;
 import com.thatsoulyguy.moonlander.render.TextureManager;
 import com.thatsoulyguy.moonlander.ui.Menu;
+import com.thatsoulyguy.moonlander.ui.MenuManager;
 import com.thatsoulyguy.moonlander.ui.UIElement;
 import com.thatsoulyguy.moonlander.ui.UIPanel;
 import com.thatsoulyguy.moonlander.ui.uielements.ButtonUIElement;
 import com.thatsoulyguy.moonlander.ui.uielements.ImageUIElement;
 import com.thatsoulyguy.moonlander.ui.uielements.TextUIElement;
 import com.thatsoulyguy.moonlander.util.AssetPath;
+import com.thatsoulyguy.moonlander.util.ManagerLinkedClass;
 import com.thatsoulyguy.moonlander.world.TextureAtlas;
 import com.thatsoulyguy.moonlander.world.TextureAtlasManager;
 import org.jetbrains.annotations.NotNull;
@@ -554,7 +556,7 @@ public class InventoryMenu extends Menu
 
                 TextureAtlas atlas = Objects.requireNonNull(TextureAtlasManager.get("items"));
 
-                slotElements[x][y].setTexture(atlas.getOutputTexture());
+                slotElements[x][y].setTexture(atlas);
 
                 Vector2f[] uvs = atlas.getSubTextureCoordinates(item.getTexture(), 90);
 
@@ -568,7 +570,7 @@ public class InventoryMenu extends Menu
 
                 if (x == 0)
                 {
-                    hotbarElements[y].setTexture(atlas.getOutputTexture());
+                    hotbarElements[y].setTexture(atlas);
                     hotbarElements[y].setUVs(uvs);
                 }
 
@@ -627,7 +629,7 @@ public class InventoryMenu extends Menu
 
                 TextureAtlas atlas = Objects.requireNonNull(TextureAtlasManager.get("items"));
 
-                craftingSlotElements[x][y].setTexture(atlas.getOutputTexture());
+                craftingSlotElements[x][y].setTexture(atlas);
 
                 Vector2f[] uvs = atlas.getSubTextureCoordinates(item.getTexture(), 90);
 
@@ -677,7 +679,7 @@ public class InventoryMenu extends Menu
 
         TextureAtlas atlas = Objects.requireNonNull(TextureAtlasManager.get("items"));
 
-        craftingResultElement.setTexture(atlas.getOutputTexture());
+        craftingResultElement.setTexture(atlas);
 
         Vector2f[] uvs = atlas.getSubTextureCoordinates(resultItem.getTexture(), 90);
 
@@ -787,7 +789,7 @@ public class InventoryMenu extends Menu
             if (craftingResultSlot != ItemRegistry.ITEM_AIR.getId())
             {
                 grabbedItemId = craftingResultSlot;
-                grabbedItemElement.setTexture(craftingResultElement.getTexture());
+                grabbedItemElement.setTexture((TextureAtlas) craftingResultElement.getTexture());
                 grabbedItemElement.setUVs(TextureAtlasManager.get("items").getSubTextureCoordinates(Objects.requireNonNull(ItemRegistry.get(craftingResultSlot)).getTexture(), 90));
                 grabbedItemElement.setPosition(InputManager.getMousePosition());
                 grabbedItemElement.setActive(true);
@@ -819,7 +821,7 @@ public class InventoryMenu extends Menu
         if (itemArr[x][y] != ItemRegistry.ITEM_AIR.getId() && grabbedItemId == ItemRegistry.ITEM_AIR.getId())
         {
             grabbedItemId = itemArr[x][y];
-            grabbedItemElement.setTexture(uiArr[x][y].getTexture());
+            grabbedItemElement.setTexture((TextureAtlas) uiArr[x][y].getTexture());
             grabbedItemElement.setUVs(TextureAtlasManager.get("items").getSubTextureCoordinates(Objects.requireNonNull(ItemRegistry.get(itemArr[x][y])).getTexture(), 90));
             grabbedItemElement.setPosition(InputManager.getMousePosition());
             grabbedItemElement.setActive(true);
@@ -867,7 +869,7 @@ public class InventoryMenu extends Menu
             grabbedItemId = itemArr[x][y];
             grabbedItemCount = countArr[x][y];
 
-            grabbedItemElement.setTexture(uiArr[x][y].getTexture());
+            grabbedItemElement.setTexture((TextureAtlas) uiArr[x][y].getTexture());
             grabbedItemElement.setUVs(TextureAtlasManager.get("items").getSubTextureCoordinates(Objects.requireNonNull(ItemRegistry.get(itemArr[x][y])).getTexture(), 90));
             grabbedItemElement.setPosition(InputManager.getMousePosition());
             grabbedItemElement.setActive(true);

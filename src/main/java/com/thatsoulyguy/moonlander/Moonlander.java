@@ -1,5 +1,6 @@
 package com.thatsoulyguy.moonlander;
 
+import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
 import com.thatsoulyguy.moonlander.block.BlockRegistry;
 import com.thatsoulyguy.moonlander.collider.Collider;
 import com.thatsoulyguy.moonlander.collider.colliders.BoxCollider;
@@ -55,6 +56,8 @@ import java.util.stream.Collectors;
 
 public class Moonlander
 {
+    private @EffectivelyNotNull Camera camera;
+
     public void preInitialize()
     {
         InputManager.initialize();
@@ -175,9 +178,9 @@ public class Moonlander
 
     public void initialize()
     {
-        //LevelManager.loadLevel(FileHelper.getPersistentDataPath("Invasion2") + "/overworld", true);
+        LevelManager.loadLevel(FileHelper.getPersistentDataPath("Invasion2") + "/overworld", true);
 
-        //*
+        /*
         LevelManager.createLevel("overworld", true);
 
         GameObject player = GameObject.create("default.player", Layer.DEFAULT);
@@ -197,6 +200,8 @@ public class Moonlander
         world.addTerrainGenerator(TerrainGenerator.create(GroundTerrainGenerator.class));
         world.addTerrainGenerator(TerrainGenerator.create(CaveTerrainGenerator.class));
         //*/
+
+        camera = Objects.requireNonNull(GameObjectManager.get("default.player")).getComponentNotNull(EntityPlayer.class).getCamera();
     }
 
     public void update()
@@ -218,7 +223,7 @@ public class Moonlander
     {
         Window.preRender();
 
-        GameObjectManager.renderDefault(Objects.requireNonNull(GameObjectManager.get("default.player")).getComponentNotNull(EntityPlayer.class).getCamera());
+        GameObjectManager.renderDefault(camera);
 
         GameObjectManager.renderUI();
 

@@ -82,7 +82,11 @@ public class GameObject implements Serializable
 
     public <T extends Component> void removeComponent(@NotNull Class<T> clazz)
     {
+        if (!componentMap.containsKey(clazz))
+            return;
+
         Component removed = componentMap.remove(clazz);
+
         if (removed != null)
             removed.uninitialize();
     }
@@ -420,6 +424,15 @@ public class GameObject implements Serializable
                         Component component = (Component) linkedClass.getManagingClass()
                                 .getMethod("get", String.class)
                                 .invoke(null, linkedClass.getManagedItem());
+
+                        if (component == null)
+                        {
+                            result.addComponent((Component) linkedClass);
+
+                            System.out.println("Deserialized component '" + linkedClass.getClass().getSimpleName() + "'.");
+
+                            continue;
+                        }
 
                         System.out.println("Deserialized component '" + component.getClass().getSimpleName() + "'.");
                         result.addComponent(component);

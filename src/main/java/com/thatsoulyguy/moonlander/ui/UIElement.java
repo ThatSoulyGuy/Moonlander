@@ -5,9 +5,12 @@ import com.thatsoulyguy.moonlander.core.Window;
 import com.thatsoulyguy.moonlander.render.Mesh;
 import com.thatsoulyguy.moonlander.render.Texture;
 import com.thatsoulyguy.moonlander.render.Vertex;
+import com.thatsoulyguy.moonlander.system.Component;
 import com.thatsoulyguy.moonlander.system.GameObject;
 import com.thatsoulyguy.moonlander.system.Layer;
 import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
+import com.thatsoulyguy.moonlander.util.ManagerLinkedClass;
+import com.thatsoulyguy.moonlander.world.TextureAtlas;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
@@ -213,14 +216,31 @@ public abstract class UIElement implements Serializable
         return name;
     }
 
-    public @NotNull Texture getTexture()
+    @SuppressWarnings("unchecked")
+    public <T extends Component> @NotNull T getTexture()
     {
-        return object.getComponentNotNull(Texture.class);
+        if (object.hasComponent(Texture.class))
+            return (T) object.getComponentNotNull(Texture.class);
+        else if (object.hasComponent(TextureAtlas.class))
+            return (T) object.getComponentNotNull(TextureAtlas.class);
+        else
+            throw new IllegalStateException("UIElement does not have Texture or TextureAtlas component!");
     }
 
     public void setTexture(@NotNull Texture texture)
     {
-        object.setComponent(texture);
+        object.removeComponent(TextureAtlas.class);
+
+        if (!object.hasComponent(texture.getClass()))
+            object.addComponent(texture);
+        else
+            object.setComponent(texture);
+    }
+
+    public void setTexture(@NotNull TextureAtlas texture)
+    {
+        object.removeComponent(Texture.class);
+        object.addComponent(texture);
     }
 
     public boolean doesAlignAndStretch()

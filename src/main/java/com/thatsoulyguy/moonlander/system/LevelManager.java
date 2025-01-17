@@ -64,7 +64,7 @@ public class LevelManager
 
         System.out.println("Saving level '" + name + "'...");
 
-        UIManager.serialize(path);
+        //UIManager.serialize(path);
 
         File gameObjectsDirectory = new File(path, "gameObject/");
 
@@ -120,7 +120,7 @@ public class LevelManager
             return;
         }
 
-        UIManager.deserialize(path);
+        //UIManager.deserialize(path);
 
         File saveFile = new File(path, "level.bin");
 

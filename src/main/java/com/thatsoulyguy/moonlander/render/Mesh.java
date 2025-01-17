@@ -276,8 +276,23 @@ public class Mesh extends Component
             vertexModifier.accept(vertices);
             indexModifier.accept(indices);
 
+            if (vertices.isEmpty() || indices.isEmpty())
+                return;
+
             if (vao != -1)
                 MainThreadExecutor.submit(this::updateBufferData);
+            else
+                MainThreadExecutor.submit(() ->
+                {
+                    try
+                    {
+                        createOrUpdateBuffers();
+                    }
+                    finally
+                    {
+                        initializationLatch.countDown();
+                    }
+                });
         }
     }
 
@@ -291,6 +306,9 @@ public class Mesh extends Component
 
     private void createOrUpdateBuffers()
     {
+        if (vertices.isEmpty() || indices.isEmpty())
+            return;
+
         vao = GL41.glGenVertexArrays();
         GL41.glBindVertexArray(vao);
 
@@ -332,6 +350,9 @@ public class Mesh extends Component
 
     private void updateBufferData()
     {
+        if (vertices.isEmpty() || indices.isEmpty())
+            return;
+
         GL41.glBindVertexArray(vao);
 
         FloatBuffer positionBuffer = toBuffer(vertices, Vertex::getPosition);
@@ -342,7 +363,6 @@ public class Mesh extends Component
         GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, cbo);
         resizeOrSubData(GL41.GL_ARRAY_BUFFER, colorBuffer);
 
-        // Update normal buffer
         FloatBuffer normalBuffer = toBuffer(vertices, Vertex::getNormal);
         GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, nbo);
         resizeOrSubData(GL41.GL_ARRAY_BUFFER, normalBuffer);
