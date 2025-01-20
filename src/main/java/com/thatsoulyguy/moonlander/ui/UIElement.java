@@ -50,6 +50,8 @@ public abstract class UIElement implements Serializable
 
     @Nullable UIPanel parent;
 
+    private @NotNull Vector2f pivot = new Vector2f(0.5f, 0.5f);
+
     private boolean isActive = true;
 
     private boolean alignAndStretch = true;
@@ -60,10 +62,7 @@ public abstract class UIElement implements Serializable
 
     public void update()
     {
-        if (!isActive)
-            return;
-
-        if (!alignAndStretch)
+        if (!isActive || !alignAndStretch)
             return;
 
         applyStretch();
@@ -78,22 +77,18 @@ public abstract class UIElement implements Serializable
                 newPosition.x = (windowDimensions.x - elementDimensions.x) / 2.0f;
                 newPosition.y = 0;
                 break;
-
             case BOTTOM:
                 newPosition.x = (windowDimensions.x - elementDimensions.x) / 2.0f;
                 newPosition.y = windowDimensions.y - elementDimensions.y;
                 break;
-
             case CENTER:
                 newPosition.x = (windowDimensions.x - elementDimensions.x) / 2.0f;
                 newPosition.y = (windowDimensions.y - elementDimensions.y) / 2.0f;
                 break;
-
             case RIGHT:
                 newPosition.x = windowDimensions.x - elementDimensions.x;
                 newPosition.y = (windowDimensions.y - elementDimensions.y) / 2.0f;
                 break;
-
             case LEFT:
                 newPosition.x = 0;
                 newPosition.y = (windowDimensions.y - elementDimensions.y) / 2.0f;
@@ -101,6 +96,20 @@ public abstract class UIElement implements Serializable
         }
 
         newPosition.add(offset);
+
+        float angleRadians = (float) Math.toRadians(getRotation());
+
+        Vector2f pivotWorld = new Vector2f(newPosition.x + elementDimensions.x * pivot.x, newPosition.y + elementDimensions.y * pivot.y);
+
+        Vector2f offset = new Vector2f(newPosition.x - pivotWorld.x, newPosition.y - pivotWorld.y);
+
+        float cos = (float) Math.cos(angleRadians);
+        float sin = (float) Math.sin(angleRadians);
+
+        Vector2f rotatedOffset = new Vector2f(offset.x * cos - offset.y * sin, offset.x * sin + offset.y * cos);
+
+        newPosition = new Vector2f(pivotWorld.x + rotatedOffset.x, pivotWorld.y + rotatedOffset.y);
+
         setPosition(newPosition);
     }
 
@@ -251,6 +260,16 @@ public abstract class UIElement implements Serializable
     public void setAlignAndStretch(boolean alignAndStretch)
     {
         this.alignAndStretch = alignAndStretch;
+    }
+
+    public @NotNull Vector2f getPivot()
+    {
+        return pivot;
+    }
+
+    public void setPivot(@NotNull Vector2f pivot)
+    {
+        this.pivot = pivot;
     }
 
     public void setColor(@NotNull Vector3f color)

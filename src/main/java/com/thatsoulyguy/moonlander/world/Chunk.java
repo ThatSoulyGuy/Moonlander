@@ -4,10 +4,12 @@ import com.thatsoulyguy.moonlander.annotation.CustomConstructor;
 import com.thatsoulyguy.moonlander.block.Block;
 import com.thatsoulyguy.moonlander.block.BlockRegistry;
 import com.thatsoulyguy.moonlander.collider.colliders.VoxelMeshCollider;
+import com.thatsoulyguy.moonlander.entity.Entity;
 import com.thatsoulyguy.moonlander.render.Mesh;
 import com.thatsoulyguy.moonlander.render.Vertex;
 import com.thatsoulyguy.moonlander.system.Component;
 import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
+import com.thatsoulyguy.moonlander.util.CoordinateHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
@@ -26,6 +28,8 @@ public class Chunk extends Component
 
     private Map<Integer, Short> blocks = new HashMap<>();
 
+    private boolean needsToUpdate = false;
+
     private Chunk() { }
 
     @Override
@@ -36,6 +40,8 @@ public class Chunk extends Component
 
         List<Vector3f> renderingVoxelPositions = new ArrayList<>();
 
+        needsToUpdate = false;
+
         for (int x = 0; x < SIZE; x++)
         {
             for (int y = 0; y < SIZE; y++)
@@ -43,7 +49,9 @@ public class Chunk extends Component
                 for (int z = 0; z < SIZE; z++)
                 {
                     short blockId = getBlock(x, y, z);
-                    if (blockId == BlockRegistry.BLOCK_AIR.getId()) continue;
+
+                    if (blockId == BlockRegistry.BLOCK_AIR.getId())
+                        continue;
 
                     TextureAtlas textureAtlas = getGameObject().getComponent(TextureAtlas.class);
 
@@ -54,6 +62,10 @@ public class Chunk extends Component
                     }
 
                     Block block = Objects.requireNonNull(BlockRegistry.get(blockId));
+
+                    if (block.updates())
+                        needsToUpdate = true;
+
                     renderFaceIfNeeded(x, y, z, textureAtlas, block, renderingVoxelPositions);
                 }
             }
@@ -94,6 +106,31 @@ public class Chunk extends Component
         }
     }
 
+    @Override
+    public void update()
+    {
+        if (!needsToUpdate)
+            return;
+
+        Vector3f chunkWorldPos = getGameObject().getTransform().getWorldPosition();
+
+        blocks.entrySet().parallelStream().forEach(entry ->
+        {
+            int index = entry.getKey();
+            short blockId = entry.getValue();
+
+            Vector3i localPos = fromIndex(index);
+
+            Vector3i globalBlockPos = new Vector3i(
+                    (int)(chunkWorldPos.x) + localPos.x,
+                    (int)(chunkWorldPos.y) + localPos.y,
+                    (int)(chunkWorldPos.z) + localPos.z
+            );
+
+            BlockRegistry.get(blockId).onTick(World.getLocalWorld(), this, globalBlockPos);
+        });
+    }
+
     private void renderFaceIfNeeded(int x, int y, int z, TextureAtlas textureAtlas, Block block, List<Vector3f> renderingVoxelPositions)
     {
         Vector3f basePosition = new Vector3f(x + 0.5f, y + 0.5f, z + 0.5f);
@@ -102,17 +139,17 @@ public class Chunk extends Component
             renderingVoxelPositions.add(basePosition);
 
         Vector3i[] directions =
-                {
-                new Vector3i(0, 0, 1),
-                new Vector3i(0, 0, -1),
-                new Vector3i(0, 1, 0),
-                new Vector3i(0, -1, 0),
-                new Vector3i(1, 0, 0),
-                new Vector3i(-1, 0, 0)
+        {
+            new Vector3i( 0,  0,  1),
+            new Vector3i( 0,  0, -1),
+            new Vector3i( 0,  1,  0),
+            new Vector3i( 0, -1,  0),
+            new Vector3i( 1,  0,  0),
+            new Vector3i(-1,  0,  0)
         };
 
-        int[] textureRotations = {180, 180, 0, 0, -90, 90};
-        int[] colorIndices = {2, 3, 0, 1, 4, 5};
+        int[] textureRotations = { 180, 180, 0, 0, -90, 90 };
+        int[] colorIndices = { 2, 3, 0, 1, 4, 5 };
 
         for (int i = 0; i < directions.length; i++)
         {
@@ -148,17 +185,28 @@ public class Chunk extends Component
      * If you "break" a block (set it to air), this will remove its faces.
      * If you place a new block, it'll add its faces.
      *
+     * @param interactor The entity setting the block
      * @param blockPosition The (x, y, z) position in chunk space
      * @param type The block ID to place
      */
-    public void setBlock(@NotNull Vector3i blockPosition, short type) {
-        if (!isValidPosition(blockPosition)) return;
+    public void setBlock(@NotNull Entity interactor, @NotNull Vector3i blockPosition, short type)
+    {
+        if (!isValidPosition(blockPosition))
+            return;
 
         int index = toIndex(blockPosition.x, blockPosition.y, blockPosition.z);
-        if (type == BlockRegistry.BLOCK_AIR.getId()) {
+
+        Vector3i globalBlockCoordinates = CoordinateHelper.worldToGlobalBlockCoordinates(CoordinateHelper.blockToWorldCoordinates(blockPosition, CoordinateHelper.worldToChunkCoordinates(getGameObject().getTransform().getWorldPosition())));
+
+        if (type == BlockRegistry.BLOCK_AIR.getId())
+        {
             blocks.remove(index);
-        } else {
+            BlockRegistry.get(type).onBroken(interactor, World.getLocalWorld(), this, globalBlockCoordinates);
+        }
+        else
+        {
             blocks.put(index, type);
+            BlockRegistry.get(type).onPlaced(interactor, World.getLocalWorld(), this, globalBlockCoordinates);
         }
 
         rebuildMeshAndCollider();
@@ -200,6 +248,15 @@ public class Chunk extends Component
                 position.z >= 0 && position.z < SIZE;
     }
 
+    private static @NotNull Vector3i fromIndex(int index)
+    {
+        int x = index & 0xF;
+        int y = (index >> 4) & 0xF;
+        int z = (index >> 8) & 0xF;
+
+        return new Vector3i(x, y, z);
+    }
+
     private static int toIndex(int x, int y, int z)
     {
         return (x & 0xF) | ((y & 0xF) << 4) | ((z & 0xF) << 8);
@@ -219,6 +276,8 @@ public class Chunk extends Component
             return;
         }
 
+        needsToUpdate = false;
+
         for (int x = 0; x < SIZE; x++)
         {
             for (int y = 0; y < SIZE; y++)
@@ -231,6 +290,10 @@ public class Chunk extends Component
                         continue;
 
                     Block block = Objects.requireNonNull(BlockRegistry.get(blockID));
+
+                    if (block.updates())
+                        needsToUpdate = true;
+
                     renderFaceIfNeeded(x, y, z, textureAtlas, block, renderingVoxelPositions);
                 }
             }
@@ -366,69 +429,72 @@ public class Chunk extends Component
 
         if (normal.x == 0 && normal.y == 0 && normal.z == 1)
         {
-            return new Vector3i[]{
-                    new Vector3i(x, y, z + 1),
-                    new Vector3i(x, y + 1, z + 1),
-                    new Vector3i(x + 1, y + 1, z + 1),
-                    new Vector3i(x + 1, y, z + 1)
+            return new Vector3i[]
+            {
+                new Vector3i(x, y, z + 1),
+                new Vector3i(x, y + 1, z + 1),
+                new Vector3i(x + 1, y + 1, z + 1),
+                new Vector3i(x + 1, y, z + 1)
             };
         }
         else if (normal.x == 0 && normal.y == 0 && normal.z == -1)
         {
-            return new Vector3i[]{
-                    new Vector3i(x + 1, y, z),
-                    new Vector3i(x + 1, y + 1, z),
-                    new Vector3i(x, y + 1, z),
-                    new Vector3i(x, y, z)
+            return new Vector3i[]
+            {
+                new Vector3i(x + 1, y, z),
+                new Vector3i(x + 1, y + 1, z),
+                new Vector3i(x, y + 1, z),
+                new Vector3i(x, y, z)
             };
         }
         else if (normal.x == 0 && normal.y == 1 && normal.z == 0)
         {
-            return new Vector3i[]{
-                    new Vector3i(x, y + 1, z),
-                    new Vector3i(x, y + 1, z + 1),
-                    new Vector3i(x + 1, y + 1, z + 1),
-                    new Vector3i(x + 1, y + 1, z)
+            return new Vector3i[]
+            {
+                new Vector3i(x, y + 1, z),
+                new Vector3i(x, y + 1, z + 1),
+                new Vector3i(x + 1, y + 1, z + 1),
+                new Vector3i(x + 1, y + 1, z)
             };
         }
         else if (normal.x == 0 && normal.y == -1 && normal.z == 0)
         {
             return new Vector3i[]
-                    {
-                            new Vector3i(x + 1, y, z),
-                            new Vector3i(x + 1, y, z + 1),
-                            new Vector3i(x, y, z + 1),
-                            new Vector3i(x, y, z)
-                    };
+            {
+                new Vector3i(x + 1, y, z),
+                new Vector3i(x + 1, y, z + 1),
+                new Vector3i(x, y, z + 1),
+                new Vector3i(x, y, z)
+            };
         }
         else if (normal.x == 1 && normal.y == 0 && normal.z == 0)
         {
             return new Vector3i[]
-                    {
-                            new Vector3i(x + 1, y, z),
-                            new Vector3i(x + 1, y, z + 1),
-                            new Vector3i(x + 1, y + 1, z + 1),
-                            new Vector3i(x + 1, y + 1, z)
-                    };
+            {
+                new Vector3i(x + 1, y, z),
+                new Vector3i(x + 1, y, z + 1),
+                new Vector3i(x + 1, y + 1, z + 1),
+                new Vector3i(x + 1, y + 1, z)
+            };
         }
         else if (normal.x == -1 && normal.y == 0 && normal.z == 0)
         {
             return new Vector3i[]
-                    {
-                            new Vector3i(x, y + 1, z),
-                            new Vector3i(x, y + 1, z + 1),
-                            new Vector3i(x, y, z + 1),
-                            new Vector3i(x, y, z)
-                    };
+            {
+                new Vector3i(x, y + 1, z),
+                new Vector3i(x, y + 1, z + 1),
+                new Vector3i(x, y, z + 1),
+                new Vector3i(x, y, z)
+            };
         }
 
         return new Vector3i[]
-                {
-                        new Vector3i(x, y, z),
-                        new Vector3i(x, y, z),
-                        new Vector3i(x, y, z),
-                        new Vector3i(x, y, z)
-                };
+        {
+            new Vector3i(x, y, z),
+            new Vector3i(x, y, z),
+            new Vector3i(x, y, z),
+            new Vector3i(x, y, z)
+        };
     }
 
     public static @NotNull Chunk create()

@@ -22,7 +22,13 @@ public abstract class Block
         id = idCounter++;
     }
 
+    public void onPlaced(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition) { }
+
+    public void onTick(@NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition) { }
+
     public void onInteractedWith(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition) { }
+
+    public void onBroken(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition) { }
 
     public abstract @NotNull String getDisplayName();
 
@@ -37,6 +43,8 @@ public abstract class Block
     public abstract @NotNull Vector3f[] getColors();
 
     public abstract boolean isInteractable();
+
+    public abstract boolean updates();
 
     public @NotNull Item getAssociatedItem()
     {

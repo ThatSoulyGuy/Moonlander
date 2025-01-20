@@ -3,6 +3,7 @@ package com.thatsoulyguy.moonlander.system;
 import com.thatsoulyguy.moonlander.annotation.Manager;
 import com.thatsoulyguy.moonlander.annotation.Static;
 import com.thatsoulyguy.moonlander.core.Settings;
+import com.thatsoulyguy.moonlander.gameplay.OxygenBubble;
 import com.thatsoulyguy.moonlander.render.Camera;
 import com.thatsoulyguy.moonlander.render.DebugRenderer;
 import com.thatsoulyguy.moonlander.render.Mesh;
@@ -157,7 +158,7 @@ public class GameObjectManager
 
             for (GameObject gameObject : gameObjectMap.values())
             {
-                if (gameObject.hasComponent(Mesh.class) && gameObject.getComponentNotNull(Mesh.class).isTransparent())
+                if ((gameObject.hasComponent(Mesh.class) && gameObject.getComponentNotNull(Mesh.class).isTransparent()) || gameObject.hasComponent(OxygenBubble.class))
                     transparentGameObjects.add(gameObject);
                 else
                     gameObject.renderDefault(camera);

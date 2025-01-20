@@ -7,6 +7,8 @@ import com.thatsoulyguy.moonlander.collider.Collider;
 import com.thatsoulyguy.moonlander.collider.colliders.BoxCollider;
 import com.thatsoulyguy.moonlander.core.Time;
 import com.thatsoulyguy.moonlander.entity.Entity;
+import com.thatsoulyguy.moonlander.gameplay.OxygenBubble;
+import com.thatsoulyguy.moonlander.gameplay.OxygenBubbleManager;
 import com.thatsoulyguy.moonlander.input.*;
 import com.thatsoulyguy.moonlander.item.Inventory;
 import com.thatsoulyguy.moonlander.item.Item;
@@ -20,6 +22,7 @@ import com.thatsoulyguy.moonlander.system.Layer;
 import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
 import com.thatsoulyguy.moonlander.ui.MenuManager;
 import com.thatsoulyguy.moonlander.ui.menus.CraftingTableMenu;
+import com.thatsoulyguy.moonlander.ui.menus.DeathMenu;
 import com.thatsoulyguy.moonlander.ui.menus.InventoryMenu;
 import com.thatsoulyguy.moonlander.ui.menus.PauseMenu;
 import com.thatsoulyguy.moonlander.util.CoordinateHelper;
@@ -34,7 +37,7 @@ import org.lwjgl.opengl.GL41;
 import java.io.Serializable;
 import java.lang.Math;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -52,16 +55,25 @@ public class EntityPlayer extends Entity
     private @EffectivelyNotNull PauseMenu pauseMenu;
     private @EffectivelyNotNull InventoryMenu inventoryMenu;
     private @EffectivelyNotNull CraftingTableMenu craftingTableMenu;
+    private @EffectivelyNotNull DeathMenu deathMenu;
 
     private @NotNull Inventory inventory = new Inventory();
 
     private float breakingProgress;
 
-    private final float blockBreakCooldownTimerStart = 0.083f;
-    private float blockBreakCooldownTimer;
-
     private final float jumpCooldownTimerStart = 0.18f;
     private float jumpCooldownTimer;
+
+    private final float oxygenDepletionCooldownTimerStart = 3.0f;
+    private float oxygenDepletionCooldownTimer;
+
+    private final float suffocationCooldownTimerStart = 4.0f;
+    private float suffocationCooldownTimer;
+
+    private final float oxygenRefillCooldownTimerStart = 0.25f;
+    private float oxygenRefillCooldownTimer;
+
+    private int oxygen = 100;
 
     @Override
     public void initialize()
@@ -144,6 +156,10 @@ public class EntityPlayer extends Entity
         blockBreakageMesh = blockBreakageObject.getComponentNotNull(Mesh.class);
 
         inventoryMenu.addItem(ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT.getId(), (byte) 10);
+
+        oxygenDepletionCooldownTimer = oxygenDepletionCooldownTimerStart;
+        suffocationCooldownTimer = suffocationCooldownTimerStart;
+        oxygenRefillCooldownTimer = oxygenRefillCooldownTimerStart;
     }
 
     @Override
@@ -155,11 +171,50 @@ public class EntityPlayer extends Entity
         updateMouselook();
         updateMovement();
 
+        if (oxygenDepletionCooldownTimer < 0 && oxygen > 0)
+        {
+            oxygen--;
+            oxygenDepletionCooldownTimer = oxygenDepletionCooldownTimerStart;
+        }
+
+        if (suffocationCooldownTimer < 0 && oxygen <= 0)
+        {
+            setCurrentHealth(getCurrentHealth() - 3);
+            suffocationCooldownTimer = suffocationCooldownTimerStart;
+        }
+
+        if (getCurrentHealth() <= 0)
+        {
+            deathMenu.setActive(true);
+            inventoryMenu.setSurvivalMenuActive(false);
+            craftingTableMenu.setActive(false);
+            pauseMenu.setActive(false);
+            InputManager.setMouseMode(MouseMode.FREE);
+        }
+
+        BoxCollider self = getGameObject().getComponentNotNull(BoxCollider.class);
+
+        for (Collider other : OxygenBubbleManager.getAll().stream().filter(OxygenBubble::isOxygenActive).map((oxygenBubble -> oxygenBubble.getGameObject().getComponent(BoxCollider.class))).toList())
+        {
+            if (other.intersects(self) && oxygenRefillCooldownTimer < 0)
+            {
+                if (oxygen < 100)
+                    oxygen++;
+
+                oxygenRefillCooldownTimer = oxygenRefillCooldownTimerStart;
+            }
+        }
+
         inventoryMenu.update();
         craftingTableMenu.update();
 
+        inventoryMenu.health = getCurrentHealth();
+        inventoryMenu.oxygen = oxygen;
+
         jumpCooldownTimer -= Time.getDeltaTime();
-        blockBreakCooldownTimer -= Time.getDeltaTime();
+        oxygenDepletionCooldownTimer -= Time.getDeltaTime();
+        suffocationCooldownTimer -= Time.getDeltaTime();
+        oxygenRefillCooldownTimer -= Time.getDeltaTime();
     }
 
     @Override
@@ -172,7 +227,6 @@ public class EntityPlayer extends Entity
     private void initializeCamera()
     {
         jumpCooldownTimer = jumpCooldownTimerStart;
-        blockBreakCooldownTimer = blockBreakCooldownTimerStart;
 
         getGameObject().addChild(GameObject.create("default.camera", Layer.DEFAULT));
 
@@ -194,7 +248,6 @@ public class EntityPlayer extends Entity
 
         inventoryMenu.setInventory(inventory);
 
-
         pauseMenu = (PauseMenu) MenuManager.get("menu_pause");
 
         assert pauseMenu != null;
@@ -202,7 +255,6 @@ public class EntityPlayer extends Entity
         pauseMenu.setHost(this);
 
         pauseMenu.setActive(false);
-
 
         craftingTableMenu = (CraftingTableMenu) MenuManager.get("menu_crafting_table");
 
@@ -212,6 +264,13 @@ public class EntityPlayer extends Entity
         craftingTableMenu.setInventoryMenu(inventoryMenu);
 
         craftingTableMenu.setActive(false);
+
+        deathMenu = (DeathMenu) MenuManager.get("menu_death");
+
+        assert deathMenu != null;
+
+        deathMenu.setHost(this);
+        deathMenu.setActive(false);
     }
 
     private void updateControls()
@@ -224,14 +283,8 @@ public class EntityPlayer extends Entity
             return;
         }
 
-        if (InputManager.getKeyState(KeyCode.K, KeyState.PRESSED))
-            setCraftingTableMenuActive(true);
-
-        if (InputManager.getKeyState(KeyCode.LEFT, KeyState.PRESSED))
-            inventoryMenu.currentSlotSelected--;
-
-        if (InputManager.getKeyState(KeyCode.RIGHT, KeyState.PRESSED))
-            inventoryMenu.currentSlotSelected++;
+        if (deathMenu.getActive())
+            return;
 
         if (InputManager.getKeyState(KeyCode.E, KeyState.PRESSED) && !pauseMenu.getActive() && !craftingTableMenu.isActive())
         {
@@ -276,13 +329,20 @@ public class EntityPlayer extends Entity
         if (inventoryMenu.getSurvivalMenuActive() || inventoryMenu.getCreativeMenuActive() || pauseMenu.getActive() || craftingTableMenu.isActive())
             return;
 
+        int oldSlotSelected = inventoryMenu.currentSlotSelected;
+
+        if (InputManager.getKeyState(KeyCode.LEFT, KeyState.PRESSED))
+            inventoryMenu.currentSlotSelected--;
+
+        if (InputManager.getKeyState(KeyCode.RIGHT, KeyState.PRESSED))
+            inventoryMenu.currentSlotSelected++;
+
         Raycast.VoxelHit hit = Raycast.castVoxel(camera.getGameObject().getTransform().getWorldPosition(), camera.getGameObject().getTransform().getForward(), 4);
 
         if (hit != null)
         {
             {
                 Vector3f point = hit.center();
-
                 short block = World.getLocalWorld().getBlock(point);
 
                 if (block != BlockRegistry.BLOCK_AIR.getId() && block != -1)
@@ -322,7 +382,17 @@ public class EntityPlayer extends Entity
                         breakingProgress = 0;
                     }
 
-                    float blockHardness = Objects.requireNonNull(BlockRegistry.get(blockID)).getHardness();
+                    InventoryMenu.SlotData currentlySelectedSlot = inventoryMenu.getSlot(new Vector2i(0, inventoryMenu.currentSlotSelected));
+
+                    float blockHardness;
+                    if (currentlySelectedSlot != null)
+                    {
+                        blockHardness = Objects.requireNonNull(BlockRegistry.get(blockID)).getHardness() *
+                                Objects.requireNonNull(ItemRegistry.get(currentlySelectedSlot.id())).getBreakageSpeedModifier();
+                    }
+                    else
+                        blockHardness = Objects.requireNonNull(BlockRegistry.get(blockID)).getHardness();
+
                     breakingProgress += Time.getDeltaTime();
 
                     int totalStages = 9;
@@ -331,14 +401,26 @@ public class EntityPlayer extends Entity
 
                     if (breakingProgress >= blockHardness)
                     {
-                        if (Objects.requireNonNull(BlockRegistry.get(blockID)).toolRequired() == Tool.NONE)
-                            inventoryMenu.addItem(Objects.requireNonNull(BlockRegistry.get(World.getLocalWorld().getBlock(point))).getAssociatedItem().getId(), (byte) 1);
+                        Tool toolPossessed;
 
-                        World.getLocalWorld().setBlock(point, BlockRegistry.BLOCK_AIR.getId());
+                        currentlySelectedSlot = inventoryMenu.getSlot(new Vector2i(0, inventoryMenu.currentSlotSelected));
+
+                        if (currentlySelectedSlot != null)
+                            toolPossessed = Objects.requireNonNull(ItemRegistry.get(currentlySelectedSlot.id())).getToolType();
+                        else
+                            toolPossessed = Tool.NONE;
+
+                        if (Objects.requireNonNull(BlockRegistry.get(blockID)).toolRequired() == Tool.NONE || Objects.requireNonNull(BlockRegistry.get(blockID)).toolRequired() == toolPossessed)
+                        {
+                            inventoryMenu.addItem(Objects.requireNonNull(
+                                    BlockRegistry.get(World.getLocalWorld().getBlock(point))
+                            ).getAssociatedItem().getId(), (byte) 1);
+                        }
+
+                        World.getLocalWorld().setBlock(this, point, BlockRegistry.BLOCK_AIR.getId());
 
                         breakingProgress = 0;
                         breakingBlockCoordinates = null;
-                        blockBreakCooldownTimer = blockBreakCooldownTimerStart;
 
                         updateDestroyStages(0);
                     }
@@ -380,7 +462,14 @@ public class EntityPlayer extends Entity
                 if (currentBlock != -1 && currentBlock != BlockRegistry.BLOCK_AIR.getId())
                 {
                     if (Objects.requireNonNull(BlockRegistry.get(currentBlock)).isInteractable())
-                        Objects.requireNonNull(BlockRegistry.get(currentBlock)).onInteractedWith(this, World.getLocalWorld(), Objects.requireNonNull(World.getLocalWorld().getChunk(CoordinateHelper.worldToChunkCoordinates(point))), CoordinateHelper.worldToGlobalBlockCoordinates(point));
+                    {
+                        Objects.requireNonNull(BlockRegistry.get(currentBlock)).onInteractedWith(
+                                this,
+                                World.getLocalWorld(),
+                                Objects.requireNonNull(World.getLocalWorld().getChunk(CoordinateHelper.worldToChunkCoordinates(point))),
+                                CoordinateHelper.worldToGlobalBlockCoordinates(point)
+                        );
+                    }
                 }
 
                 point.add(normal.mul(1f, new Vector3f()));
@@ -392,9 +481,11 @@ public class EntityPlayer extends Entity
                     if (slot.count() <= 0 || !item.isBlockItem())
                         return;
 
-                    World.getLocalWorld().setBlock(point, item.getAssociatedBlock().getId());
+                    World.getLocalWorld().setBlock(this, point, item.getAssociatedBlock().getId());
 
-                    inventoryMenu.setSlot(new Vector2i(0, inventoryMenu.currentSlotSelected), item.getAssociatedBlock().getId(), (byte) (slot.count() - 1));
+                    inventoryMenu.setSlot(new Vector2i(new Vector2i(0, inventoryMenu.currentSlotSelected)),
+                            item.getId(),
+                            (byte) (slot.count() - 1));
                 }
             }
         }
@@ -402,7 +493,9 @@ public class EntityPlayer extends Entity
         {
             breakingBlockCoordinates = null;
             breakingProgress = 0;
+
             updateDestroyStages(0);
+
             blockBreakageMesh.getGameObject().setActive(false);
             selectorMesh.active = false;
         }
@@ -412,11 +505,25 @@ public class EntityPlayer extends Entity
 
         if (InputManager.getScrollDelta() < 0)
             inventoryMenu.currentSlotSelected++;
+
+        if (inventoryMenu.currentSlotSelected != oldSlotSelected)
+            resetBlockBreaking();
+    }
+
+    /**
+     * Reset all block-breaking state.
+     */
+    private void resetBlockBreaking()
+    {
+        breakingBlockCoordinates = null;
+        breakingProgress = 0.0f;
+        blockBreakageMesh.getGameObject().setActive(false);
+        updateDestroyStages(0);
     }
 
     private void updateMouselook()
     {
-        if (inventoryMenu.getSurvivalMenuActive() || inventoryMenu.getCreativeMenuActive() || pauseMenu.getActive() || craftingTableMenu.isActive())
+        if (inventoryMenu.getSurvivalMenuActive() || inventoryMenu.getCreativeMenuActive() || pauseMenu.getActive() || craftingTableMenu.isActive() || deathMenu.getActive())
             return;
 
         Vector2f mouseDelta = InputManager.getMouseDelta();
@@ -440,7 +547,7 @@ public class EntityPlayer extends Entity
 
     private void updateMovement()
     {
-        if (inventoryMenu.getSurvivalMenuActive() || inventoryMenu.getCreativeMenuActive() || pauseMenu.getActive() || craftingTableMenu.isActive())
+        if (inventoryMenu.getSurvivalMenuActive() || inventoryMenu.getCreativeMenuActive() || pauseMenu.getActive() || craftingTableMenu.isActive() || deathMenu.getActive())
             return;
 
         Rigidbody rigidbody = getGameObject().getComponent(Rigidbody.class);
@@ -493,69 +600,64 @@ public class EntityPlayer extends Entity
         Vector2f[] uvs = Objects.requireNonNull(TextureAtlasManager.get("blocks")).getSubTextureCoordinates("destroy_stage_" + index);
 
         blockBreakageMesh.setVertices(
-        List.of
-        (
-            Vertex.create(new Vector3f(-0.5f, -0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, 0.5f), uvs[0]),
-            Vertex.create(new Vector3f( 0.5f, -0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, 0.5f), uvs[1]),
-            Vertex.create(new Vector3f( 0.5f,  0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, 0.5f), uvs[2]),
-            Vertex.create(new Vector3f(-0.5f,  0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, 0.5f), uvs[3]),
+            List.of
+            (
+                Vertex.create(new Vector3f(-0.5f, -0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, 0.5f), uvs[0]),
+                Vertex.create(new Vector3f( 0.5f, -0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, 0.5f), uvs[1]),
+                Vertex.create(new Vector3f( 0.5f,  0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, 0.5f), uvs[2]),
+                Vertex.create(new Vector3f(-0.5f,  0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, 0.5f), uvs[3]),
 
-            Vertex.create(new Vector3f( 0.5f, -0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, -0.5f), uvs[0]),
-            Vertex.create(new Vector3f(-0.5f, -0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, -0.5f), uvs[1]),
-            Vertex.create(new Vector3f(-0.5f,  0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, -0.5f), uvs[2]),
-            Vertex.create(new Vector3f( 0.5f,  0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, -0.5f), uvs[3]),
+                Vertex.create(new Vector3f( 0.5f, -0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, -0.5f), uvs[0]),
+                Vertex.create(new Vector3f(-0.5f, -0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, -0.5f), uvs[1]),
+                Vertex.create(new Vector3f(-0.5f,  0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, -0.5f), uvs[2]),
+                Vertex.create(new Vector3f( 0.5f,  0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, -0.5f), uvs[3]),
 
-            Vertex.create(new Vector3f(-0.5f, -0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(-0.5f, 0.0f, 0.0f), uvs[0]),
-            Vertex.create(new Vector3f(-0.5f, -0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(-0.5f, 0.0f, 0.0f), uvs[1]),
-            Vertex.create(new Vector3f(-0.5f,  0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(-0.5f, 0.0f, 0.0f), uvs[2]),
-            Vertex.create(new Vector3f(-0.5f,  0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(-0.5f, 0.0f, 0.0f), uvs[3]),
+                Vertex.create(new Vector3f(-0.5f, -0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(-0.5f, 0.0f, 0.0f), uvs[0]),
+                Vertex.create(new Vector3f(-0.5f, -0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(-0.5f, 0.0f, 0.0f), uvs[1]),
+                Vertex.create(new Vector3f(-0.5f,  0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(-0.5f, 0.0f, 0.0f), uvs[2]),
+                Vertex.create(new Vector3f(-0.5f,  0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(-0.5f, 0.0f, 0.0f), uvs[3]),
 
-            Vertex.create(new Vector3f( 0.5f, -0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.5f, 0.0f, 0.0f), uvs[0]),
-            Vertex.create(new Vector3f( 0.5f, -0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.5f, 0.0f, 0.0f), uvs[1]),
-            Vertex.create(new Vector3f( 0.5f,  0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.5f, 0.0f, 0.0f), uvs[2]),
-            Vertex.create(new Vector3f( 0.5f,  0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.5f, 0.0f, 0.0f), uvs[3]),
+                Vertex.create(new Vector3f( 0.5f, -0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.5f, 0.0f, 0.0f), uvs[0]),
+                Vertex.create(new Vector3f( 0.5f, -0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.5f, 0.0f, 0.0f), uvs[1]),
+                Vertex.create(new Vector3f( 0.5f,  0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.5f, 0.0f, 0.0f), uvs[2]),
+                Vertex.create(new Vector3f( 0.5f,  0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.5f, 0.0f, 0.0f), uvs[3]),
 
-            Vertex.create(new Vector3f(-0.5f,  0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.5f, 0.0f), uvs[0]),
-            Vertex.create(new Vector3f( 0.5f,  0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.5f, 0.0f), uvs[1]),
-            Vertex.create(new Vector3f( 0.5f,  0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.5f, 0.0f), uvs[2]),
-            Vertex.create(new Vector3f(-0.5f,  0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.5f, 0.0f), uvs[3]),
+                Vertex.create(new Vector3f(-0.5f,  0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.5f, 0.0f), uvs[0]),
+                Vertex.create(new Vector3f( 0.5f,  0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.5f, 0.0f), uvs[1]),
+                Vertex.create(new Vector3f( 0.5f,  0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.5f, 0.0f), uvs[2]),
+                Vertex.create(new Vector3f(-0.5f,  0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.5f, 0.0f), uvs[3]),
 
-            Vertex.create(new Vector3f(-0.5f, -0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, -0.5f, 0.0f), uvs[0]),
-            Vertex.create(new Vector3f( 0.5f, -0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, -0.5f, 0.0f), uvs[1]),
-            Vertex.create(new Vector3f( 0.5f, -0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, -0.5f, 0.0f), uvs[2]),
-            Vertex.create(new Vector3f(-0.5f, -0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, -0.5f, 0.0f), uvs[3])
-        ));
+                Vertex.create(new Vector3f(-0.5f, -0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, -0.5f, 0.0f), uvs[0]),
+                Vertex.create(new Vector3f( 0.5f, -0.5f, -0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, -0.5f, 0.0f), uvs[1]),
+                Vertex.create(new Vector3f( 0.5f, -0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, -0.5f, 0.0f), uvs[2]),
+                Vertex.create(new Vector3f(-0.5f, -0.5f,  0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, -0.5f, 0.0f), uvs[3])
+            )
+        );
 
         blockBreakageMesh.setIndices(
-        List.of
-        (
-            0, 1, 2,
-            0, 2, 3,
+            List.of
+            (
+                0, 1, 2,
+                0, 2, 3,
 
-            4, 5, 6,
-            4, 6, 7,
+                4, 5, 6,
+                4, 6, 7,
 
-            8, 9, 10,
-            8, 10, 11,
+                8, 9, 10,
+                8, 10, 11,
 
-            12, 13, 14,
-            12, 14, 15,
+                12, 13, 14,
+                12, 14, 15,
 
-            16, 17, 18,
-            16, 18, 19,
+                16, 17, 18,
+                16, 18, 19,
 
-            20, 21, 22,
-            20, 22, 23
-        ));
+                20, 21, 22,
+                20, 22, 23
+            )
+        );
 
         blockBreakageMesh.onLoad();
-    }
-
-    private void resetBreakingVisuals()
-    {
-        breakingBlockCoordinates = null;
-        breakingProgress = 0;
-        updateDestroyStages(0);
     }
 
     @Override
@@ -583,14 +685,29 @@ public class EntityPlayer extends Entity
     }
 
     @Override
-    public float getMaximumHealth()
+    public int getMaximumHealth()
     {
-        return 100;
+        return 20;
     }
 
     public @NotNull Camera getCamera()
     {
         return camera;
+    }
+
+    public void setOxygen(int oxygen)
+    {
+        this.oxygen = oxygen;
+    }
+
+    public int getOxygen()
+    {
+        return oxygen;
+    }
+
+    public @NotNull InventoryMenu getInventoryMenu()
+    {
+        return inventoryMenu;
     }
 
     public void setPaused(boolean paused)
@@ -612,11 +729,12 @@ public class EntityPlayer extends Entity
         if (active)
         {
             craftingTableMenu.build();
-
             InputManager.setMouseMode(MouseMode.FREE);
         }
         else
+        {
             InputManager.setMouseMode(MouseMode.LOCKED);
+        }
 
         craftingTableMenu.setActive(active);
     }
@@ -638,18 +756,18 @@ public class EntityPlayer extends Entity
         private static final float[] BOX_VERTICES =
         {
             -0.5f, -0.5f, -0.5f,   0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,   0.5f,  0.5f, -0.5f,
-            0.5f,  0.5f, -0.5f,  -0.5f,  0.5f, -0.5f,
+             0.5f, -0.5f, -0.5f,   0.5f,  0.5f, -0.5f,
+             0.5f,  0.5f, -0.5f,  -0.5f,  0.5f, -0.5f,
             -0.5f,  0.5f, -0.5f,  -0.5f, -0.5f, -0.5f,
 
             -0.5f, -0.5f,  0.5f,   0.5f, -0.5f,  0.5f,
-            0.5f, -0.5f,  0.5f,   0.5f,  0.5f,  0.5f,
-            0.5f,  0.5f,  0.5f,  -0.5f,  0.5f,  0.5f,
+             0.5f, -0.5f,  0.5f,   0.5f,  0.5f,  0.5f,
+             0.5f,  0.5f,  0.5f,  -0.5f,  0.5f,  0.5f,
             -0.5f,  0.5f,  0.5f,  -0.5f, -0.5f,  0.5f,
 
             -0.5f, -0.5f, -0.5f,  -0.5f, -0.5f,  0.5f,
-            0.5f, -0.5f, -0.5f,   0.5f, -0.5f,  0.5f,
-            0.5f,  0.5f, -0.5f,   0.5f,  0.5f,  0.5f,
+             0.5f, -0.5f, -0.5f,   0.5f, -0.5f,  0.5f,
+             0.5f,  0.5f, -0.5f,   0.5f,  0.5f,  0.5f,
             -0.5f,  0.5f, -0.5f,  -0.5f,  0.5f,  0.5f,
         };
 
@@ -657,7 +775,7 @@ public class EntityPlayer extends Entity
 
         private @NotNull Vector3f position = new Vector3f(0.0f, 0.0f, 0.0f);
 
-        private boolean active;
+        public boolean active;
 
         private transient int vao, vbo, ibo;
 
@@ -698,14 +816,12 @@ public class EntityPlayer extends Entity
             GL41.glEnableVertexAttribArray(0);
 
             int error = GL41.glGetError();
-
             if (error != GL41.GL_NO_ERROR)
-                System.err.println("OpenGL Error after binding of VAO + enabling of vertex attribute arrays (SelectorBox::render): " + error);
+                System.err.println("OpenGL Error after binding of VAO (SelectorBox::render): " + error);
 
             shader.bind();
 
             error = GL41.glGetError();
-
             if (error != GL41.GL_NO_ERROR)
                 System.err.println("OpenGL Error after binding shader (SelectorBox::render): " + error);
 
@@ -722,31 +838,27 @@ public class EntityPlayer extends Entity
             shader.setUniform("model", localMatrix);
 
             error = GL41.glGetError();
-
             if (error != GL41.GL_NO_ERROR)
-                System.err.println("OpenGL Error after setting shader uniforms (SelectorBox::render): " + error);
+                System.err.println("OpenGL Error after setting uniforms (SelectorBox::render): " + error);
 
             GL41.glDrawArrays(GL41.GL_LINES, 0, BOX_VERTICES.length / 3);
 
             error = GL41.glGetError();
-
             if (error != GL41.GL_NO_ERROR)
-                System.err.println("OpenGL Error after rendering objects (SelectorBox::render): " + error);
+                System.err.println("OpenGL Error after glDrawArrays (SelectorBox::render): " + error);
 
             shader.unbind();
 
             error = GL41.glGetError();
-
             if (error != GL41.GL_NO_ERROR)
-                System.err.println("OpenGL Error after unbinding shader (SelectorBox::render): " + error);
+                System.err.println("OpenGL Error after unbind shader (SelectorBox::render): " + error);
 
             GL41.glDisableVertexAttribArray(0);
             GL41.glBindVertexArray(0);
 
             error = GL41.glGetError();
-
             if (error != GL41.GL_NO_ERROR)
-                System.err.println("OpenGL Error after unbinding of VAO + disabling of vertex attribute arrays (SelectorBox::render): " + error);
+                System.err.println("OpenGL Error after unbinding VAO (SelectorBox::render): " + error);
         }
 
         public void uninitialize()

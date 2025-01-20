@@ -2,19 +2,27 @@ package com.thatsoulyguy.moonlander.block;
 
 import com.thatsoulyguy.moonlander.annotation.Manager;
 import com.thatsoulyguy.moonlander.annotation.Static;
+import com.thatsoulyguy.moonlander.core.Time;
 import com.thatsoulyguy.moonlander.entity.Entity;
 import com.thatsoulyguy.moonlander.entity.entities.EntityPlayer;
+import com.thatsoulyguy.moonlander.gameplay.OxygenBubble;
 import com.thatsoulyguy.moonlander.item.Item;
 import com.thatsoulyguy.moonlander.item.ItemRegistry;
 import com.thatsoulyguy.moonlander.item.Tool;
+import com.thatsoulyguy.moonlander.system.GameObject;
+import com.thatsoulyguy.moonlander.system.GameObjectManager;
+import com.thatsoulyguy.moonlander.ui.menus.InventoryMenu;
 import com.thatsoulyguy.moonlander.world.Chunk;
 import com.thatsoulyguy.moonlander.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -73,6 +81,12 @@ public class BlockRegistry
 
         @Override
         public boolean isInteractable()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean updates()
         {
             return false;
         }
@@ -139,6 +153,12 @@ public class BlockRegistry
         }
 
         @Override
+        public boolean updates()
+        {
+            return false;
+        }
+
+        @Override
         public @NotNull Item getAssociatedItem()
         {
             return ItemRegistry.ITEM_SOFT_MOON_ROCK_BLOCK;
@@ -162,7 +182,7 @@ public class BlockRegistry
         @Override
         public float getHardness()
         {
-            return 10.65f;
+            return 19.65f;
         }
 
         @Override
@@ -201,6 +221,12 @@ public class BlockRegistry
 
         @Override
         public boolean isInteractable()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean updates()
         {
             return false;
         }
@@ -279,9 +305,173 @@ public class BlockRegistry
         }
 
         @Override
+        public boolean updates()
+        {
+            return false;
+        }
+
+        @Override
         public @NotNull Item getAssociatedItem()
         {
             return ItemRegistry.ITEM_STONE_BLOCK;
+        }
+
+        @Override
+        public @NotNull Tool toolRequired()
+        {
+            return Tool.PICKAXE;
+        }
+    };
+
+    public static final Block BLOCK_REDSTONE_ORE = new Block()
+    {
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "block_redstone_ore";
+        }
+
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "Redstone Ore";
+        }
+
+        @Override
+        public float getHardness()
+        {
+            return 18.25f;
+        }
+
+        @Override
+        public float getResistance()
+        {
+            return 0.1f;
+        }
+
+        @Override
+        public @NotNull String[] getTextures()
+        {
+            return new String[]
+            {
+                "redstone_ore",
+                "redstone_ore",
+                "redstone_ore",
+                "redstone_ore",
+                "redstone_ore",
+                "redstone_ore"
+            };
+        }
+
+        @Override
+        public @NotNull Vector3f[] getColors()
+        {
+            return new Vector3f[]
+            {
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+            };
+        }
+
+        @Override
+        public boolean isInteractable()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean updates()
+        {
+            return false;
+        }
+
+        @Override
+        public @NotNull Item getAssociatedItem()
+        {
+            return ItemRegistry.ITEM_REDSTONE_DUST;
+        }
+
+        @Override
+        public @NotNull Tool toolRequired()
+        {
+            return Tool.PICKAXE;
+        }
+    };
+
+    public static final Block BLOCK_COAL_ORE = new Block()
+    {
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "block_coal_ore";
+        }
+
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "Coal Ore";
+        }
+
+        @Override
+        public float getHardness()
+        {
+            return 17.25f;
+        }
+
+        @Override
+        public float getResistance()
+        {
+            return 0.1f;
+        }
+
+        @Override
+        public @NotNull String[] getTextures()
+        {
+            return new String[]
+            {
+                "coal_ore",
+                "coal_ore",
+                "coal_ore",
+                "coal_ore",
+                "coal_ore",
+                "coal_ore"
+            };
+        }
+
+        @Override
+        public @NotNull Vector3f[] getColors()
+        {
+            return new Vector3f[]
+            {
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+            };
+        }
+
+        @Override
+        public boolean isInteractable()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean updates()
+        {
+            return false;
+        }
+
+        @Override
+        public @NotNull Item getAssociatedItem()
+        {
+            return ItemRegistry.ITEM_COAL;
         }
 
         @Override
@@ -359,9 +549,148 @@ public class BlockRegistry
         }
 
         @Override
+        public boolean updates()
+        {
+            return false;
+        }
+
+        @Override
         public @NotNull Item getAssociatedItem()
         {
             return ItemRegistry.ITEM_CRAFTING_TABLE_BLOCK;
+        }
+    };
+
+    public static final Block BLOCK_OXYGEN_GENERATOR = new Block()
+    {
+        private final @NotNull Map<Vector3i, GameObject> bubbleMap = new HashMap<>();
+        private final @NotNull Map<Vector3i, Integer> coalConsumptionMap = new HashMap<>();
+
+        private final float coalConsumptionCooldownTimerStart = 16.0f;
+        private float coalConsumptionCooldownTimer;
+
+        {
+            coalConsumptionCooldownTimer = coalConsumptionCooldownTimerStart;
+        }
+
+        @Override
+        public void onPlaced(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
+        {
+            bubbleMap.put(globalBlockPosition, OxygenBubble.createGameObject("oxygen_bubble_" + globalBlockPosition.x + "_" + globalBlockPosition.y + "_" + globalBlockPosition.z, new Vector3f(globalBlockPosition)));
+            bubbleMap.get(globalBlockPosition).getComponentNotNull(OxygenBubble.class).setOxygenActive(false);
+            coalConsumptionMap.put(globalBlockPosition, 0);
+        }
+
+        @Override
+        public void onTick(@NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
+        {
+            bubbleMap.get(globalBlockPosition).getComponentNotNull(OxygenBubble.class).setOxygenActive(coalConsumptionMap.get(globalBlockPosition) > 0);
+
+            if (coalConsumptionCooldownTimer < 0)
+            {
+                if (coalConsumptionMap.get(globalBlockPosition) > 0)
+                    coalConsumptionMap.put(globalBlockPosition, coalConsumptionMap.get(globalBlockPosition) - 1);
+
+                coalConsumptionCooldownTimer = coalConsumptionCooldownTimerStart;
+            }
+
+            coalConsumptionCooldownTimer -= Time.getDeltaTime();
+        }
+
+        @Override
+        public void onInteractedWith(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
+        {
+            if (interactor instanceof EntityPlayer player)
+            {
+                InventoryMenu.SlotData currentSlot = player.getInventoryMenu().getSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected));
+
+                assert currentSlot != null;
+
+                if (currentSlot.id() == ItemRegistry.ITEM_COAL.getId() && currentSlot.count() > 0)
+                {
+                    coalConsumptionMap.put(globalBlockPosition, coalConsumptionMap.get(globalBlockPosition) + 1);
+
+                    player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), currentSlot.id(), (byte) (currentSlot.count() - 1));
+                }
+            }
+        }
+
+        @Override
+        public void onBroken(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
+        {
+            GameObjectManager.unregister(bubbleMap.get(globalBlockPosition).getName());
+
+            bubbleMap.remove(globalBlockPosition);
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "block_crafting_table";
+        }
+
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "Crafting Table";
+        }
+
+        @Override
+        public float getHardness()
+        {
+            return 2.84f;
+        }
+
+        @Override
+        public float getResistance()
+        {
+            return 0.1f;
+        }
+
+        @Override
+        public @NotNull String[] getTextures()
+        {
+            return new String[]
+            {
+                "oxygen_generator_top",
+                "moon_rock",
+                "oxygen_generator_front",
+                "oxygen_generator_side",
+                "oxygen_generator_side",
+                "oxygen_generator_side"
+            };
+        }
+
+        @Override
+        public @NotNull Vector3f[] getColors()
+        {
+            return new Vector3f[]
+            {
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+            };
+        }
+
+        @Override
+        public boolean isInteractable()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean updates()
+        {
+            return true;
+        }
+
+        @Override
+        public @NotNull Item getAssociatedItem()
+        {
+            return ItemRegistry.ITEM_OXYGEN_GENERATOR_BLOCK;
         }
     };
 
@@ -376,7 +705,10 @@ public class BlockRegistry
         register(BLOCK_SOFT_MOON_ROCK);
         register(BLOCK_MOON_ROCK);
         register(BLOCK_STONE);
+        register(BLOCK_REDSTONE_ORE);
+        register(BLOCK_COAL_ORE);
         register(BLOCK_CRAFTING_TABLE);
+        register(BLOCK_OXYGEN_GENERATOR);
     }
 
     public static void register(@NotNull Block object)

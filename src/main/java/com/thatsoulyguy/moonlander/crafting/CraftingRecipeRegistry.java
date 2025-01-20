@@ -117,12 +117,12 @@ public class CraftingRecipeRegistry
         }
     };
 
-    public static final @NotNull CraftingRecipe REFINED_ALUMINUM_INGOT_TO_ALUMINUM_PICKAXE = new CraftingRecipe()
+    public static final @NotNull CraftingRecipe REFINED_ALUMINUM_INGOT_AND_STICK_TO_ALUMINUM_PICKAXE = new CraftingRecipe()
     {
         @Override
         public @NotNull String getRegistryName()
         {
-            return "recipe_refined_aluminum_ingot_to_aluminum_pickaxe";
+            return "recipe_refined_aluminum_ingot_and_stick_to_aluminum_pickaxe";
         }
 
         @Override
@@ -153,6 +153,43 @@ public class CraftingRecipeRegistry
         }
     };
 
+    public static final @NotNull CraftingRecipe REFINED_ALUMINUM_INGOT_AND_REDSTONE_DUST_MOON_ROCK_TO_OXYGEN_GENERATOR = new CraftingRecipe()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "recipe_refined_aluminum_ingot_and_redstone_dust_and_moon_rock_to_oxygen_generator";
+        }
+
+        @Override
+        public @NotNull Map<Character, Item> getKeyDefinitions()
+        {
+            return Map.of
+            (
+                'a', ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT,
+                'r', ItemRegistry.ITEM_REDSTONE_DUST,
+                'm', ItemRegistry.ITEM_MOON_ROCK_BLOCK
+            );
+        }
+
+        @Override
+        public char[][] getRecipeGrid()
+        {
+            return new char[][]
+            {
+                new char[] { 'a', 'a', 'a' },
+                new char[] { 'm', 'r', 'm' },
+                new char[] { 'm', 'm', 'm' }
+            };
+        }
+
+        @Override
+        public @NotNull Result getResult()
+        {
+            return new Result(ItemRegistry.ITEM_OXYGEN_GENERATOR_BLOCK, (byte) 1);
+        }
+    };
+
     private static final @NotNull ConcurrentMap<String, CraftingRecipe> recipesByName = new ConcurrentHashMap<>();
     private static final @NotNull ConcurrentMap<Short, CraftingRecipe> recipesById = new ConcurrentHashMap<>();
     
@@ -163,7 +200,8 @@ public class CraftingRecipeRegistry
         register(MOON_ROCK_TO_MOON_ROCK_PEBBLE);
         register(MOON_ROCK_PEBBLE_TO_STICK);
         register(MOON_ROCK_TO_CRAFTING_TABLE);
-        register(REFINED_ALUMINUM_INGOT_TO_ALUMINUM_PICKAXE);
+        register(REFINED_ALUMINUM_INGOT_AND_REDSTONE_DUST_MOON_ROCK_TO_OXYGEN_GENERATOR);
+        register(REFINED_ALUMINUM_INGOT_AND_STICK_TO_ALUMINUM_PICKAXE);
     }
 
     public static void register(@NotNull CraftingRecipe object)

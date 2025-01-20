@@ -4,6 +4,8 @@ import com.thatsoulyguy.moonlander.annotation.CustomConstructor;
 import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
 import com.thatsoulyguy.moonlander.collider.Collider;
 import com.thatsoulyguy.moonlander.collider.colliders.VoxelMeshCollider;
+import com.thatsoulyguy.moonlander.core.Settings;
+import com.thatsoulyguy.moonlander.entity.Entity;
 import com.thatsoulyguy.moonlander.math.Transform;
 import com.thatsoulyguy.moonlander.render.Mesh;
 import com.thatsoulyguy.moonlander.render.ShaderManager;
@@ -26,8 +28,6 @@ public class World extends Component
 {
     public static final int WORLD_HEIGHT = 256;
     public static final int VERTICAL_CHUNKS = WORLD_HEIGHT / Chunk.SIZE;
-
-    public static final byte RENDER_DISTANCE = 2;
 
     public long seed = 354576879657L;
 
@@ -118,10 +118,11 @@ public class World extends Component
     /**
      * Sets the type of a block in the world.
      *
+     * @param interactor The entity setting the block
      * @param worldPosition The world position at which a block is set.
      * @param type The type of the block being set
      */
-    public boolean setBlock(@NotNull Vector3f worldPosition, short type)
+    public boolean setBlock(@NotNull Entity interactor, @NotNull Vector3f worldPosition, short type)
     {
         Vector3i blockCoordinates = CoordinateHelper.worldToBlockCoordinates(worldPosition);
         Vector3i chunkCoordinates = CoordinateHelper.worldToChunkCoordinates(worldPosition);
@@ -130,7 +131,7 @@ public class World extends Component
             return false;
         else
         {
-            Objects.requireNonNull(getChunk(chunkCoordinates)).setBlock(blockCoordinates, type);
+            Objects.requireNonNull(getChunk(chunkCoordinates)).setBlock(interactor, blockCoordinates, type);
             return true;
         }
     }
@@ -202,9 +203,9 @@ public class World extends Component
 
         List<Vector3i> chunkPositions = new ArrayList<>();
 
-        for (int cx = playerChunkPosition.x - RENDER_DISTANCE; cx <= playerChunkPosition.x + RENDER_DISTANCE; cx++)
+        for (int cx = playerChunkPosition.x - Settings.RENDER_DISTANCE.getValue(); cx <= playerChunkPosition.x + Settings.RENDER_DISTANCE.getValue(); cx++)
         {
-            for (int cz = playerChunkPosition.z - RENDER_DISTANCE; cz <= playerChunkPosition.z + RENDER_DISTANCE; cz++)
+            for (int cz = playerChunkPosition.z - Settings.RENDER_DISTANCE.getValue(); cz <= playerChunkPosition.z + Settings.RENDER_DISTANCE.getValue(); cz++)
             {
                 for (int cy = 0; cy < VERTICAL_CHUNKS; cy++)
                     chunkPositions.add(new Vector3i(cx, cy, cz));
@@ -255,7 +256,7 @@ public class World extends Component
             Vector3f playerWorldPosition = chunkLoader.getWorldPosition();
             Vector3i playerChunkPosition = CoordinateHelper.worldToChunkCoordinates(playerWorldPosition);
 
-            int unloadDistance = RENDER_DISTANCE + 1;
+            int unloadDistance = Settings.RENDER_DISTANCE.getValue() + 1;
 
             loadedChunks.removeIf(chunkPosition ->
             {

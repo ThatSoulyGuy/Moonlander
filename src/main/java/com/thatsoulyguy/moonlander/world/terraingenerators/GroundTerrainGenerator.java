@@ -67,7 +67,23 @@ public class GroundTerrainGenerator extends TerrainGenerator
                         else if (worldY >= terrainHeight - 5)
                             blocks[x][y][z] = BlockRegistry.BLOCK_MOON_ROCK.getId();
                         else
+                        {
                             blocks[x][y][z] = BlockRegistry.BLOCK_STONE.getId();
+
+                            double oreNoise = OpenSimplex2.noise3_ImproveXZ(
+                                    getSeed() + 500,
+                                    worldX * 0.1,
+                                    worldY * 0.1,
+                                    worldZ * 0.1
+                            );
+
+                            oreNoise = (oreNoise + 1) / 2.0;
+
+                            if (oreNoise > 0.8)
+                                blocks[x][y][z] = BlockRegistry.BLOCK_REDSTONE_ORE.getId();
+                            else if (oreNoise > 0.7)
+                                blocks[x][y][z] = BlockRegistry.BLOCK_COAL_ORE.getId();
+                        }
                     }
                     else
                         blocks[x][y][z] = BlockRegistry.BLOCK_AIR.getId();

@@ -38,6 +38,8 @@ public class InventoryMenu extends Menu
     private static final @NotNull Texture TEXTURE_SLOT_DARKEN = Objects.requireNonNull(TextureManager.get("ui.menu.slot_darken"));
 
     public int currentSlotSelected = 0;
+    public int health = 20;
+    public int oxygen = 100;
 
     private @EffectivelyNotNull Inventory inventory;
 
@@ -65,6 +67,9 @@ public class InventoryMenu extends Menu
     private byte grabbedItemCount = 0;
     private @EffectivelyNotNull UIElement grabbedItemElement;
     private @EffectivelyNotNull TextUIElement grabbedItemText;
+
+    private @EffectivelyNotNull UIElement oxygenDialPointer;
+    private final @NotNull UIElement[] heartsElements = new UIElement[10];
 
     @Override
     public void initialize()
@@ -136,6 +141,70 @@ public class InventoryMenu extends Menu
             text.setOffset(new Vector2f(y * (40 * Settings.UI_SCALE.getValue()) - 224.5f, -9.45f));
 
             hotbarElementTexts[y] = text;
+        }
+
+        {
+            UIElement oxygenDial = hud.addElement(UIElement.create(ImageUIElement.class, "oxygen_dial", new Vector2f(0.0f, 0.0f), new Vector2f(35.0f, 19.0f).mul(Settings.UI_SCALE.getValue())));
+
+            oxygenDial.setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.oxygen_dial")));
+            oxygenDial.setTransparent(true);
+            oxygenDial.setAlignment(UIElement.Alignment.BOTTOM);
+            oxygenDial.setOffset(new Vector2f(-262, -110.0f).add(20.0f, 0.0f));
+
+            TextUIElement oxygenDialText = (TextUIElement) hud.addElement(UIElement.create(TextUIElement.class, "oxygen_dial_text", new Vector2f(0.0f, 0.0f), new Vector2f(100, 20)));
+
+            oxygenDialText.setTransparent(true);
+            oxygenDialText.setText("O₂");
+            oxygenDialText.setAlignment(
+                    TextUIElement.TextAlignment.VERTICAL_CENTER,
+                    TextUIElement.TextAlignment.HORIZONTAL_CENTER
+            );
+
+            oxygenDialText.setColor(new Vector3f(0.0f, 0.45f, 0.75f));
+            oxygenDialText.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
+            oxygenDialText.setFontSize(14);
+            oxygenDialText.build();
+
+            oxygenDialText.setAlignment(UIElement.Alignment.BOTTOM);
+            oxygenDialText.setOffset(new Vector2f(-258, -117.0f).add(20.0f, 0.0f));
+
+            oxygenDialPointer = hud.addElement(UIElement.create(ImageUIElement.class, "oxygen_pointer", new Vector2f(0.0f, 0.0f), new Vector2f(2.0f, 12.0f).mul(Settings.UI_SCALE.getValue())));
+
+            oxygenDialPointer.setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.oxygen_pointer")));
+            oxygenDialPointer.setTransparent(true);
+            oxygenDialPointer.setAlignment(UIElement.Alignment.BOTTOM);
+            oxygenDialPointer.setOffset(new Vector2f(-262, -115.0f).add(20.0f, 0.0f));
+            oxygenDialPointer.setPivot(new Vector2f(0.5f, 0.9f));
+            oxygenDialPointer.setRotation(-90.0f);
+
+            UIElement oxygenDialBall = hud.addElement(UIElement.create(ImageUIElement.class, "oxygen_dial_ball", new Vector2f(0.0f, 0.0f), new Vector2f(35.0f, 19.0f).mul(Settings.UI_SCALE.getValue())));
+
+            oxygenDialBall.setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.oxygen_dial_ball")));
+            oxygenDialBall.setTransparent(true);
+            oxygenDialBall.setAlignment(UIElement.Alignment.BOTTOM);
+            oxygenDialBall.setOffset(new Vector2f(-262, -110.0f).add(20.0f, 0.0f));
+
+            for (int h = 0; h < 10; h++)
+            {
+                UIElement emptyHeart = hud.addElement(UIElement.create(ImageUIElement.class, "empty_heart_" + h, new Vector2f(0.0f, 0.0f), new Vector2f(17.0f, 16.0f).mul(Settings.UI_SCALE.getValue())));
+
+                emptyHeart.setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.empty_heart")));
+                emptyHeart.setTransparent(true);
+                emptyHeart.setAlignment(UIElement.Alignment.BOTTOM);
+                emptyHeart.setOffset(new Vector2f(((19.5f * (Settings.UI_SCALE.getValue() * ((float) 9 / 11))) * h) - 262, -75.0f));
+            }
+
+            for (int h = 0; h < 10; h++)
+            {
+                UIElement emptyHeart = hud.addElement(UIElement.create(ImageUIElement.class, " heart_" + h, new Vector2f(0.0f, 0.0f), new Vector2f(15.0f, 14.0f).mul(Settings.UI_SCALE.getValue())));
+
+                emptyHeart.setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.full_heart")));
+                emptyHeart.setTransparent(true);
+                emptyHeart.setAlignment(UIElement.Alignment.BOTTOM);
+                emptyHeart.setOffset(new Vector2f(((19.5f * (Settings.UI_SCALE.getValue() * ((float) 9 / 11))) * h) - 262, -77.0f));
+
+                heartsElements[h] = emptyHeart;
+            }
         }
 
         hotbarSelector = hud.addElement(
@@ -415,6 +484,32 @@ public class InventoryMenu extends Menu
 
         if (grabbedItemElement.isActive())
             grabbedItemElement.setPosition(InputManager.getMousePosition().sub(new Vector2f(16.0f, 16.0f)));
+
+        if (health < 20)
+        {
+            for (int h = 10; h > 0; h--)
+            {
+                int heartIndex = h - 1;
+                int heartValue = Math.max(0, Math.min(2, health - (heartIndex * 2)));
+
+                switch (heartValue)
+                {
+                    case 2:
+                        heartsElements[heartIndex].setActive(true);
+                        heartsElements[heartIndex].setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.full_heart")));
+                        break;
+                    case 1:
+                        heartsElements[heartIndex].setActive(true);
+                        heartsElements[heartIndex].setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.half_heart")));
+                        break;
+                    default:
+                        heartsElements[heartIndex].setActive(false);
+                        break;
+                }
+            }
+        }
+
+        oxygenDialPointer.setRotation(-90 + (oxygen * 1.8f));
 
         List<CraftingRecipe> craftingRecipes = CraftingRecipeRegistry.getAll();
 
@@ -711,7 +806,6 @@ public class InventoryMenu extends Menu
 
                     return;
                 }
-
                 else if (inventory.slots[x][y] == ItemRegistry.ITEM_AIR.getId())
                 {
                     inventory.slots[x][y] = item;
@@ -906,7 +1000,11 @@ public class InventoryMenu extends Menu
         if (grabbedItemCount > 0 && (itemArr[x][y] == ItemRegistry.ITEM_AIR.getId() || itemArr[x][y] == grabbedItemId))
         {
             itemArr[x][y] = grabbedItemId;
-            countArr[x][y] = (byte) (countArr[x][y] + 1);
+
+            if (countArr[x][y] < 0)
+                countArr[x][y] = 1;
+            else
+                countArr[x][y] = (byte) (countArr[x][y] + 1);
 
             grabbedItemCount--;
             updateGrabbedItemText();

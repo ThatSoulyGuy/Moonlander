@@ -296,6 +296,84 @@ public class ItemRegistry
         {
             return false;
         }
+
+        @Override
+        public @NotNull Tool getToolType()
+        {
+            return Tool.PICKAXE;
+        }
+
+        @Override
+        public float getBreakageSpeedModifier()
+        {
+            return 0.6f;
+        }
+    };
+
+    public static final Item ITEM_REDSTONE_DUST = new Item()
+    {
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "item_redstone_dust";
+        }
+
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "Redstone Dust";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "redstone_dust";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return false;
+        }
+    };
+
+    public static final Item ITEM_COAL = new Item()
+    {
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "item_coal";
+        }
+
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "Coal";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "coal";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return false;
+        }
     };
 
     public static final Item ITEM_CRAFTING_TABLE_BLOCK = new Item()
@@ -337,6 +415,45 @@ public class ItemRegistry
         }
     };
 
+    public static final Item ITEM_OXYGEN_GENERATOR_BLOCK = new Item()
+    {
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "item_oxygen_generator_block";
+        }
+
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "Oxygen Generator";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "oxygen_generator";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return true;
+        }
+
+        @Override
+        public @NotNull Block getAssociatedBlock()
+        {
+            return BlockRegistry.BLOCK_OXYGEN_GENERATOR;
+        }
+    };
+
     private static final ConcurrentMap<String, Item> itemsByName = new ConcurrentHashMap<>();
     private static final ConcurrentMap<Short, Item> itemsById = new ConcurrentHashMap<>();
 
@@ -352,7 +469,10 @@ public class ItemRegistry
         register(ITEM_STICK);
         register(ITEM_REFINED_ALUMINUM_INGOT);
         register(ITEM_ALUMINIUM_PICKAXE);
+        register(ITEM_REDSTONE_DUST);
+        register(ITEM_COAL);
         register(ITEM_CRAFTING_TABLE_BLOCK);
+        register(ITEM_OXYGEN_GENERATOR_BLOCK);
     }
 
     public static void register(@NotNull Item object)

@@ -32,6 +32,7 @@ import com.thatsoulyguy.moonlander.ui.Menu;
 import com.thatsoulyguy.moonlander.ui.MenuManager;
 import com.thatsoulyguy.moonlander.ui.UIManager;
 import com.thatsoulyguy.moonlander.ui.menus.CraftingTableMenu;
+import com.thatsoulyguy.moonlander.ui.menus.DeathMenu;
 import com.thatsoulyguy.moonlander.ui.menus.InventoryMenu;
 import com.thatsoulyguy.moonlander.ui.menus.PauseMenu;
 import com.thatsoulyguy.moonlander.util.AssetPath;
@@ -97,6 +98,7 @@ public class Moonlander
         ShaderManager.register(Shader.create("ssao.conclusion", AssetPath.create("moonlander", "shader/ssao/conclusion")));
         ShaderManager.register(Shader.create("skybox", AssetPath.create("moonlander", "shader/skybox")));
         ShaderManager.register(Shader.create("selector_box", AssetPath.create("moonlander", "shader/selectorBox")));
+        ShaderManager.register(Shader.create("oxygen_bubble", AssetPath.create("moonlander", "shader/oxygenBubble")));
 
         TextureManager.register(Texture.create("debug", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/debug.png")));
         TextureManager.register(Texture.create("error", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/error.png")));
@@ -104,12 +106,19 @@ public class Moonlander
         TextureManager.register(Texture.create("ui.hotbar_selector", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/hotbar_selector.png")));
         TextureManager.register(Texture.create("ui.transparency", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/transparency.png")));
         TextureManager.register(Texture.create("ui.background", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/background.png")));
+        TextureManager.register(Texture.create("ui.death_red", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/death_red.png")));
         TextureManager.register(Texture.create("ui.button_default", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/button_default.png")));
         TextureManager.register(Texture.create("ui.button_disabled", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/button_disabled.png")));
         TextureManager.register(Texture.create("ui.button_selected", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/button_selected.png")));
         TextureManager.register(Texture.create("ui.menu.survival_inventory", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/inventory_survival.png")));
         TextureManager.register(Texture.create("ui.menu.crafting_table", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/crafting_table.png")));
         TextureManager.register(Texture.create("ui.menu.slot_darken", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/slot_darken.png")));
+        TextureManager.register(Texture.create("ui.menu.empty_heart", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/empty_heart.png")));
+        TextureManager.register(Texture.create("ui.menu.full_heart", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/full_heart.png")));
+        TextureManager.register(Texture.create("ui.menu.half_heart", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/half_heart.png")));
+        TextureManager.register(Texture.create("ui.menu.oxygen_dial", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/oxygen_dial.png")));
+        TextureManager.register(Texture.create("ui.menu.oxygen_dial_ball", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/oxygen_dial_ball.png")));
+        TextureManager.register(Texture.create("ui.menu.oxygen_pointer", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/oxygen_pointer.png")));
 
         TextureAtlasManager.register(TextureAtlas.create("blocks", AssetPath.create("moonlander", "texture/block/")));
         TextureAtlasManager.register(TextureAtlas.create("items", AssetPath.create("moonlander", "texture/item/")));
@@ -117,6 +126,7 @@ public class Moonlander
         MenuManager.register(Menu.create(CraftingTableMenu.class));
         MenuManager.register(Menu.create(InventoryMenu.class));
         MenuManager.register(Menu.create(PauseMenu.class));
+        MenuManager.register(Menu.create(DeathMenu.class));
 
         Skybox.CURRENT_SKYBOX = Skybox.create(Texture.createCubeMap("skybox", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, List.of
         (
@@ -178,9 +188,9 @@ public class Moonlander
 
     public void initialize()
     {
-        LevelManager.loadLevel(FileHelper.getPersistentDataPath("Invasion2") + "/overworld", true);
+        //LevelManager.loadLevel(FileHelper.getPersistentDataPath("Invasion2") + "/overworld", true);
 
-        /*
+        //*
         LevelManager.createLevel("overworld", true);
 
         GameObject player = GameObject.create("default.player", Layer.DEFAULT);

@@ -640,7 +640,11 @@ public class CraftingTableMenu extends Menu
         if (grabbedItemCount > 0 && (itemArr[x][y] == ItemRegistry.ITEM_AIR.getId() || itemArr[x][y] == grabbedItemId))
         {
             itemArr[x][y] = grabbedItemId;
-            countArr[x][y] = (byte) (countArr[x][y] + 1);
+
+            if (countArr[x][y] < 0)
+                countArr[x][y] = 1;
+            else
+                countArr[x][y] = (byte) (countArr[x][y] + 1);
 
             grabbedItemCount--;
             updateGrabbedItemText();

@@ -31,6 +31,16 @@ public abstract class Item
         return BlockRegistry.BLOCK_AIR;
     }
 
+    public @NotNull Tool getToolType()
+    {
+        return Tool.NONE;
+    }
+
+    public float getBreakageSpeedModifier()
+    {
+        return 1.0f;
+    }
+
     public short getId()
     {
         return id;

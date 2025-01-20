@@ -15,6 +15,7 @@ public class Settings
     public static final Setting<Float> UI_SCALE = new Setting<>(1.5f);
     public static final Setting<Boolean> USE_ADVANCED_RENDERING_FEATURES = new Setting<>(true);
     public static final Setting<Shader> DEFAULT_RENDERING_SHADER = new Setting<>(null);
+    public static final Setting<Byte> RENDER_DISTANCE = new Setting<>((byte) 3);
 
     private Settings() { }
 

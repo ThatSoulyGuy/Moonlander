@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class Entity extends Component
 {
-    private float currentHealth;
+    private int currentHealth;
 
     protected Entity()
     {
@@ -20,14 +20,14 @@ public abstract class Entity extends Component
 
     public abstract float getRunningSpeed();
 
-    public abstract float getMaximumHealth();
+    public abstract int getMaximumHealth();
 
-    public void setCurrentHealth(float currentHealth)
+    public void setCurrentHealth(int currentHealth)
     {
         this.currentHealth = currentHealth;
     }
 
-    public float getCurrentHealth()
+    public int getCurrentHealth()
     {
         return currentHealth;
     }
