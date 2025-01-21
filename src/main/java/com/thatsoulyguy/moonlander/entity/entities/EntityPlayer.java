@@ -20,11 +20,9 @@ import com.thatsoulyguy.moonlander.render.*;
 import com.thatsoulyguy.moonlander.system.GameObject;
 import com.thatsoulyguy.moonlander.system.Layer;
 import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
+import com.thatsoulyguy.moonlander.ui.Menu;
 import com.thatsoulyguy.moonlander.ui.MenuManager;
-import com.thatsoulyguy.moonlander.ui.menus.CraftingTableMenu;
-import com.thatsoulyguy.moonlander.ui.menus.DeathMenu;
-import com.thatsoulyguy.moonlander.ui.menus.InventoryMenu;
-import com.thatsoulyguy.moonlander.ui.menus.PauseMenu;
+import com.thatsoulyguy.moonlander.ui.menus.*;
 import com.thatsoulyguy.moonlander.util.CoordinateHelper;
 import com.thatsoulyguy.moonlander.world.TextureAtlasManager;
 import com.thatsoulyguy.moonlander.world.World;
@@ -56,6 +54,7 @@ public class EntityPlayer extends Entity
     private @EffectivelyNotNull InventoryMenu inventoryMenu;
     private @EffectivelyNotNull CraftingTableMenu craftingTableMenu;
     private @EffectivelyNotNull DeathMenu deathMenu;
+    private @EffectivelyNotNull BookMenu bookMenu;
 
     private @NotNull Inventory inventory = new Inventory();
 
@@ -156,6 +155,7 @@ public class EntityPlayer extends Entity
         blockBreakageMesh = blockBreakageObject.getComponentNotNull(Mesh.class);
 
         inventoryMenu.addItem(ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT.getId(), (byte) 10);
+        inventoryMenu.addItem(ItemRegistry.ITEM_KNOWLEDGE_BOOK.getId(), (byte) 1);
 
         oxygenDepletionCooldownTimer = oxygenDepletionCooldownTimerStart;
         suffocationCooldownTimer = suffocationCooldownTimerStart;
@@ -189,6 +189,7 @@ public class EntityPlayer extends Entity
             inventoryMenu.setSurvivalMenuActive(false);
             craftingTableMenu.setActive(false);
             pauseMenu.setActive(false);
+            bookMenu.setActive(false);
             InputManager.setMouseMode(MouseMode.FREE);
         }
 
@@ -207,6 +208,7 @@ public class EntityPlayer extends Entity
 
         inventoryMenu.update();
         craftingTableMenu.update();
+        bookMenu.update();
 
         inventoryMenu.health = getCurrentHealth();
         inventoryMenu.oxygen = oxygen;
@@ -248,6 +250,7 @@ public class EntityPlayer extends Entity
 
         inventoryMenu.setInventory(inventory);
 
+
         pauseMenu = (PauseMenu) MenuManager.get("menu_pause");
 
         assert pauseMenu != null;
@@ -255,6 +258,7 @@ public class EntityPlayer extends Entity
         pauseMenu.setHost(this);
 
         pauseMenu.setActive(false);
+
 
         craftingTableMenu = (CraftingTableMenu) MenuManager.get("menu_crafting_table");
 
@@ -265,12 +269,20 @@ public class EntityPlayer extends Entity
 
         craftingTableMenu.setActive(false);
 
+
         deathMenu = (DeathMenu) MenuManager.get("menu_death");
 
         assert deathMenu != null;
 
         deathMenu.setHost(this);
         deathMenu.setActive(false);
+
+
+        bookMenu = (BookMenu) MenuManager.get("menu_book");
+
+        assert bookMenu != null;
+
+        bookMenu.setActive(false);
     }
 
     private void updateControls()
@@ -286,7 +298,7 @@ public class EntityPlayer extends Entity
         if (deathMenu.getActive())
             return;
 
-        if (InputManager.getKeyState(KeyCode.E, KeyState.PRESSED) && !pauseMenu.getActive() && !craftingTableMenu.isActive())
+        if (InputManager.getKeyState(KeyCode.E, KeyState.PRESSED) && !pauseMenu.getActive() && !craftingTableMenu.isActive() && !deathMenu.getActive() && !bookMenu.isActive())
         {
             if (!inventoryMenu.getSurvivalMenuActive())
                 InputManager.setMouseMode(MouseMode.FREE);
@@ -314,6 +326,14 @@ public class EntityPlayer extends Entity
                 return;
             }
 
+            if (bookMenu.isActive())
+            {
+                bookMenu.setActive(false);
+                InputManager.setMouseMode(MouseMode.LOCKED);
+
+                return;
+            }
+
             if (pauseMenu.getActive())
             {
                 pauseMenu.setActive(false);
@@ -326,7 +346,7 @@ public class EntityPlayer extends Entity
             }
         }
 
-        if (inventoryMenu.getSurvivalMenuActive() || inventoryMenu.getCreativeMenuActive() || pauseMenu.getActive() || craftingTableMenu.isActive())
+        if (inventoryMenu.getSurvivalMenuActive() || inventoryMenu.getCreativeMenuActive() || pauseMenu.getActive() || craftingTableMenu.isActive() || bookMenu.isActive())
             return;
 
         int oldSlotSelected = inventoryMenu.currentSlotSelected;
@@ -470,6 +490,8 @@ public class EntityPlayer extends Entity
                                 CoordinateHelper.worldToGlobalBlockCoordinates(point)
                         );
                     }
+                    else
+                        Objects.requireNonNull(ItemRegistry.get(Objects.requireNonNull(inventoryMenu.getSlot(new Vector2i(0, inventoryMenu.currentSlotSelected))).id())).onInteractedWith(this);
                 }
 
                 point.add(normal.mul(1f, new Vector3f()));
@@ -491,6 +513,9 @@ public class EntityPlayer extends Entity
         }
         else
         {
+            if (InputManager.getMouseState(MouseCode.MOUSE_RIGHT, MouseState.PRESSED))
+                Objects.requireNonNull(ItemRegistry.get(Objects.requireNonNull(inventoryMenu.getSlot(new Vector2i(0, inventoryMenu.currentSlotSelected))).id())).onInteractedWith(this);
+
             breakingBlockCoordinates = null;
             breakingProgress = 0;
 
@@ -523,7 +548,7 @@ public class EntityPlayer extends Entity
 
     private void updateMouselook()
     {
-        if (inventoryMenu.getSurvivalMenuActive() || inventoryMenu.getCreativeMenuActive() || pauseMenu.getActive() || craftingTableMenu.isActive() || deathMenu.getActive())
+        if (inventoryMenu.getSurvivalMenuActive() || inventoryMenu.getCreativeMenuActive() || pauseMenu.getActive() || craftingTableMenu.isActive() || deathMenu.getActive() || bookMenu.isActive())
             return;
 
         Vector2f mouseDelta = InputManager.getMouseDelta();
@@ -547,7 +572,7 @@ public class EntityPlayer extends Entity
 
     private void updateMovement()
     {
-        if (inventoryMenu.getSurvivalMenuActive() || inventoryMenu.getCreativeMenuActive() || pauseMenu.getActive() || craftingTableMenu.isActive() || deathMenu.getActive())
+        if (inventoryMenu.getSurvivalMenuActive() || inventoryMenu.getCreativeMenuActive() || pauseMenu.getActive() || craftingTableMenu.isActive() || deathMenu.getActive() || bookMenu.isActive())
             return;
 
         Rigidbody rigidbody = getGameObject().getComponent(Rigidbody.class);
@@ -705,6 +730,11 @@ public class EntityPlayer extends Entity
         return oxygen;
     }
 
+    public @NotNull BookMenu getBookMenu()
+    {
+        return bookMenu;
+    }
+
     public @NotNull InventoryMenu getInventoryMenu()
     {
         return inventoryMenu;
@@ -713,15 +743,19 @@ public class EntityPlayer extends Entity
     public void setPaused(boolean paused)
     {
         if (paused)
-        {
-            pauseMenu.setActive(true);
             InputManager.setMouseMode(MouseMode.FREE);
-        }
         else
-        {
-            pauseMenu.setActive(false);
             InputManager.setMouseMode(MouseMode.LOCKED);
-        }
+    }
+
+    public void setBookMenuActive(boolean active)
+    {
+        bookMenu.setActive(active);
+    }
+
+    public void setPauseMenuActive(boolean active)
+    {
+        pauseMenu.setActive(active);
     }
 
     public void setCraftingTableMenuActive(boolean active)

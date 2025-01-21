@@ -33,13 +33,13 @@ public class BlockRegistry
     public static final Block BLOCK_AIR = new Block()
     {
         @Override
-        public @NotNull String getDisplayName()
+        public @NotNull String getRegistryName()
         {
             return "block_air";
         }
 
         @Override
-        public @NotNull String getRegistryName()
+        public @NotNull String getDisplayName()
         {
             return "";
         }
@@ -95,13 +95,13 @@ public class BlockRegistry
     public static final Block BLOCK_SOFT_MOON_ROCK = new Block()
     {
         @Override
-        public @NotNull String getDisplayName()
+        public @NotNull String getRegistryName()
         {
             return "block_soft_moon_rock";
         }
 
         @Override
-        public @NotNull String getRegistryName()
+        public @NotNull String getDisplayName()
         {
             return "Soft Moon Rock";
         }
@@ -168,13 +168,13 @@ public class BlockRegistry
     public static final Block BLOCK_MOON_ROCK = new Block()
     {
         @Override
-        public @NotNull String getDisplayName()
+        public @NotNull String getRegistryName()
         {
             return "block_moon_rock";
         }
 
         @Override
-        public @NotNull String getRegistryName()
+        public @NotNull String getDisplayName()
         {
             return "Moon Rock";
         }
@@ -182,7 +182,7 @@ public class BlockRegistry
         @Override
         public float getHardness()
         {
-            return 19.65f;
+            return 8.65f;
         }
 
         @Override
@@ -247,13 +247,13 @@ public class BlockRegistry
     public static final Block BLOCK_STONE = new Block()
     {
         @Override
-        public @NotNull String getDisplayName()
+        public @NotNull String getRegistryName()
         {
             return "block_stone";
         }
 
         @Override
-        public @NotNull String getRegistryName()
+        public @NotNull String getDisplayName()
         {
             return "Stone Block";
         }
@@ -261,7 +261,7 @@ public class BlockRegistry
         @Override
         public float getHardness()
         {
-            return 20.25f;
+            return 15.25f;
         }
 
         @Override
@@ -326,13 +326,13 @@ public class BlockRegistry
     public static final Block BLOCK_REDSTONE_ORE = new Block()
     {
         @Override
-        public @NotNull String getDisplayName()
+        public @NotNull String getRegistryName()
         {
             return "block_redstone_ore";
         }
 
         @Override
-        public @NotNull String getRegistryName()
+        public @NotNull String getDisplayName()
         {
             return "Redstone Ore";
         }
@@ -340,7 +340,7 @@ public class BlockRegistry
         @Override
         public float getHardness()
         {
-            return 18.25f;
+            return 12.25f;
         }
 
         @Override
@@ -405,13 +405,13 @@ public class BlockRegistry
     public static final Block BLOCK_COAL_ORE = new Block()
     {
         @Override
-        public @NotNull String getDisplayName()
+        public @NotNull String getRegistryName()
         {
             return "block_coal_ore";
         }
 
         @Override
-        public @NotNull String getRegistryName()
+        public @NotNull String getDisplayName()
         {
             return "Coal Ore";
         }
@@ -419,7 +419,7 @@ public class BlockRegistry
         @Override
         public float getHardness()
         {
-            return 17.25f;
+            return 10.25f;
         }
 
         @Override
@@ -491,13 +491,13 @@ public class BlockRegistry
         }
 
         @Override
-        public @NotNull String getDisplayName()
+        public @NotNull String getRegistryName()
         {
             return "block_crafting_table";
         }
 
         @Override
-        public @NotNull String getRegistryName()
+        public @NotNull String getDisplayName()
         {
             return "Crafting Table";
         }
@@ -624,13 +624,13 @@ public class BlockRegistry
         }
 
         @Override
-        public @NotNull String getDisplayName()
+        public @NotNull String getRegistryName()
         {
             return "block_crafting_table";
         }
 
         @Override
-        public @NotNull String getRegistryName()
+        public @NotNull String getDisplayName()
         {
             return "Crafting Table";
         }
@@ -713,7 +713,7 @@ public class BlockRegistry
 
     public static void register(@NotNull Block object)
     {
-        blocksByName.putIfAbsent(object.getRegistryName(), object);
+        blocksByName.putIfAbsent(object.getDisplayName(), object);
         blocksById.putIfAbsent(object.getId(), object);
     }
 
@@ -724,7 +724,7 @@ public class BlockRegistry
         if (block == null)
             return;
 
-        blocksByName.remove(block.getRegistryName());
+        blocksByName.remove(block.getDisplayName());
         blocksById.remove(block.getId());
     }
 

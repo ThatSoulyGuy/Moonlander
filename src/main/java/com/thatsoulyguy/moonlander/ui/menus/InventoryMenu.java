@@ -11,14 +11,12 @@ import com.thatsoulyguy.moonlander.item.ItemRegistry;
 import com.thatsoulyguy.moonlander.render.Texture;
 import com.thatsoulyguy.moonlander.render.TextureManager;
 import com.thatsoulyguy.moonlander.ui.Menu;
-import com.thatsoulyguy.moonlander.ui.MenuManager;
 import com.thatsoulyguy.moonlander.ui.UIElement;
 import com.thatsoulyguy.moonlander.ui.UIPanel;
 import com.thatsoulyguy.moonlander.ui.uielements.ButtonUIElement;
 import com.thatsoulyguy.moonlander.ui.uielements.ImageUIElement;
 import com.thatsoulyguy.moonlander.ui.uielements.TextUIElement;
 import com.thatsoulyguy.moonlander.util.AssetPath;
-import com.thatsoulyguy.moonlander.util.ManagerLinkedClass;
 import com.thatsoulyguy.moonlander.world.TextureAtlas;
 import com.thatsoulyguy.moonlander.world.TextureAtlasManager;
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +36,7 @@ public class InventoryMenu extends Menu
     private static final @NotNull Texture TEXTURE_SLOT_DARKEN = Objects.requireNonNull(TextureManager.get("ui.menu.slot_darken"));
 
     public int currentSlotSelected = 0;
+    public short currentlySelectedBlock;
     public int health = 20;
     public int oxygen = 100;
 
@@ -70,6 +69,8 @@ public class InventoryMenu extends Menu
 
     private @EffectivelyNotNull UIElement oxygenDialPointer;
     private final @NotNull UIElement[] heartsElements = new UIElement[10];
+
+    private @EffectivelyNotNull TextUIElement selectedItemHoveringText;
 
     @Override
     public void initialize()
@@ -216,11 +217,55 @@ public class InventoryMenu extends Menu
                 )
         );
 
+        {
+            selectedItemHoveringText = (TextUIElement) hud.addElement(UIElement.create(TextUIElement.class, "selected_item_hovering_text", new Vector2f(0.0f, 0.0f), new Vector2f(300, 20)));
+
+            selectedItemHoveringText.setTransparent(true);
+            selectedItemHoveringText.setText("");
+            selectedItemHoveringText.setAlignment(
+                    TextUIElement.TextAlignment.VERTICAL_CENTER,
+                    TextUIElement.TextAlignment.HORIZONTAL_CENTER
+            );
+
+            selectedItemHoveringText.setColor(new Vector3f(1.0f, 1.0f, 1.0f));
+            selectedItemHoveringText.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
+            selectedItemHoveringText.setFontSize(15);
+            selectedItemHoveringText.build();
+
+            selectedItemHoveringText.setAlignment(UIElement.Alignment.BOTTOM);
+        }
+
+        /* //TODO: Implement later
+        {
+            UIElement blockLookOverBackground = hud.addElement(UIElement.create(ImageUIElement.class, "block_lookover_background", new Vector2f(0.0f, 0.0f), new Vector2f(80.0f, 46.0f).mul(1.8f).mul(Settings.UI_SCALE.getValue())));
+
+            blockLookOverBackground.setTexture(Objects.requireNonNull(TextureManager.get("ui.block_lookover")));
+            blockLookOverBackground.setTransparent(true);
+            blockLookOverBackground.setAlignment(UIElement.Alignment.TOP);
+
+            TextUIElement blockLookOverText = (TextUIElement) hud.addElement(UIElement.create(TextUIElement.class, "block_lookover_text", new Vector2f(0.0f, 0.0f), new Vector2f(300, 20)));
+
+            blockLookOverText.setTransparent(true);
+            blockLookOverText.setText("Soft Moon Rock");
+            blockLookOverText.setAlignment(
+                    TextUIElement.TextAlignment.VERTICAL_CENTER,
+                    TextUIElement.TextAlignment.HORIZONTAL_CENTER
+            );
+
+            blockLookOverText.setColor(new Vector3f(1.0f, 1.0f, 1.0f));
+            blockLookOverText.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
+            blockLookOverText.setFontSize(12);
+            blockLookOverText.build();
+
+            blockLookOverText.setAlignment(UIElement.Alignment.TOP);
+            blockLookOverText.setOffset(new Vector2f(33.0f, 23.0f));
+        }
+         */
+
         hotbarSelector.setTexture(Objects.requireNonNull(TextureManager.get("ui.hotbar_selector")));
         hotbarSelector.setTransparent(true);
         hotbarSelector.setAlignment(UIElement.Alignment.BOTTOM);
         hotbarSelector.setOffset(new Vector2f(0.0f, -5.0f));
-
 
         survivalMenu = UIPanel.create("survival_menu");
 
@@ -484,6 +529,14 @@ public class InventoryMenu extends Menu
 
         if (grabbedItemElement.isActive())
             grabbedItemElement.setPosition(InputManager.getMousePosition().sub(new Vector2f(16.0f, 16.0f)));
+
+        if (!selectedItemHoveringText.getText().equals(Objects.requireNonNull(ItemRegistry.get(inventory.slots[0][currentSlotSelected])).getDisplayName()))
+        {
+            selectedItemHoveringText.setText(Objects.requireNonNull(ItemRegistry.get(inventory.slots[0][currentSlotSelected])).getDisplayName());
+            selectedItemHoveringText.build();
+        }
+
+        selectedItemHoveringText.setOffset(new Vector2f(hotbarSelector.getOffset().x, -140.0f));
 
         if (health < 20)
         {

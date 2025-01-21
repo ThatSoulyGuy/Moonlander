@@ -31,10 +31,7 @@ import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
 import com.thatsoulyguy.moonlander.ui.Menu;
 import com.thatsoulyguy.moonlander.ui.MenuManager;
 import com.thatsoulyguy.moonlander.ui.UIManager;
-import com.thatsoulyguy.moonlander.ui.menus.CraftingTableMenu;
-import com.thatsoulyguy.moonlander.ui.menus.DeathMenu;
-import com.thatsoulyguy.moonlander.ui.menus.InventoryMenu;
-import com.thatsoulyguy.moonlander.ui.menus.PauseMenu;
+import com.thatsoulyguy.moonlander.ui.menus.*;
 import com.thatsoulyguy.moonlander.util.AssetPath;
 import com.thatsoulyguy.moonlander.util.FileHelper;
 import com.thatsoulyguy.moonlander.world.TerrainGenerator;
@@ -117,12 +114,19 @@ public class Moonlander
         TextureManager.register(Texture.create("ui.menu.full_heart", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/full_heart.png")));
         TextureManager.register(Texture.create("ui.menu.half_heart", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/half_heart.png")));
         TextureManager.register(Texture.create("ui.menu.oxygen_dial", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/oxygen_dial.png")));
+        TextureManager.register(Texture.create("ui.menu.book", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/book.png")));
+        TextureManager.register(Texture.create("ui.menu.next_page", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/next_page.png")));
+        TextureManager.register(Texture.create("ui.menu.previous_page", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/previous_page.png")));
+        TextureManager.register(Texture.create("ui.menu.next_page_deactivated", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/next_page_deactivated.png")));
+        TextureManager.register(Texture.create("ui.menu.previous_page_deactivated", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/previous_page_deactivated.png")));
         TextureManager.register(Texture.create("ui.menu.oxygen_dial_ball", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/oxygen_dial_ball.png")));
         TextureManager.register(Texture.create("ui.menu.oxygen_pointer", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/oxygen_pointer.png")));
+        TextureManager.register(Texture.create("ui.block_lookover", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/block_lookover.png")));
 
         TextureAtlasManager.register(TextureAtlas.create("blocks", AssetPath.create("moonlander", "texture/block/")));
         TextureAtlasManager.register(TextureAtlas.create("items", AssetPath.create("moonlander", "texture/item/")));
 
+        MenuManager.register(Menu.create(BookMenu.class));
         MenuManager.register(Menu.create(CraftingTableMenu.class));
         MenuManager.register(Menu.create(InventoryMenu.class));
         MenuManager.register(Menu.create(PauseMenu.class));

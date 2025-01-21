@@ -44,6 +44,7 @@ public class PauseMenu extends Menu
                 button.setTexture(Objects.requireNonNull(TextureManager.get("ui.button_disabled")));
 
                 host.setPaused(false);
+                host.setPauseMenuActive(false);
             });
 
             button.addOnHoveringBeginEvent(() -> button.setTexture(Objects.requireNonNull(TextureManager.get("ui.button_selected"))));

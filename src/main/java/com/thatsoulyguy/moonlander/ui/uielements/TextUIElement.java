@@ -17,6 +17,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class TextUIElement extends UIElement
@@ -99,7 +100,45 @@ public class TextUIElement extends UIElement
         graphics.setFont(customFont);
         FontMetrics fm = graphics.getFontMetrics();
 
-        String[] lines = text.split("\n");
+        String[] originalLines = text.split("\n");
+
+        java.util.List<String> wrappedLines = new ArrayList<>();
+        int maxLineWidth = dimensions.x;
+
+        for (String originalLine : originalLines)
+        {
+            originalLine = originalLine.trim();
+
+            String[] words = originalLine.split("\\s+");
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < words.length; i++)
+            {
+                String word = words[i];
+                String candidate = sb.isEmpty() ? word : sb + " " + word;
+
+                if (fm.stringWidth(candidate) > maxLineWidth && !sb.isEmpty())
+                {
+                    wrappedLines.add(sb.toString());
+
+                    sb.setLength(0);
+                    sb.append(word);
+                }
+                else
+                {
+                    sb.setLength(0);
+                    sb.append(candidate);
+                }
+            }
+
+            if (!sb.isEmpty())
+                wrappedLines.add(sb.toString());
+
+            if (originalLine.isEmpty())
+                wrappedLines.add("");
+        }
+
+        String[] lines = wrappedLines.toArray(new String[0]);
 
         int lineHeight = fm.getHeight();
         int totalTextHeight = lines.length * lineHeight;
@@ -112,7 +151,6 @@ public class TextUIElement extends UIElement
             startY = dimensions.y - totalTextHeight + fm.getAscent();
         else
             startY = fm.getAscent();
-
 
         for (int i = 0; i < lines.length; i++)
         {
