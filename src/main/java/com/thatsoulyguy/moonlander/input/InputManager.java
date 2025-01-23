@@ -1,6 +1,5 @@
 package com.thatsoulyguy.moonlander.input;
 
-import com.sun.jna.Platform;
 import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
 import com.thatsoulyguy.moonlander.annotation.Static;
 import com.thatsoulyguy.moonlander.core.Window;
@@ -89,7 +88,7 @@ public class InputManager
                 float[] xScale = new float[1];
                 float[] yScale = new float[1];
 
-                if (!Platform.isWindows())
+                if (!System.getProperty("os.name").contains("Window"))
                     GLFW.glfwGetWindowContentScale(windowHandle, xScale, yScale);
                 else
                 {

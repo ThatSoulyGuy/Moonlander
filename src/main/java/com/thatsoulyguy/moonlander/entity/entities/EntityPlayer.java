@@ -20,7 +20,6 @@ import com.thatsoulyguy.moonlander.render.*;
 import com.thatsoulyguy.moonlander.system.GameObject;
 import com.thatsoulyguy.moonlander.system.Layer;
 import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
-import com.thatsoulyguy.moonlander.ui.Menu;
 import com.thatsoulyguy.moonlander.ui.MenuManager;
 import com.thatsoulyguy.moonlander.ui.menus.*;
 import com.thatsoulyguy.moonlander.util.CoordinateHelper;
@@ -35,7 +34,6 @@ import org.lwjgl.opengl.GL41;
 import java.io.Serializable;
 import java.lang.Math;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -56,7 +54,7 @@ public class EntityPlayer extends Entity
     private @EffectivelyNotNull DeathMenu deathMenu;
     private @EffectivelyNotNull BookMenu bookMenu;
 
-    private @NotNull Inventory inventory = new Inventory();
+    private final @NotNull Inventory inventory = new Inventory();
 
     private float breakingProgress;
 
@@ -171,6 +169,9 @@ public class EntityPlayer extends Entity
         updateMouselook();
         updateMovement();
 
+        inventoryMenu.health = getCurrentHealth();
+        inventoryMenu.oxygen = oxygen;
+
         if (oxygenDepletionCooldownTimer < 0 && oxygen > 0)
         {
             oxygen--;
@@ -209,9 +210,6 @@ public class EntityPlayer extends Entity
         inventoryMenu.update();
         craftingTableMenu.update();
         bookMenu.update();
-
-        inventoryMenu.health = getCurrentHealth();
-        inventoryMenu.oxygen = oxygen;
 
         jumpCooldownTimer -= Time.getDeltaTime();
         oxygenDepletionCooldownTimer -= Time.getDeltaTime();

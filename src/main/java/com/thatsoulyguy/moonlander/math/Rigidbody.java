@@ -21,6 +21,8 @@ public class Rigidbody extends Component
     public static final float GRAVITY = -6.8f;
     public static final float DRAG = 0.01f;
 
+    private static final float FIXED_DELTA = 1.0f / 60.0f;
+
     private final @NotNull Vector3f velocity = new Vector3f(0,0,0);
 
     private boolean isGrounded = false;
@@ -51,8 +53,6 @@ public class Rigidbody extends Component
     @Override
     public void update()
     {
-        float deltaTime = Time.getDeltaTime();
-
         Collider self = getGameObject().getComponent(BoxCollider.class);
         if (self == null)
         {
@@ -61,18 +61,18 @@ public class Rigidbody extends Component
         }
 
         if (!isGrounded)
-            velocity.y += GRAVITY * deltaTime;
+            velocity.y += GRAVITY * FIXED_DELTA;
 
-        velocity.x *= (float) Math.pow(DRAG, deltaTime);
-        velocity.z *= (float) Math.pow(DRAG, deltaTime);
+        velocity.x *= (float) Math.pow(DRAG, FIXED_DELTA);
+        velocity.z *= (float) Math.pow(DRAG, FIXED_DELTA);
 
         Transform transform = getGameObject().getTransform();
         Vector3f currentPosition = transform.getWorldPosition();
 
         Vector3f newPosition = new Vector3f(
-                currentPosition.x + velocity.x * deltaTime,
-                currentPosition.y + velocity.y * deltaTime,
-                currentPosition.z + velocity.z * deltaTime
+                currentPosition.x + velocity.x * FIXED_DELTA,
+                currentPosition.y + velocity.y * FIXED_DELTA,
+                currentPosition.z + velocity.z * FIXED_DELTA
         );
 
         transform.setLocalPosition(newPosition);
