@@ -88,6 +88,12 @@ public class BlockRegistry
         {
             return false;
         }
+
+        @Override
+        public boolean isSolid()
+        {
+            return true;
+        }
     };
 
     public static final Block BLOCK_SOFT_MOON_ROCK = new Block()
@@ -154,6 +160,12 @@ public class BlockRegistry
         public boolean updates()
         {
             return false;
+        }
+
+        @Override
+        public boolean isSolid()
+        {
+            return true;
         }
 
         @Override
@@ -227,6 +239,12 @@ public class BlockRegistry
         public boolean updates()
         {
             return false;
+        }
+
+        @Override
+        public boolean isSolid()
+        {
+            return true;
         }
 
         @Override
@@ -309,6 +327,12 @@ public class BlockRegistry
         }
 
         @Override
+        public boolean isSolid()
+        {
+            return true;
+        }
+
+        @Override
         public @NotNull Item getAssociatedItem()
         {
             return ItemRegistry.ITEM_STONE_BLOCK;
@@ -385,6 +409,12 @@ public class BlockRegistry
         public boolean updates()
         {
             return false;
+        }
+
+        @Override
+        public boolean isSolid()
+        {
+            return true;
         }
 
         @Override
@@ -467,6 +497,12 @@ public class BlockRegistry
         }
 
         @Override
+        public boolean isSolid()
+        {
+            return true;
+        }
+
+        @Override
         public @NotNull Item getAssociatedItem()
         {
             return ItemRegistry.ITEM_COAL;
@@ -546,6 +582,12 @@ public class BlockRegistry
         }
 
         @Override
+        public boolean isSolid()
+        {
+            return true;
+        }
+
+        @Override
         public @NotNull Item getAssociatedItem()
         {
             return ItemRegistry.ITEM_ALUMINUM_ORE_BLOCK;
@@ -622,6 +664,12 @@ public class BlockRegistry
         public boolean updates()
         {
             return false;
+        }
+
+        @Override
+        public boolean isSolid()
+        {
+            return true;
         }
 
         @Override
@@ -708,6 +756,12 @@ public class BlockRegistry
         public boolean updates()
         {
             return false;
+        }
+
+        @Override
+        public boolean isSolid()
+        {
+            return true;
         }
 
         @Override
@@ -888,6 +942,12 @@ public class BlockRegistry
         }
 
         @Override
+        public boolean isSolid()
+        {
+            return true;
+        }
+
+        @Override
         public @NotNull Item getAssociatedItem()
         {
             return ItemRegistry.ITEM_FURNACE_BLOCK;
@@ -1021,9 +1081,102 @@ public class BlockRegistry
         }
 
         @Override
+        public boolean isSolid()
+        {
+            return true;
+        }
+
+        @Override
         public @NotNull Item getAssociatedItem()
         {
             return ItemRegistry.ITEM_OXYGEN_GENERATOR_BLOCK;
+        }
+    };
+
+    public static final Block BLOCK_OIL = new Block()
+    {
+        @Override
+        public void onInteractedWith(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
+        {
+            if (interactor instanceof EntityPlayer player)
+            {
+                if (Objects.requireNonNull(player.getInventoryMenu().getSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected))).id() == ItemRegistry.ITEM_EMPTY_BUCKET.getId())
+                {
+                    player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), ItemRegistry.ITEM_OIL_BUCKET.getId(), (byte) 1);
+
+                    World.getLocalWorld().setBlock(interactor, new Vector3f(globalBlockPosition), BlockRegistry.BLOCK_AIR.getId());
+                }
+            }
+        }
+
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "block_oil";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Oil";
+        }
+
+        @Override
+        public float getHardness()
+        {
+            return 0.0f;
+        }
+
+        @Override
+        public float getResistance()
+        {
+            return 0.1f;
+        }
+
+        @Override
+        public @NotNull String[] getTextures()
+        {
+            return new String[]
+            {
+                "oil",
+                "oil",
+                "oil",
+                "oil",
+                "oil",
+                "oil"
+            };
+        }
+
+        @Override
+        public @NotNull Vector3f[] getColors()
+        {
+            return new Vector3f[]
+            {
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+            };
+        }
+
+        @Override
+        public boolean isInteractable()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean updates()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isSolid()
+        {
+            return false;
         }
     };
 
@@ -1042,6 +1195,7 @@ public class BlockRegistry
         register(BLOCK_COAL_ORE);
         register(BLOCK_ALUMINUM_ORE);
         register(BLOCK_IRON_ORE);
+        register(BLOCK_OIL);
         register(BLOCK_CRAFTING_TABLE);
         register(BLOCK_FURNACE);
         register(BLOCK_OXYGEN_GENERATOR);

@@ -153,7 +153,78 @@ public class CraftingRecipeRegistry
         }
     };
 
-    public static final @NotNull CraftingRecipe REFINED_ALUMINUM_INGOT_AND_REDSTONE_DUST_MOON_ROCK_TO_OXYGEN_GENERATOR = new CraftingRecipe()
+    public static final @NotNull CraftingRecipe IRON_INGOT_AND_STICK_TO_ALUMINUM_PICKAXE = new CraftingRecipe()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "recipe_iron_ingot_and_stick_to_aluminum_pickaxe";
+        }
+
+        @Override
+        public @NotNull Map<Character, Item> getKeyDefinitions()
+        {
+            return Map.of
+            (
+                's', ItemRegistry.ITEM_STICK,
+                'i', ItemRegistry.ITEM_IRON_INGOT
+            );
+        }
+
+        @Override
+        public char[][] getRecipeGrid()
+        {
+            return new char[][]
+            {
+                new char[] { 'i', 'i', 'i' },
+                new char[] { '#', 's', '#' },
+                new char[] { '#', 's', '#' }
+            };
+        }
+
+        @Override
+        public @NotNull Result getResult()
+        {
+            return new Result(ItemRegistry.ITEM_IRON_PICKAXE, (byte) 1);
+        }
+    };
+
+    public static final @NotNull CraftingRecipe IRON_INGOT_TO_BUCKET = new CraftingRecipe()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "recipe_iron_ingot_to_bucket";
+        }
+
+        @Override
+        public @NotNull Map<Character, Item> getKeyDefinitions()
+        {
+            return Map.of
+            (
+                'i', ItemRegistry.ITEM_IRON_INGOT
+            );
+        }
+
+        @Override
+        public char[][] getRecipeGrid()
+        {
+            return new char[][]
+            {
+                new char[] { '#', '#', '#' },
+                new char[] { 'i', '#', 'i' },
+                new char[] { '#', 'i', '#' }
+            };
+        }
+
+        @Override
+        public @NotNull Result getResult()
+        {
+            return new Result(ItemRegistry.ITEM_EMPTY_BUCKET, (byte) 1);
+        }
+    };
+
+    public static final @NotNull CraftingRecipe REFINED_ALUMINUM_INGOT_AND_REDSTONE_DUST_AND_MOON_ROCK_TO_OXYGEN_GENERATOR = new CraftingRecipe()
     {
         @Override
         public @NotNull String getRegistryName()
@@ -272,8 +343,10 @@ public class CraftingRecipeRegistry
         register(MOON_ROCK_TO_MOON_ROCK_PEBBLE);
         register(MOON_ROCK_PEBBLE_TO_STICK);
         register(MOON_ROCK_TO_CRAFTING_TABLE);
-        register(REFINED_ALUMINUM_INGOT_AND_REDSTONE_DUST_MOON_ROCK_TO_OXYGEN_GENERATOR);
+        register(REFINED_ALUMINUM_INGOT_AND_REDSTONE_DUST_AND_MOON_ROCK_TO_OXYGEN_GENERATOR);
         register(REFINED_ALUMINUM_INGOT_AND_STICK_TO_ALUMINUM_PICKAXE);
+        register(IRON_INGOT_AND_STICK_TO_ALUMINUM_PICKAXE);
+        register(IRON_INGOT_TO_BUCKET);
         register(STONE_AND_REDSTONE_TO_FURNACE);
         register(MOON_ROCK_AND_REDSTONE_TO_FURNACE);
     }

@@ -135,7 +135,7 @@ public class Chunk extends Component
     {
         Vector3f basePosition = new Vector3f(x + 0.5f, y + 0.5f, z + 0.5f);
 
-        if (!renderingVoxelPositions.contains(basePosition))
+        if (!renderingVoxelPositions.contains(basePosition) && block.isSolid())
             renderingVoxelPositions.add(basePosition);
 
         Vector3i[] directions =

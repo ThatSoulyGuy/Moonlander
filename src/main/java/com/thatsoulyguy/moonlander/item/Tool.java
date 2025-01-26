@@ -6,5 +6,6 @@ public enum Tool
     SWORD,
     SHOVEL,
     AXE,
+    BUCKET,
     NONE
 }

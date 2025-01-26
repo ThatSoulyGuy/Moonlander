@@ -546,6 +546,57 @@ public class ItemRegistry
         }
     };
 
+    public static final Item ITEM_IRON_PICKAXE = new Item()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_iron_pickaxe";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Iron Pickaxe";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "iron_pickaxe";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+
+        @Override
+        public @NotNull Tool getToolType()
+        {
+            return Tool.PICKAXE;
+        }
+
+        @Override
+        public float getBreakageSpeedModifier()
+        {
+            return 0.4f;
+        }
+    };
+
     public static final Item ITEM_REDSTONE_DUST = new Item()
     {
         @Override
@@ -621,6 +672,102 @@ public class ItemRegistry
         public boolean isSmeltable()
         {
             return false;
+        }
+    };
+
+    public static final Item ITEM_EMPTY_BUCKET = new Item()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_empty_bucket";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Bucket";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "bucket";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+
+        @Override
+        public @NotNull Tool getToolType()
+        {
+            return Tool.BUCKET;
+        }
+    };
+
+    public static final Item ITEM_OIL_BUCKET = new Item()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_oil_bucket";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Oil Bucket";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "oil_bucket";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+
+        @Override
+        public @NotNull Block getAssociatedBlock()
+        {
+            return BlockRegistry.BLOCK_OIL;
+        }
+
+        @Override
+        public @NotNull Tool getToolType()
+        {
+            return Tool.BUCKET;
         }
     };
 
@@ -937,8 +1084,11 @@ public class ItemRegistry
         register(ITEM_ALUMINUM_INGOT);
         register(ITEM_IRON_INGOT);
         register(ITEM_ALUMINIUM_PICKAXE);
+        register(ITEM_IRON_PICKAXE);
         register(ITEM_REDSTONE_DUST);
         register(ITEM_COAL);
+        register(ITEM_EMPTY_BUCKET);
+        register(ITEM_OIL_BUCKET);
         register(ITEM_KNOWLEDGE_BOOK);
         register(ITEM_CRAFTING_TABLE_BLOCK);
         register(ITEM_FURNACE_BLOCK);

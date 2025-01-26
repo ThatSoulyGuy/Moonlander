@@ -367,7 +367,7 @@ public class EntityPlayer extends Entity
                 Vector3f point = hit.center();
                 short block = World.getLocalWorld().getBlock(point);
 
-                if (block != BlockRegistry.BLOCK_AIR.getId() && block != -1)
+                if (block != BlockRegistry.BLOCK_AIR.getId() && block != -1 && Objects.requireNonNull(BlockRegistry.get(block)).isSolid())
                 {
                     selectorMesh.active = true;
 
@@ -394,7 +394,7 @@ public class EntityPlayer extends Entity
 
                 blockBreakageMesh.getGameObject().setActive(true);
 
-                if (blockID != BlockRegistry.BLOCK_AIR.getId() && blockID != -1)
+                if (blockID != BlockRegistry.BLOCK_AIR.getId() && blockID != -1 && Objects.requireNonNull(BlockRegistry.get(blockID)).isSolid())
                 {
                     Vector3i blockCoordinates = CoordinateHelper.worldToBlockCoordinates(point);
 
@@ -511,7 +511,12 @@ public class EntityPlayer extends Entity
 
                     World.getLocalWorld().setBlock(this, point, item.getAssociatedBlock().getId());
 
-                    inventoryMenu.setSlot(new Vector2i(new Vector2i(0, inventoryMenu.currentSlotSelected)),
+                    if (Objects.requireNonNull(ItemRegistry.get(slot.id())).getToolType() == Tool.BUCKET)
+                        inventoryMenu.setSlot(new Vector2i(new Vector2i(0, inventoryMenu.currentSlotSelected)),
+                            ItemRegistry.ITEM_EMPTY_BUCKET.getId(),
+                            (byte) 1);
+                    else
+                        inventoryMenu.setSlot(new Vector2i(new Vector2i(0, inventoryMenu.currentSlotSelected)),
                             item.getId(),
                             (byte) (slot.count() - 1));
                 }

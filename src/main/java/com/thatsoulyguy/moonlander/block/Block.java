@@ -45,6 +45,8 @@ public abstract class Block
 
     public abstract boolean updates();
 
+    public abstract boolean isSolid();
+
     public @NotNull Item getAssociatedItem()
     {
         return ItemRegistry.ITEM_AIR;
