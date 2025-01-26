@@ -154,6 +154,10 @@ public class EntityPlayer extends Entity
 
         inventoryMenu.addItem(ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT.getId(), (byte) 10);
         inventoryMenu.addItem(ItemRegistry.ITEM_KNOWLEDGE_BOOK.getId(), (byte) 1);
+        inventoryMenu.addItem(ItemRegistry.ITEM_FURNACE_BLOCK.getId(), (byte) 1);
+        inventoryMenu.addItem(ItemRegistry.ITEM_ALUMINIUM_PICKAXE.getId(), (byte) 1);
+        inventoryMenu.addItem(ItemRegistry.ITEM_COAL.getId(), (byte) 10);
+        inventoryMenu.addItem(ItemRegistry.ITEM_IRON_ORE_BLOCK.getId(), (byte) 10);
 
         oxygenDepletionCooldownTimer = oxygenDepletionCooldownTimerStart;
         suffocationCooldownTimer = suffocationCooldownTimerStart;
@@ -477,9 +481,13 @@ public class EntityPlayer extends Entity
 
                 short currentBlock = World.getLocalWorld().getBlock(point);
 
+                boolean interactable = false;
+
                 if (currentBlock != -1 && currentBlock != BlockRegistry.BLOCK_AIR.getId())
                 {
-                    if (Objects.requireNonNull(BlockRegistry.get(currentBlock)).isInteractable())
+                    interactable = Objects.requireNonNull(BlockRegistry.get(currentBlock)).isInteractable();
+
+                    if (interactable)
                     {
                         Objects.requireNonNull(BlockRegistry.get(currentBlock)).onInteractedWith(
                                 this,
@@ -496,7 +504,7 @@ public class EntityPlayer extends Entity
 
                 currentBlock = World.getLocalWorld().getBlock(point);
 
-                if (currentBlock == -1 || currentBlock == BlockRegistry.BLOCK_AIR.getId())
+                if (currentBlock == -1 || currentBlock == BlockRegistry.BLOCK_AIR.getId() && !interactable)
                 {
                     if (slot.count() <= 0 || !item.isBlockItem())
                         return;

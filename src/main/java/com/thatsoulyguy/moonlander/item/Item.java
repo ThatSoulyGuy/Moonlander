@@ -3,11 +3,8 @@ package com.thatsoulyguy.moonlander.item;
 import com.thatsoulyguy.moonlander.block.Block;
 import com.thatsoulyguy.moonlander.block.BlockRegistry;
 import com.thatsoulyguy.moonlander.entity.Entity;
-import com.thatsoulyguy.moonlander.world.Chunk;
-import com.thatsoulyguy.moonlander.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
-import org.joml.Vector3i;
 
 public abstract class Item
 {
@@ -31,6 +28,13 @@ public abstract class Item
     public abstract @NotNull Vector3f getColor();
 
     public abstract boolean isBlockItem();
+
+    public abstract boolean isSmeltable();
+
+    public @NotNull Item getSmeltingResult()
+    {
+        return ItemRegistry.ITEM_AIR;
+    }
 
     public @NotNull Block getAssociatedBlock()
     {

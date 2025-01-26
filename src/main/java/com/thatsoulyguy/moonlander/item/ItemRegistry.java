@@ -49,6 +49,12 @@ public class ItemRegistry
         {
             return false;
         }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
     };
 
     public static final Item ITEM_MOON_ROCK_BLOCK = new Item()
@@ -81,6 +87,12 @@ public class ItemRegistry
         public boolean isBlockItem()
         {
             return true;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
         }
 
         @Override
@@ -123,6 +135,12 @@ public class ItemRegistry
         }
 
         @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+
+        @Override
         public @NotNull Block getAssociatedBlock()
         {
             return BlockRegistry.BLOCK_SOFT_MOON_ROCK;
@@ -160,6 +178,12 @@ public class ItemRegistry
         {
             return false;
         }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
     };
 
     public static final Item ITEM_STONE_BLOCK = new Item()
@@ -192,6 +216,12 @@ public class ItemRegistry
         public boolean isBlockItem()
         {
             return true;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
         }
 
         @Override
@@ -232,6 +262,12 @@ public class ItemRegistry
         {
             return false;
         }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
     };
 
     public static final Item ITEM_REFINED_ALUMINUM_INGOT = new Item()
@@ -265,6 +301,198 @@ public class ItemRegistry
         {
             return false;
         }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+    };
+
+    public static final Item ITEM_ALUMINUM_INGOT = new Item()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_aluminum_ingot";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Unrefined Aluminum Ingot";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "aluminum_ingot";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return true;
+        }
+
+        @Override
+        public @NotNull Item getSmeltingResult()
+        {
+            return ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT;
+        }
+    };
+
+    public static final Item ITEM_IRON_INGOT = new Item()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_iron_ingot";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Iron Ingot";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "iron_ingot";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+    };
+
+    public static final Item ITEM_ALUMINUM_ORE_BLOCK = new Item()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_aluminum_ore_block";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Aluminum Ore";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "aluminum_ore_block";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return true;
+        }
+
+        @Override
+        public @NotNull Item getSmeltingResult()
+        {
+            return ItemRegistry.ITEM_ALUMINUM_INGOT;
+        }
+
+        @Override
+        public @NotNull Block getAssociatedBlock()
+        {
+            return BlockRegistry.BLOCK_ALUMINUM_ORE;
+        }
+    };
+
+    public static final Item ITEM_IRON_ORE_BLOCK = new Item()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_iron_ore_block";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Iron Ore";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "iron_ore_block";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return true;
+        }
+
+        @Override
+        public @NotNull Item getSmeltingResult()
+        {
+            return ItemRegistry.ITEM_IRON_INGOT;
+        }
+
+        @Override
+        public @NotNull Block getAssociatedBlock()
+        {
+            return BlockRegistry.BLOCK_IRON_ORE;
+        }
     };
 
     public static final Item ITEM_ALUMINIUM_PICKAXE = new Item()
@@ -295,6 +523,12 @@ public class ItemRegistry
 
         @Override
         public boolean isBlockItem()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isSmeltable()
         {
             return false;
         }
@@ -343,6 +577,12 @@ public class ItemRegistry
         {
             return false;
         }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
     };
 
     public static final Item ITEM_COAL = new Item()
@@ -373,6 +613,12 @@ public class ItemRegistry
 
         @Override
         public boolean isBlockItem()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isSmeltable()
         {
             return false;
         }
@@ -529,6 +775,12 @@ public class ItemRegistry
         {
             return false;
         }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
     };
 
     public static final Item ITEM_CRAFTING_TABLE_BLOCK = new Item()
@@ -536,7 +788,7 @@ public class ItemRegistry
         @Override
         public @NotNull String getRegistryName()
         {
-            return "item_crafting_table";
+            return "item_crafting_table_block";
         }
 
         @Override
@@ -564,9 +816,60 @@ public class ItemRegistry
         }
 
         @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+
+        @Override
         public @NotNull Block getAssociatedBlock()
         {
             return BlockRegistry.BLOCK_CRAFTING_TABLE;
+        }
+    };
+
+    public static final Item ITEM_FURNACE_BLOCK = new Item()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_furnace_block";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Furnace";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "furnace_block";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+
+        @Override
+        public @NotNull Block getAssociatedBlock()
+        {
+            return BlockRegistry.BLOCK_FURNACE;
         }
     };
 
@@ -603,6 +906,12 @@ public class ItemRegistry
         }
 
         @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+
+        @Override
         public @NotNull Block getAssociatedBlock()
         {
             return BlockRegistry.BLOCK_OXYGEN_GENERATOR;
@@ -620,14 +929,19 @@ public class ItemRegistry
         register(ITEM_MOON_ROCK_BLOCK);
         register(ITEM_SOFT_MOON_ROCK_BLOCK);
         register(ITEM_MOON_ROCK_PEBBLE);
+        register(ITEM_ALUMINUM_ORE_BLOCK);
+        register(ITEM_IRON_ORE_BLOCK);
         register(ITEM_STONE_BLOCK);
         register(ITEM_STICK);
         register(ITEM_REFINED_ALUMINUM_INGOT);
+        register(ITEM_ALUMINUM_INGOT);
+        register(ITEM_IRON_INGOT);
         register(ITEM_ALUMINIUM_PICKAXE);
         register(ITEM_REDSTONE_DUST);
         register(ITEM_COAL);
         register(ITEM_KNOWLEDGE_BOOK);
         register(ITEM_CRAFTING_TABLE_BLOCK);
+        register(ITEM_FURNACE_BLOCK);
         register(ITEM_OXYGEN_GENERATOR_BLOCK);
     }
 

@@ -79,7 +79,11 @@ public class GroundTerrainGenerator extends TerrainGenerator
 
                             oreNoise = (oreNoise + 1) / 2.0;
 
-                            if (oreNoise > 0.8)
+                            if (oreNoise > 0.9)
+                                blocks[x][y][z] = BlockRegistry.BLOCK_ALUMINUM_ORE.getId();
+                            else if (oreNoise > 0.85)
+                                blocks[x][y][z] = BlockRegistry.BLOCK_IRON_ORE.getId();
+                            else if (oreNoise > 0.8)
                                 blocks[x][y][z] = BlockRegistry.BLOCK_REDSTONE_ORE.getId();
                             else if (oreNoise > 0.7)
                                 blocks[x][y][z] = BlockRegistry.BLOCK_COAL_ORE.getId();

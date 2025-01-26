@@ -20,9 +20,7 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -481,6 +479,164 @@ public class BlockRegistry
         }
     };
 
+    public static final Block BLOCK_ALUMINUM_ORE = new Block()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "block_aluminum_ore";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Aluminum Ore";
+        }
+
+        @Override
+        public float getHardness()
+        {
+            return 10.25f;
+        }
+
+        @Override
+        public float getResistance()
+        {
+            return 0.1f;
+        }
+
+        @Override
+        public @NotNull String[] getTextures()
+        {
+            return new String[]
+            {
+                "aluminum_ore",
+                "aluminum_ore",
+                "aluminum_ore",
+                "aluminum_ore",
+                "aluminum_ore",
+                "aluminum_ore"
+            };
+        }
+
+        @Override
+        public @NotNull Vector3f[] getColors()
+        {
+            return new Vector3f[]
+            {
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+            };
+        }
+
+        @Override
+        public boolean isInteractable()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean updates()
+        {
+            return false;
+        }
+
+        @Override
+        public @NotNull Item getAssociatedItem()
+        {
+            return ItemRegistry.ITEM_ALUMINUM_ORE_BLOCK;
+        }
+
+        @Override
+        public @NotNull Tool toolRequired()
+        {
+            return Tool.PICKAXE;
+        }
+    };
+
+    public static final Block BLOCK_IRON_ORE = new Block()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "block_iron_ore";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Iron Ore";
+        }
+
+        @Override
+        public float getHardness()
+        {
+            return 10.25f;
+        }
+
+        @Override
+        public float getResistance()
+        {
+            return 0.1f;
+        }
+
+        @Override
+        public @NotNull String[] getTextures()
+        {
+            return new String[]
+            {
+                "iron_ore",
+                "iron_ore",
+                "iron_ore",
+                "iron_ore",
+                "iron_ore",
+                "iron_ore"
+            };
+        }
+
+        @Override
+        public @NotNull Vector3f[] getColors()
+        {
+            return new Vector3f[]
+            {
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+            };
+        }
+
+        @Override
+        public boolean isInteractable()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean updates()
+        {
+            return false;
+        }
+
+        @Override
+        public @NotNull Item getAssociatedItem()
+        {
+            return ItemRegistry.ITEM_IRON_ORE_BLOCK;
+        }
+
+        @Override
+        public @NotNull Tool toolRequired()
+        {
+            return Tool.PICKAXE;
+        }
+    };
+
     public static final Block BLOCK_CRAFTING_TABLE = new Block()
     {
         @Override
@@ -558,6 +714,183 @@ public class BlockRegistry
         public @NotNull Item getAssociatedItem()
         {
             return ItemRegistry.ITEM_CRAFTING_TABLE_BLOCK;
+        }
+    };
+
+    public static final Block BLOCK_FURNACE = new Block()
+    {
+        private @Nullable EntityPlayer lastInteractor;
+
+        private final @NotNull Map<Vector3i, LinkedList<Short>> furnaceCookingItemsMap = new HashMap<>();
+        private final @NotNull Map<Vector3i, LinkedList<Float>> furnaceCookingTimesMap = new HashMap<>();
+        private final @NotNull Map<Vector3i, Integer> coalConsumptionMap = new HashMap<>();
+
+        private final float coalConsumptionCooldownTimerStart = 5.0f;
+        private float coalConsumptionCooldownTimer;
+
+        @Override
+        public void onInteractedWith(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
+        {
+            if (interactor instanceof EntityPlayer player)
+            {
+                short currentlySelectedSlotId = Objects.requireNonNull(player.getInventoryMenu().getSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected))).id();
+
+                if (currentlySelectedSlotId != ItemRegistry.ITEM_AIR.getId())
+                {
+                    lastInteractor = player;
+
+                    if (currentlySelectedSlotId == ItemRegistry.ITEM_COAL.getId())
+                    {
+                        if (coalConsumptionMap.containsKey(globalBlockPosition))
+                        {
+                            Integer coalCount = coalConsumptionMap.get(globalBlockPosition);
+
+                            coalCount += 1;
+
+                            coalConsumptionMap.put(globalBlockPosition, coalCount);
+                        }
+                        else
+                            coalConsumptionMap.put(globalBlockPosition, 1);
+
+                        player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), currentlySelectedSlotId, (byte) (Objects.requireNonNull(player.getInventoryMenu().getSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected))).count() - 1));
+
+                        return;
+                    }
+
+                    if (!Objects.requireNonNull(ItemRegistry.get(currentlySelectedSlotId)).isSmeltable())
+                        return;
+
+                    if (furnaceCookingItemsMap.containsKey(globalBlockPosition))
+                        furnaceCookingItemsMap.get(globalBlockPosition).add(currentlySelectedSlotId);
+                    else
+                        furnaceCookingItemsMap.put(globalBlockPosition, new LinkedList<>(List.of(currentlySelectedSlotId)));
+
+                    if (furnaceCookingTimesMap.containsKey(globalBlockPosition))
+                        furnaceCookingTimesMap.get(globalBlockPosition).add(8.0f);
+                    else
+                        furnaceCookingTimesMap.put(globalBlockPosition, new LinkedList<>(List.of(7.0f)));
+
+                    player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), currentlySelectedSlotId, (byte) (Objects.requireNonNull(player.getInventoryMenu().getSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected))).count() - 1));
+                }
+            }
+        }
+
+        @Override
+        public void onTick(@NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
+        {
+            if (!coalConsumptionMap.containsKey(globalBlockPosition) || lastInteractor == null)
+                return;
+
+            if (coalConsumptionCooldownTimer < 0)
+            {
+                Integer coal = coalConsumptionMap.get(globalBlockPosition);
+
+                coal -= 1;
+
+                coalConsumptionMap.put(globalBlockPosition, coal);
+
+                coalConsumptionCooldownTimer = coalConsumptionCooldownTimerStart;
+            }
+
+            if (coalConsumptionMap.get(globalBlockPosition) <= 0)
+                return;
+
+            furnaceCookingTimesMap.forEach((position, list) ->
+            {
+                Map<Integer, Float> changesToBeMade = new HashMap<>();
+
+                list.forEach(time -> changesToBeMade.put(list.indexOf(time), time - 0.01f));
+
+                changesToBeMade.forEach((index, time) -> furnaceCookingTimesMap.get(position).set(index, time));
+
+                List<Integer> cookTimesToBeRemoved = new ArrayList<>();
+
+                list.forEach(time ->
+                {
+                    if (time <= 0)
+                    {
+                        lastInteractor.getInventoryMenu().addItem(Objects.requireNonNull(ItemRegistry.get(furnaceCookingItemsMap.get(position).get(list.indexOf(time)))).getSmeltingResult().getId(), (byte) 1);
+
+                        furnaceCookingItemsMap.get(position).remove(list.indexOf(time));
+
+                        cookTimesToBeRemoved.add(list.indexOf(time));
+                    }
+                });
+
+                cookTimesToBeRemoved.forEach(index -> furnaceCookingTimesMap.get(position).remove((int) index));
+            });
+
+            coalConsumptionCooldownTimer -= 0.01f;
+        }
+
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "block_furnace";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Furnace";
+        }
+
+        @Override
+        public float getHardness()
+        {
+            return 2.84f;
+        }
+
+        @Override
+        public float getResistance()
+        {
+            return 0.1f;
+        }
+
+        @Override
+        public @NotNull String[] getTextures()
+        {
+            return new String[]
+            {
+                "furnace_top",
+                "stone",
+                "furnace_side",
+                "furnace_side",
+                "furnace_side",
+                "furnace_side"
+            };
+        }
+
+        @Override
+        public @NotNull Vector3f[] getColors()
+        {
+            return new Vector3f[]
+            {
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+            };
+        }
+
+        @Override
+        public boolean isInteractable()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean updates()
+        {
+            return true;
+        }
+
+        @Override
+        public @NotNull Item getAssociatedItem()
+        {
+            return ItemRegistry.ITEM_FURNACE_BLOCK;
         }
     };
 
@@ -707,7 +1040,10 @@ public class BlockRegistry
         register(BLOCK_STONE);
         register(BLOCK_REDSTONE_ORE);
         register(BLOCK_COAL_ORE);
+        register(BLOCK_ALUMINUM_ORE);
+        register(BLOCK_IRON_ORE);
         register(BLOCK_CRAFTING_TABLE);
+        register(BLOCK_FURNACE);
         register(BLOCK_OXYGEN_GENERATOR);
     }
 
