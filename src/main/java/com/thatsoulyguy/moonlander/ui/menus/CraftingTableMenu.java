@@ -71,87 +71,88 @@ public class CraftingTableMenu extends Menu
             }
         }
 
-        UIElement background = menu.addElement(UIElement.create(ImageUIElement.class, "background", new Vector2f(0.0f, 0.0f), new Vector2f(100.0f, 100.0f)));
+        UIElement background = menu.addElement(
+                UIElement.create(ImageUIElement.class, "background", new Vector2f(0.0f, 0.0f), new Vector2f(100.0f, 100.0f))
+        );
 
         background.setTransparent(true);
         background.setTexture(Objects.requireNonNull(TextureManager.get("ui.background")));
-        background.setStretch(List.of(UIElement.Stretch.LEFT, UIElement.Stretch.RIGHT, UIElement.Stretch.TOP, UIElement.Stretch.BOTTOM));
+        background.setStretch(List.of(
+                UIElement.Stretch.LEFT,
+                UIElement.Stretch.RIGHT,
+                UIElement.Stretch.TOP,
+                UIElement.Stretch.BOTTOM
+        ));
 
-        UIElement inventory = menu.addElement(UIElement.create(ImageUIElement.class, "inventory", new Vector2f(0.0f, 0.0f), new Vector2f(352.0f, 332.0f).mul(Settings.UI_SCALE.getValue() * ((float) 9 / 11))));
+        UIElement inventoryElement = menu.addElement(
+                UIElement.create(ImageUIElement.class, "inventory", new Vector2f(0.0f, 0.0f),
+                        scaleVector(352.0f * (9.0f / 11.0f), 332.0f * (9.0f / 11.0f))
+                )
+        );
 
-        inventory.setTransparent(true);
-        inventory.setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.crafting_table")));
-        inventory.setOffset(new Vector2f(0.0f, -35.0f));
+        inventoryElement.setTransparent(true);
+        inventoryElement.setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.crafting_table")));
+        inventoryElement.setOffset(new Vector2f(0.0f, scale(-35.0f)));
 
         for (int x = 0; x < 4; x++)
         {
             for (int y = 0; y < 9; y++)
             {
                 ButtonUIElement button = (ButtonUIElement) menu.addElement(
-                        UIElement.create(
-                                ButtonUIElement.class,
+                        createButtonElement(
                                 "slot_" + x + "_" + y,
-                                new Vector2f(0.0f, 0.0f),
-                                new Vector2f(32.0f, 32.0f)
-                                        .mul(Settings.UI_SCALE.getValue() * ((float) 9 / 11))
+                                scaleVector(32.0f * (9.0f/11.0f), 32.0f * (9.0f/11.0f))
                         )
                 );
-
-                button.setTransparent(true);
-                button.setTexture(TEXTURE_TRANSPARENCY);
 
                 setupInventorySlotEvents(button, x, y);
 
                 if (x == 0)
                 {
                     button.setOffset(new Vector2f(
-                            y * (36f * (Settings.UI_SCALE.getValue() * ((float) 9 / 11))) - 176.5f,
-                            129.0f
+                            y * scale(36.0f * (9.0f/11.0f)) - scale(117.5f),
+                            scale(75.0f)
                     ));
                 }
                 else
                 {
                     button.setOffset(new Vector2f(
-                            y * (36f * (Settings.UI_SCALE.getValue() * ((float) 9 / 11))) - 176.5f,
-                            119.0f - (x * (36f * (Settings.UI_SCALE.getValue() * ((float) 9 / 11))))
+                            y * scale(36.0f * (9.0f/11.0f)) - scale(117.5f),
+                            scale(68.0f) - (x * scale(36.0f * (9.0f/11.0f)))
                     ));
                 }
 
                 slotElements[x][y] = button;
 
                 TextUIElement text = (TextUIElement) menu.addElement(
-                        UIElement.create(
-                                TextUIElement.class,
+                        createTextElement(
                                 "slot_text_" + x + "_" + y,
                                 new Vector2f(0.0f, 0.0f),
-                                new Vector2f(18.0f, 18.0f).mul(Settings.UI_SCALE.getValue())
+                                scaleVector(18.0f, 18.0f),
+                                "",
+                                scaleFont(18),
+                                new Vector3f(1.0f),
+                                true,
+                                false,
+                                null,
+                                new Vector2f(0.0f, 0.0f)
                         )
                 );
 
-                text.setTransparent(true);
-                text.setActive(false);
-                text.setText("");
-                text.setAlignment(
-                        TextUIElement.TextAlignment.VERTICAL_CENTER,
-                        TextUIElement.TextAlignment.HORIZONTAL_CENTER
-                );
-
-                text.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
-                text.setFontSize(18);
-                text.build();
+                text.setAlignment(TextUIElement.TextAlignment.VERTICAL_CENTER, TextUIElement.TextAlignment.HORIZONTAL_CENTER);
 
                 if (x == 0)
                 {
                     text.setOffset(new Vector2f(
-                            y * (29.5f * Settings.UI_SCALE.getValue()) - 161.0f,
-                            129.0f + 12.45f
+                            y * scale(29.5f) - scale(111.0f),
+                            scale(71.0f) + scale(12.45f)
                     ));
                 }
                 else
                 {
                     text.setOffset(new Vector2f(
-                            y * (29.5f * Settings.UI_SCALE.getValue()) - 161.0f,
-                            (119.0f + 12.45f) - (x * (36f * (Settings.UI_SCALE.getValue() * ((float) 9 / 11))))
+                            y * scale(29.5f) - scale(111.0f),
+                            (scale(65.0f) + scale(12.45f)) - (x * scale(36.0f * (9.0f/11.0f)))
                     ));
                 }
 
@@ -163,32 +164,46 @@ public class CraftingTableMenu extends Menu
         {
             for (int y = 0; y < 3; y++)
             {
-                ButtonUIElement button = (ButtonUIElement) menu.addElement(UIElement.create(ButtonUIElement.class, "crafting_slot_" + x + "_" + y, new Vector2f(0.0f, 0.0f), new Vector2f(32.0f, 32.0f).mul(Settings.UI_SCALE.getValue() * ((float) 9 / 11))));
-
+                ButtonUIElement button = (ButtonUIElement) menu.addElement(
+                        UIElement.create(
+                                ButtonUIElement.class,
+                                "crafting_slot_" + x + "_" + y,
+                                new Vector2f(0.0f, 0.0f),
+                                scaleVector(32.0f * (9.0f / 11.0f), 32.0f * (9.0f / 11.0f))
+                        )
+                );
                 button.setTransparent(true);
                 button.setTexture(TEXTURE_TRANSPARENCY);
 
                 setupCraftingSlotEvents(button, x, y);
 
-                button.setOffset(new Vector2f(((36 * Settings.UI_SCALE.getValue() * ((float) 9 / 11)) * x) - 123, ((36 * Settings.UI_SCALE.getValue() * ((float) 9 / 11)) * y) - 178));
+                button.setOffset(new Vector2f(
+                        x * scale(36.0f * (9.0f / 11.0f)) - scale(82.0f),
+                        y * scale(36.0f * (9.0f / 11.0f)) - scale(130.0f)
+                ));
 
                 craftingSlotElements[x][y] = button;
 
-                TextUIElement text = (TextUIElement) menu.addElement(UIElement.create(TextUIElement.class, "crafting_slot_text_" + x + "_" + y, new Vector2f(0.0f, 0.0f), new Vector2f(18.0f, 18.0f).mul(Settings.UI_SCALE.getValue())));
+                TextUIElement text = (TextUIElement) menu.addElement(
+                        UIElement.create(
+                                TextUIElement.class,
+                                "crafting_slot_text_" + x + "_" + y,
+                                new Vector2f(0.0f, 0.0f),
+                                scaleVector(18.0f, 18.0f)
+                        )
+                );
 
                 text.setTransparent(true);
                 text.setActive(false);
                 text.setText("");
-                text.setAlignment(
-                        TextUIElement.TextAlignment.VERTICAL_CENTER,
-                        TextUIElement.TextAlignment.HORIZONTAL_CENTER
-                );
-
+                text.setAlignment(TextUIElement.TextAlignment.VERTICAL_CENTER, TextUIElement.TextAlignment.HORIZONTAL_CENTER);
                 text.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
                 text.setFontSize(18);
                 text.build();
-
-                text.setOffset(new Vector2f(((36 * Settings.UI_SCALE.getValue() * ((float) 9 / 11)) * x) - 107, ((36 * Settings.UI_SCALE.getValue() * ((float) 9 / 11)) * y) - 165));
+                text.setOffset(new Vector2f(
+                        x * scale(36.0f * (9.0f / 11.0f)) - scale(75.0f),
+                        y * scale(36.0f * (9.0f / 11.0f)) - scale(121.0f)
+                ));
 
                 craftingSlotTexts[x][y] = text;
             }
@@ -199,16 +214,16 @@ public class CraftingTableMenu extends Menu
                         ButtonUIElement.class,
                         "crafting_result_slot",
                         new Vector2f(0.0f, 0.0f),
-                        new Vector2f(32.0f, 32.0f)
-                                .mul(Settings.UI_SCALE.getValue() * ((float) 9 / 11))
+                        scaleVector(32.0f * (9.0f / 11.0f), 32.0f * (9.0f / 11.0f))
                 )
         );
 
         craftingResultButton.setTransparent(true);
         craftingResultButton.setTexture(TEXTURE_TRANSPARENCY);
-        setupCraftingResultSlotEvents(craftingResultButton);
 
-        craftingResultButton.setOffset(new Vector2f(156.5f, -130.0f).add(new Vector2f(-49.0f, -3.0f)));
+        setupCraftingResultSlotEvents(craftingResultButton);
+        craftingResultButton.setOffset(new Vector2f(scale(71.5f), scale(-100.5f)));
+
         craftingResultElement = craftingResultButton;
 
         TextUIElement resultText = (TextUIElement) menu.addElement(
@@ -216,7 +231,7 @@ public class CraftingTableMenu extends Menu
                         TextUIElement.class,
                         "crafting_result_slot_text",
                         new Vector2f(0.0f, 0.0f),
-                        new Vector2f(18.0f, 18.0f).mul(Settings.UI_SCALE.getValue())
+                        scaleVector(18.0f, 18.0f)
                 )
         );
 
@@ -224,10 +239,11 @@ public class CraftingTableMenu extends Menu
         resultText.setActive(false);
         resultText.setText("");
         resultText.setAlignment(TextUIElement.TextAlignment.VERTICAL_CENTER, TextUIElement.TextAlignment.HORIZONTAL_CENTER);
-        resultText.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
+        resultText.setFontPath(AssetPath.create("moonlander",  "font/Invasion2-Default.ttf"));
         resultText.setFontSize(18);
         resultText.build();
-        resultText.setOffset(new Vector2f(170.5f, -118.0f).add(new Vector2f(-49.0f, -3.0f)));
+
+        resultText.setOffset(new Vector2f(scale(121.5f), scale(-121.0f)));
 
         craftingResultText = resultText;
 
@@ -236,8 +252,7 @@ public class CraftingTableMenu extends Menu
                         ImageUIElement.class,
                         "selected_item",
                         new Vector2f(0.0f, 0.0f),
-                        new Vector2f(32.0f, 32.0f)
-                                .mul(Settings.UI_SCALE.getValue() * ((float) 9 / 11))
+                        scaleVector(32.0f * (9.0f / 11.0f), 32.0f * (9.0f / 11.0f))
                 )
         );
 
@@ -251,18 +266,14 @@ public class CraftingTableMenu extends Menu
                         TextUIElement.class,
                         "selected_item_text",
                         new Vector2f(0.0f, 0.0f),
-                        new Vector2f(18.0f, 18.0f).mul(Settings.UI_SCALE.getValue())
+                        scaleVector(18.0f, 18.0f)
                 )
         );
 
         grabbedItemText.setTransparent(true);
         grabbedItemText.setActive(false);
         grabbedItemText.setText("");
-        grabbedItemText.setAlignment(
-                TextUIElement.TextAlignment.VERTICAL_CENTER,
-                TextUIElement.TextAlignment.HORIZONTAL_CENTER
-        );
-
+        grabbedItemText.setAlignment(TextUIElement.TextAlignment.VERTICAL_CENTER, TextUIElement.TextAlignment.HORIZONTAL_CENTER);
         grabbedItemText.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
         grabbedItemText.setFontSize(18);
         grabbedItemText.build();
@@ -274,13 +285,12 @@ public class CraftingTableMenu extends Menu
     {
         if (grabbedItemText.isActive())
             grabbedItemText.setPosition(InputManager.getMousePosition().add(new Vector2f(7.5f, 7.5f)));
-
         if (grabbedItemElement.isActive())
             grabbedItemElement.setPosition(InputManager.getMousePosition().sub(new Vector2f(16.0f, 16.0f)));
 
         List<CraftingRecipe> craftingRecipes = CraftingRecipeRegistry.getAll();
-
         boolean wasMatch = false;
+
         for (CraftingRecipe recipe : craftingRecipes)
         {
             short[][] primitiveCraftingSlots = new short[craftingSlots.length][craftingSlots[0].length];
@@ -306,10 +316,10 @@ public class CraftingTableMenu extends Menu
                 break;
             }
         }
-
         if (!wasMatch)
         {
             byte oldCraftingResultSlotCount = craftingResultSlotCount;
+
             craftingResultSlotCount = 0;
 
             if (craftingResultSlotCount != oldCraftingResultSlotCount)
@@ -336,7 +346,6 @@ public class CraftingTableMenu extends Menu
                     slotElements[x][y].setTexture(TEXTURE_TRANSPARENCY);
                     slotElementTexts[x][y].setText("");
                     slotElementTexts[x][y].build();
-
                     continue;
                 }
 
@@ -352,11 +361,9 @@ public class CraftingTableMenu extends Menu
                 {
                     inventory.slots[x][y] = ItemRegistry.ITEM_AIR.getId();
                     inventory.slotCounts[x][y] = 0;
-
                     slotElements[x][y].setTexture(TEXTURE_TRANSPARENCY);
                     slotElementTexts[x][y].setText("");
                     slotElementTexts[x][y].build();
-
                     continue;
                 }
 
@@ -367,9 +374,7 @@ public class CraftingTableMenu extends Menu
                 }
 
                 TextureAtlas atlas = Objects.requireNonNull(TextureAtlasManager.get("items"));
-
                 slotElements[x][y].setTexture(atlas);
-
                 Vector2f[] uvs = atlas.getSubTextureCoordinates(item.getTexture(), 90);
 
                 if (uvs == null)
@@ -397,50 +402,37 @@ public class CraftingTableMenu extends Menu
                     craftingSlotElements[x][y].setTexture(TEXTURE_TRANSPARENCY);
                     craftingSlotTexts[x][y].setText("");
                     craftingSlotTexts[x][y].build();
-
                     continue;
                 }
-
                 Item item = ItemRegistry.get(craftingSlots[x][y]);
-
                 if (item == null)
                 {
                     System.err.println("Invalid item detected in menu!");
                     continue;
                 }
-
                 if (craftingSlotCounts[x][y] <= 0)
                 {
                     craftingSlots[x][y] = ItemRegistry.ITEM_AIR.getId();
                     craftingSlotCounts[x][y] = 0;
-
                     craftingSlotElements[x][y].setTexture(TEXTURE_TRANSPARENCY);
                     craftingSlotTexts[x][y].setText("");
                     craftingSlotTexts[x][y].build();
-
                     continue;
                 }
-
                 if (craftingSlotCounts[x][y] == 1)
                 {
                     craftingSlotTexts[x][y].setText("");
                     craftingSlotTexts[x][y].build();
                 }
-
                 TextureAtlas atlas = Objects.requireNonNull(TextureAtlasManager.get("items"));
-
                 craftingSlotElements[x][y].setTexture(atlas);
-
                 Vector2f[] uvs = atlas.getSubTextureCoordinates(item.getTexture(), 90);
-
                 if (uvs == null)
                 {
                     System.err.println("Invalid UVs detected in menu!");
                     continue;
                 }
-
                 craftingSlotElements[x][y].setUVs(uvs);
-
                 if (craftingSlotCounts[x][y] > 1)
                 {
                     craftingSlotTexts[x][y].setText(String.valueOf(craftingSlotCounts[x][y]));
@@ -453,22 +445,18 @@ public class CraftingTableMenu extends Menu
             return;
 
         Item resultItem = ItemRegistry.get(craftingResultSlot);
-
         if (resultItem == null)
         {
             System.err.println("Invalid item detected in menu!");
             return;
         }
-
         if (craftingResultSlotCount <= 0)
         {
             craftingResultSlot = ItemRegistry.ITEM_AIR.getId();
             craftingResultSlotCount = 0;
-
             craftingResultElement.setTexture(TEXTURE_TRANSPARENCY);
             craftingResultText.setText("");
             craftingResultText.build();
-
             return;
         }
         if (craftingResultSlotCount == 1)
@@ -476,21 +464,15 @@ public class CraftingTableMenu extends Menu
             craftingResultText.setText("");
             craftingResultText.build();
         }
-
         TextureAtlas atlas = Objects.requireNonNull(TextureAtlasManager.get("items"));
-
         craftingResultElement.setTexture(atlas);
-
         Vector2f[] uvs = atlas.getSubTextureCoordinates(resultItem.getTexture(), 90);
-
         if (uvs == null)
         {
             System.err.println("Invalid uvs detected in menu!");
             return;
         }
-
         craftingResultElement.setUVs(uvs);
-
         if (craftingResultSlotCount > 1)
         {
             craftingResultText.setText(String.valueOf(craftingResultSlotCount));
@@ -520,28 +502,16 @@ public class CraftingTableMenu extends Menu
 
     private void setupInventorySlotEvents(@NotNull ButtonUIElement button, int x, int y)
     {
-        button.addOnLeftClickedEvent(() -> handleSlotLeftClick(
-                x, y, inventory.slots, inventory.slotCounts, slotElements, button, false
-        ));
-
-        button.addOnRightClickedEvent(() -> handleSlotRightClick(
-                x, y, inventory.slots, inventory.slotCounts, slotElements, button, false
-        ));
-
+        button.addOnLeftClickedEvent(() -> handleSlotLeftClick(x, y, inventory.slots, inventory.slotCounts, slotElements, button, false));
+        button.addOnRightClickedEvent(() -> handleSlotRightClick(x, y, inventory.slots, inventory.slotCounts, slotElements, button, false));
         button.addOnHoveringBeginEvent(() -> handleSlotHoverBegin(button));
         button.addOnHoveringEndEvent(() -> handleSlotHoverEnd(button));
     }
 
     private void setupCraftingSlotEvents(@NotNull ButtonUIElement button, int x, int y)
     {
-        button.addOnLeftClickedEvent(() -> handleSlotLeftClick(
-                x, y, craftingSlots, craftingSlotCounts, craftingSlotElements, button, false
-        ));
-
-        button.addOnRightClickedEvent(() -> handleSlotRightClick(
-                x, y, craftingSlots, craftingSlotCounts, craftingSlotElements, button, false
-        ));
-
+        button.addOnLeftClickedEvent(() -> handleSlotLeftClick(x, y, craftingSlots, craftingSlotCounts, craftingSlotElements, button, false));
+        button.addOnRightClickedEvent(() -> handleSlotRightClick(x, y, craftingSlots, craftingSlotCounts, craftingSlotElements, button, false));
         button.addOnHoveringBeginEvent(() -> handleSlotHoverBegin(button));
         button.addOnHoveringEndEvent(() -> handleSlotHoverEnd(button));
     }
@@ -555,24 +525,16 @@ public class CraftingTableMenu extends Menu
         {
             grabbedItemId = itemArr[x][y];
             grabbedItemElement.setTexture((TextureAtlas) uiArr[x][y].getTexture());
-            grabbedItemElement.setUVs(TextureAtlasManager.get("items").getSubTextureCoordinates(Objects.requireNonNull(ItemRegistry.get(itemArr[x][y])).getTexture(), 90));
+            grabbedItemElement.setUVs(TextureAtlasManager.get("items")
+                    .getSubTextureCoordinates(Objects.requireNonNull(ItemRegistry.get(itemArr[x][y])).getTexture(), 90));
             grabbedItemElement.setPosition(InputManager.getMousePosition());
             grabbedItemElement.setActive(true);
 
-            if (countArr[x][y] > 1)
-            {
-                grabbedItemCount = countArr[x][y];
-                updateGrabbedItemText();
-            }
-            else
-            {
-                grabbedItemCount = countArr[x][y];
-                updateGrabbedItemText();
-            }
+            grabbedItemCount = countArr[x][y];
+            updateGrabbedItemText();
 
             countArr[x][y] = 0;
             build();
-
             return;
         }
 
@@ -582,7 +544,6 @@ public class CraftingTableMenu extends Menu
             grabbedItemElement.setActive(false);
 
             countArr[x][y] = grabbedItemCount;
-
             grabbedItemCount = 0;
             updateGrabbedItemText();
 
@@ -590,7 +551,6 @@ public class CraftingTableMenu extends Menu
             grabbedItemId = ItemRegistry.ITEM_AIR.getId();
 
             build();
-
             return;
         }
 
@@ -603,7 +563,8 @@ public class CraftingTableMenu extends Menu
             grabbedItemCount = countArr[x][y];
 
             grabbedItemElement.setTexture((TextureAtlas) uiArr[x][y].getTexture());
-            grabbedItemElement.setUVs(TextureAtlasManager.get("items").getSubTextureCoordinates(Objects.requireNonNull(ItemRegistry.get(itemArr[x][y])).getTexture(), 90));
+            grabbedItemElement.setUVs(TextureAtlasManager.get("items")
+                    .getSubTextureCoordinates(Objects.requireNonNull(ItemRegistry.get(itemArr[x][y])).getTexture(), 90));
             grabbedItemElement.setPosition(InputManager.getMousePosition());
             grabbedItemElement.setActive(true);
 
@@ -613,7 +574,6 @@ public class CraftingTableMenu extends Menu
             countArr[x][y] = oldGrabbedCount;
 
             build();
-
             return;
         }
 
@@ -654,7 +614,6 @@ public class CraftingTableMenu extends Menu
                 grabbedItemId = ItemRegistry.ITEM_AIR.getId();
                 grabbedItemElement.setActive(false);
             }
-
             build();
         }
     }
@@ -702,12 +661,12 @@ public class CraftingTableMenu extends Menu
             {
                 grabbedItemId = craftingResultSlot;
                 grabbedItemElement.setTexture((TextureAtlas) craftingResultElement.getTexture());
-                grabbedItemElement.setUVs(TextureAtlasManager.get("items").getSubTextureCoordinates(Objects.requireNonNull(ItemRegistry.get(craftingResultSlot)).getTexture(), 90));
+                grabbedItemElement.setUVs(TextureAtlasManager.get("items")
+                        .getSubTextureCoordinates(Objects.requireNonNull(ItemRegistry.get(craftingResultSlot)).getTexture(), 90));
                 grabbedItemElement.setPosition(InputManager.getMousePosition());
                 grabbedItemElement.setActive(true);
 
                 grabbedItemCount += craftingResultSlotCount;
-
                 updateGrabbedItemText();
 
                 for (int x = 0; x < 3; x++)
@@ -717,12 +676,62 @@ public class CraftingTableMenu extends Menu
                 }
 
                 craftingResultSlotCount = 0;
-
                 build();
             }
         });
 
         button.addOnHoveringBeginEvent(() -> handleSlotHoverBegin(button));
         button.addOnHoveringEndEvent(() -> handleSlotHoverEnd(button));
+    }
+
+    private TextUIElement createTextElement(@NotNull String name, @NotNull Vector2f position, @NotNull Vector2f size, @NotNull String text, float fontSize, @NotNull Vector3f color, boolean isTransparent, boolean isActive, UIElement.Alignment alignment, @NotNull Vector2f offset)
+    {
+        TextUIElement element = UIElement.create(TextUIElement.class, name, position, size);
+
+        element.setText(text);
+        element.setTransparent(isTransparent);
+        element.setActive(isActive);
+        element.setColor(color);
+        element.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
+        element.setFontSize((int) fontSize);
+        element.build();
+        element.setAlignment(TextUIElement.TextAlignment.VERTICAL_CENTER, TextUIElement.TextAlignment.HORIZONTAL_CENTER);
+
+        if (alignment != null)
+            element.setAlignment(alignment);
+
+        element.setOffset(offset);
+
+        return element;
+    }
+
+    private ButtonUIElement createButtonElement(@NotNull String name, @NotNull Vector2f size)
+    {
+        ButtonUIElement button = UIElement.create(
+                ButtonUIElement.class,
+                name,
+                new Vector2f(0.0f, 0.0f),
+                size
+        );
+
+        button.setTexture(TEXTURE_TRANSPARENCY);
+        button.setTransparent(true);
+
+        return button;
+    }
+
+    private float scale(float value)
+    {
+        return value * Settings.UI_SCALE.getValue();
+    }
+
+    private @NotNull Vector2f scaleVector(float x, float y)
+    {
+        return new Vector2f(x, y).mul(Settings.UI_SCALE.getValue());
+    }
+
+    private float scaleFont(float baseSize)
+    {
+        return baseSize * (Settings.UI_SCALE.getValue() - 0.5f);
     }
 }

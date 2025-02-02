@@ -30,13 +30,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 public class InventoryMenu extends Menu
 {
-    private static final @NotNull Texture TEXTURE_TRANSPARENCY = Objects.requireNonNull(TextureManager.get("ui.transparency"));
-    private static final @NotNull Texture TEXTURE_SLOT_DARKEN = Objects.requireNonNull(TextureManager.get("ui.menu.slot_darken"));
+    private static final @NotNull Texture textureTransparency = Objects.requireNonNull(TextureManager.get("ui.transparency"));
+    private static final @NotNull Texture textureSlotDarken = Objects.requireNonNull(TextureManager.get("ui.menu.slot_darken"));
 
     public int currentSlotSelected = 0;
-    public short currentlySelectedBlock;
     public int health = 20;
     public int oxygen = 100;
 
@@ -44,6 +45,7 @@ public class InventoryMenu extends Menu
 
     private final @NotNull UIElement[] hotbarElements = new UIElement[9];
     private final @NotNull TextUIElement[] hotbarElementTexts = new TextUIElement[9];
+
     private final @NotNull UIElement[][] slotElements = new UIElement[4][9];
     private final @NotNull TextUIElement[][] slotElementTexts = new TextUIElement[4][9];
 
@@ -52,10 +54,11 @@ public class InventoryMenu extends Menu
     private final @NotNull UIElement[][] craftingSlotElements = new UIElement[2][2];
     private final @NotNull TextUIElement[][] craftingSlotTexts = new TextUIElement[2][2];
 
-    private @EffectivelyNotNull UIElement craftingResultElement;
-    private @EffectivelyNotNull TextUIElement craftingResultText;
     private short craftingResultSlot = 0;
     private byte craftingResultSlotCount = 0;
+
+    private @EffectivelyNotNull UIElement craftingResultElement;
+    private @EffectivelyNotNull TextUIElement craftingResultText;
 
     private @EffectivelyNotNull UIPanel hud;
     private @EffectivelyNotNull UIPanel survivalMenu;
@@ -64,6 +67,7 @@ public class InventoryMenu extends Menu
 
     private short grabbedItemId = 0;
     private byte grabbedItemCount = 0;
+
     private @EffectivelyNotNull UIElement grabbedItemElement;
     private @EffectivelyNotNull TextUIElement grabbedItemText;
 
@@ -72,548 +76,74 @@ public class InventoryMenu extends Menu
 
     private @EffectivelyNotNull TextUIElement selectedItemHoveringText;
 
+    private final ReentrantLock menuLock = new ReentrantLock(true);
+
     @Override
     public void initialize()
     {
-        for (int x = 0; x < 2; x++)
+        menuLock.lock();
+
+        try
         {
-            for (int y = 0; y < 2; y++)
-            {
-                craftingSlots[x][y] = 0;
-                craftingSlotCounts[x][y] = 0;
-            }
+            initializeCraftingData();
+            createHudPanel();
+            createHotbarUI();
+            createOxygenAndHeartsUI();
+            createSelectedItemHoveringText();
+
+            createSurvivalMenu();
+            createCreativeMenu();
+
+            survivalMenu.setActive(false);
+            creativeMenu.setActive(false);
         }
-
-        hud = UIPanel.create("hud");
-
-        UIElement hotbar = hud.addElement(
-                UIElement.create(
-                        ImageUIElement.class,
-                        "hotbar",
-                        new Vector2f(0.0f, 0.0f),
-                        new Vector2f(362.0f, 42.0f).mul(Settings.UI_SCALE.getValue())
-                )
-        );
-
-        hotbar.setTexture(Objects.requireNonNull(TextureManager.get("ui.hotbar")));
-        hotbar.setTransparent(true);
-        hotbar.setAlignment(UIElement.Alignment.BOTTOM);
-        hotbar.setOffset(new Vector2f(0.0f, -8.0f));
-
-        for (int y = 0; y < 9; y++)
+        finally
         {
-            UIElement element = hud.addElement(
-                    UIElement.create(
-                            ImageUIElement.class,
-                            "slot_0_" + y,
-                            new Vector2f(0.0f, 0.0f),
-                            new Vector2f(28.0f, 28.0f).mul(Settings.UI_SCALE.getValue())
-                    )
-            );
-
-            element.setTransparent(true);
-            element.setTexture(TEXTURE_TRANSPARENCY);
-            element.setAlignment(UIElement.Alignment.BOTTOM);
-            element.setOffset(new Vector2f(y * (40 * Settings.UI_SCALE.getValue()) - 240, -18.0f));
-
-            hotbarElements[y] = element;
+            menuLock.unlock();
         }
-
-        for (int y = 0; y < 9; y++)
-        {
-            TextUIElement text = (TextUIElement) hud.addElement(
-                    UIElement.create(
-                            TextUIElement.class,
-                            "slot_text_0_" + y,
-                            new Vector2f(0.0f, 0.0f),
-                            new Vector2f(18.0f, 18.0f).mul(Settings.UI_SCALE.getValue())
-                    )
-            );
-
-            text.setTransparent(true);
-            text.setActive(false);
-            text.setText("0");
-            text.setAlignment(TextUIElement.TextAlignment.VERTICAL_CENTER, TextUIElement.TextAlignment.HORIZONTAL_CENTER);
-
-            text.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
-            text.setFontSize(20);
-            text.build();
-            text.setAlignment(UIElement.Alignment.BOTTOM);
-            text.setOffset(new Vector2f(y * (40 * Settings.UI_SCALE.getValue()) - 224.5f, -9.45f));
-
-            hotbarElementTexts[y] = text;
-        }
-
-        {
-            UIElement oxygenDial = hud.addElement(UIElement.create(ImageUIElement.class, "oxygen_dial", new Vector2f(0.0f, 0.0f), new Vector2f(35.0f, 19.0f).mul(Settings.UI_SCALE.getValue())));
-
-            oxygenDial.setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.oxygen_dial")));
-            oxygenDial.setTransparent(true);
-            oxygenDial.setAlignment(UIElement.Alignment.BOTTOM);
-            oxygenDial.setOffset(new Vector2f(-262, -110.0f).add(20.0f, 0.0f));
-
-            TextUIElement oxygenDialText = (TextUIElement) hud.addElement(UIElement.create(TextUIElement.class, "oxygen_dial_text", new Vector2f(0.0f, 0.0f), new Vector2f(100, 20)));
-
-            oxygenDialText.setTransparent(true);
-            oxygenDialText.setText("O₂");
-            oxygenDialText.setAlignment(
-                    TextUIElement.TextAlignment.VERTICAL_CENTER,
-                    TextUIElement.TextAlignment.HORIZONTAL_CENTER
-            );
-
-            oxygenDialText.setColor(new Vector3f(0.0f, 0.45f, 0.75f));
-            oxygenDialText.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
-            oxygenDialText.setFontSize(14);
-            oxygenDialText.build();
-
-            oxygenDialText.setAlignment(UIElement.Alignment.BOTTOM);
-            oxygenDialText.setOffset(new Vector2f(-258, -117.0f).add(20.0f, 0.0f));
-
-            oxygenDialPointer = hud.addElement(UIElement.create(ImageUIElement.class, "oxygen_pointer", new Vector2f(0.0f, 0.0f), new Vector2f(2.0f, 12.0f).mul(Settings.UI_SCALE.getValue())));
-
-            oxygenDialPointer.setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.oxygen_pointer")));
-            oxygenDialPointer.setTransparent(true);
-            oxygenDialPointer.setAlignment(UIElement.Alignment.BOTTOM);
-            oxygenDialPointer.setOffset(new Vector2f(-262, -115.0f).add(20.0f, 0.0f));
-            oxygenDialPointer.setPivot(new Vector2f(0.5f, 0.9f));
-            oxygenDialPointer.setRotation(-90.0f);
-
-            UIElement oxygenDialBall = hud.addElement(UIElement.create(ImageUIElement.class, "oxygen_dial_ball", new Vector2f(0.0f, 0.0f), new Vector2f(35.0f, 19.0f).mul(Settings.UI_SCALE.getValue())));
-
-            oxygenDialBall.setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.oxygen_dial_ball")));
-            oxygenDialBall.setTransparent(true);
-            oxygenDialBall.setAlignment(UIElement.Alignment.BOTTOM);
-            oxygenDialBall.setOffset(new Vector2f(-262, -110.0f).add(20.0f, 0.0f));
-
-            for (int h = 0; h < 10; h++)
-            {
-                UIElement emptyHeart = hud.addElement(UIElement.create(ImageUIElement.class, "empty_heart_" + h, new Vector2f(0.0f, 0.0f), new Vector2f(17.0f, 16.0f).mul(Settings.UI_SCALE.getValue())));
-
-                emptyHeart.setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.empty_heart")));
-                emptyHeart.setTransparent(true);
-                emptyHeart.setAlignment(UIElement.Alignment.BOTTOM);
-                emptyHeart.setOffset(new Vector2f(((19.5f * (Settings.UI_SCALE.getValue() * ((float) 9 / 11))) * h) - 262, -75.0f));
-            }
-
-            for (int h = 0; h < 10; h++)
-            {
-                UIElement emptyHeart = hud.addElement(UIElement.create(ImageUIElement.class, " heart_" + h, new Vector2f(0.0f, 0.0f), new Vector2f(15.0f, 14.0f).mul(Settings.UI_SCALE.getValue())));
-
-                emptyHeart.setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.full_heart")));
-                emptyHeart.setTransparent(true);
-                emptyHeart.setAlignment(UIElement.Alignment.BOTTOM);
-                emptyHeart.setOffset(new Vector2f(((19.5f * (Settings.UI_SCALE.getValue() * ((float) 9 / 11))) * h) - 262, -77.0f));
-
-                heartsElements[h] = emptyHeart;
-            }
-        }
-
-        hotbarSelector = hud.addElement(
-                UIElement.create(
-                        ImageUIElement.class,
-                        "hotbar_selector",
-                        new Vector2f(0.0f, 0.0f),
-                        new Vector2f(46.0f, 46.0f).mul(Settings.UI_SCALE.getValue())
-                )
-        );
-
-        {
-            selectedItemHoveringText = (TextUIElement) hud.addElement(UIElement.create(TextUIElement.class, "selected_item_hovering_text", new Vector2f(0.0f, 0.0f), new Vector2f(300, 20)));
-
-            selectedItemHoveringText.setTransparent(true);
-            selectedItemHoveringText.setText("");
-            selectedItemHoveringText.setAlignment(
-                    TextUIElement.TextAlignment.VERTICAL_CENTER,
-                    TextUIElement.TextAlignment.HORIZONTAL_CENTER
-            );
-
-            selectedItemHoveringText.setColor(new Vector3f(1.0f, 1.0f, 1.0f));
-            selectedItemHoveringText.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
-            selectedItemHoveringText.setFontSize(15);
-            selectedItemHoveringText.build();
-
-            selectedItemHoveringText.setAlignment(UIElement.Alignment.BOTTOM);
-        }
-
-        /* //TODO: Implement later
-        {
-            UIElement blockLookOverBackground = hud.addElement(UIElement.create(ImageUIElement.class, "block_lookover_background", new Vector2f(0.0f, 0.0f), new Vector2f(80.0f, 46.0f).mul(1.8f).mul(Settings.UI_SCALE.getValue())));
-
-            blockLookOverBackground.setTexture(Objects.requireNonNull(TextureManager.get("ui.block_lookover")));
-            blockLookOverBackground.setTransparent(true);
-            blockLookOverBackground.setAlignment(UIElement.Alignment.TOP);
-
-            TextUIElement blockLookOverText = (TextUIElement) hud.addElement(UIElement.create(TextUIElement.class, "block_lookover_text", new Vector2f(0.0f, 0.0f), new Vector2f(300, 20)));
-
-            blockLookOverText.setTransparent(true);
-            blockLookOverText.setText("Soft Moon Rock");
-            blockLookOverText.setAlignment(
-                    TextUIElement.TextAlignment.VERTICAL_CENTER,
-                    TextUIElement.TextAlignment.HORIZONTAL_CENTER
-            );
-
-            blockLookOverText.setColor(new Vector3f(1.0f, 1.0f, 1.0f));
-            blockLookOverText.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
-            blockLookOverText.setFontSize(12);
-            blockLookOverText.build();
-
-            blockLookOverText.setAlignment(UIElement.Alignment.TOP);
-            blockLookOverText.setOffset(new Vector2f(33.0f, 23.0f));
-        }
-         */
-
-        hotbarSelector.setTexture(Objects.requireNonNull(TextureManager.get("ui.hotbar_selector")));
-        hotbarSelector.setTransparent(true);
-        hotbarSelector.setAlignment(UIElement.Alignment.BOTTOM);
-        hotbarSelector.setOffset(new Vector2f(0.0f, -5.0f));
-
-        survivalMenu = UIPanel.create("survival_menu");
-
-        UIElement background = survivalMenu.addElement(
-                UIElement.create(
-                        ImageUIElement.class,
-                        "background",
-                        new Vector2f(0.0f, 0.0f),
-                        new Vector2f(100.0f, 100.0f)
-                )
-        );
-
-        background.setTransparent(true);
-        background.setTexture(Objects.requireNonNull(TextureManager.get("ui.background")));
-        background.setStretch(List.of(
-                UIElement.Stretch.LEFT,
-                UIElement.Stretch.RIGHT,
-                UIElement.Stretch.TOP,
-                UIElement.Stretch.BOTTOM
-        ));
-
-        UIElement inventory = survivalMenu.addElement(
-                UIElement.create(
-                        ImageUIElement.class,
-                        "inventory",
-                        new Vector2f(0.0f, 0.0f),
-                        new Vector2f(352.0f, 332.0f)
-                                .mul(Settings.UI_SCALE.getValue() * ((float) 9 / 11))
-                )
-        );
-
-        inventory.setTransparent(true);
-        inventory.setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.survival_inventory")));
-        inventory.setOffset(new Vector2f(0.0f, -35.0f));
-
-        for (int x = 0; x < 4; x++)
-        {
-            for (int y = 0; y < 9; y++)
-            {
-                ButtonUIElement button = (ButtonUIElement) survivalMenu.addElement(
-                        UIElement.create(
-                                ButtonUIElement.class,
-                                "survival_slot_" + x + "_" + y,
-                                new Vector2f(0.0f, 0.0f),
-                                new Vector2f(32.0f, 32.0f)
-                                        .mul(Settings.UI_SCALE.getValue() * ((float) 9 / 11))
-                        )
-                );
-
-                button.setTransparent(true);
-                button.setTexture(TEXTURE_TRANSPARENCY);
-
-                setupInventorySlotEvents(button, x, y);
-
-                if (x == 0)
-                {
-                    button.setOffset(new Vector2f(
-                            y * (36f * (Settings.UI_SCALE.getValue() * ((float) 9 / 11))) - 176.5f,
-                            129.0f
-                    ));
-                }
-                else
-                {
-                    button.setOffset(new Vector2f(
-                            y * (36f * (Settings.UI_SCALE.getValue() * ((float) 9 / 11))) - 176.5f,
-                            119.0f - (x * (36f * (Settings.UI_SCALE.getValue() * ((float) 9 / 11))))
-                    ));
-                }
-
-                slotElements[x][y] = button;
-
-                TextUIElement text = (TextUIElement) survivalMenu.addElement(
-                        UIElement.create(
-                                TextUIElement.class,
-                                "survival_slot_text_" + x + "_" + y,
-                                new Vector2f(0.0f, 0.0f),
-                                new Vector2f(18.0f, 18.0f).mul(Settings.UI_SCALE.getValue())
-                        )
-                );
-
-                text.setTransparent(true);
-                text.setActive(false);
-                text.setText("");
-                text.setAlignment(
-                        TextUIElement.TextAlignment.VERTICAL_CENTER,
-                        TextUIElement.TextAlignment.HORIZONTAL_CENTER
-                );
-
-                text.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
-                text.setFontSize(18);
-                text.build();
-
-                if (x == 0)
-                {
-                    text.setOffset(new Vector2f(
-                            y * (29.5f * Settings.UI_SCALE.getValue()) - 161.0f,
-                            129.0f + 12.45f
-                    ));
-                }
-                else
-                {
-                    text.setOffset(new Vector2f(
-                            y * (29.5f * Settings.UI_SCALE.getValue()) - 161.0f,
-                            (119.0f + 12.45f) - (x * (36f * (Settings.UI_SCALE.getValue() * ((float) 9 / 11))))
-                    ));
-                }
-
-                slotElementTexts[x][y] = text;
-            }
-        }
-
-        for (int x = 0; x < 2; x++)
-        {
-            for (int y = 0; y < 2; y++)
-            {
-                ButtonUIElement button = (ButtonUIElement) survivalMenu.addElement(
-                        UIElement.create(
-                                ButtonUIElement.class,
-                                "crafting_slot_" + x + "_" + y,
-                                new Vector2f(0.0f, 0.0f),
-                                new Vector2f(32.0f, 32.0f)
-                                        .mul(Settings.UI_SCALE.getValue() * ((float) 9 / 11))
-                        )
-                );
-
-                button.setTransparent(true);
-                button.setTexture(TEXTURE_TRANSPARENCY);
-
-                setupCraftingSlotEvents(button, x, y);
-
-                button.setOffset(new Vector2f(
-                        (y * (36f * (Settings.UI_SCALE.getValue() * ((float) 9 / 11)))) + 20,
-                        (x * (36f * (Settings.UI_SCALE.getValue() * ((float) 9 / 11)))) - 155
-                ));
-
-                craftingSlotElements[x][y] = button;
-
-                TextUIElement text = (TextUIElement) survivalMenu.addElement(
-                        UIElement.create(
-                                TextUIElement.class,
-                                "crafting_slot_text_" + x + "_" + y,
-                                new Vector2f(0.0f, 0.0f),
-                                new Vector2f(18.0f, 18.0f).mul(Settings.UI_SCALE.getValue())
-                        )
-                );
-
-                text.setTransparent(true);
-                text.setActive(false);
-                text.setText("");
-                text.setAlignment(
-                        TextUIElement.TextAlignment.VERTICAL_CENTER,
-                        TextUIElement.TextAlignment.HORIZONTAL_CENTER
-                );
-
-                text.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
-                text.setFontSize(18);
-                text.build();
-
-                text.setOffset(new Vector2f(
-                        y * (29.5f * Settings.UI_SCALE.getValue()) + 36.0f,
-                        (x * (36f * (Settings.UI_SCALE.getValue() * ((float) 9 / 11))))
-                                - (130.0f + 12.45f)
-                ));
-
-                craftingSlotTexts[x][y] = text;
-            }
-        }
-
-        ButtonUIElement craftingResultButton = (ButtonUIElement) survivalMenu.addElement(
-                UIElement.create(
-                        ButtonUIElement.class,
-                        "crafting_result_slot",
-                        new Vector2f(0.0f, 0.0f),
-                        new Vector2f(32.0f, 32.0f)
-                                .mul(Settings.UI_SCALE.getValue() * ((float) 9 / 11))
-                )
-        );
-
-        craftingResultButton.setTransparent(true);
-        craftingResultButton.setTexture(TEXTURE_TRANSPARENCY);
-        setupCraftingResultSlotEvents(craftingResultButton);
-
-        craftingResultButton.setOffset(new Vector2f(156.5f, -130.0f));
-        craftingResultElement = craftingResultButton;
-
-        TextUIElement resultText = (TextUIElement) survivalMenu.addElement(
-                UIElement.create(
-                        TextUIElement.class,
-                        "crafting_result_slot_text",
-                        new Vector2f(0.0f, 0.0f),
-                        new Vector2f(18.0f, 18.0f).mul(Settings.UI_SCALE.getValue())
-                )
-        );
-
-        resultText.setTransparent(true);
-        resultText.setActive(false);
-        resultText.setText("");
-        resultText.setAlignment(TextUIElement.TextAlignment.VERTICAL_CENTER, TextUIElement.TextAlignment.HORIZONTAL_CENTER);
-        resultText.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
-        resultText.setFontSize(18);
-        resultText.build();
-        resultText.setOffset(new Vector2f(170.5f, -118.0f));
-
-        craftingResultText = resultText;
-
-        grabbedItemElement = survivalMenu.addElement(
-                UIElement.create(
-                        ImageUIElement.class,
-                        "selected_item",
-                        new Vector2f(0.0f, 0.0f),
-                        new Vector2f(32.0f, 32.0f)
-                                .mul(Settings.UI_SCALE.getValue() * ((float) 9 / 11))
-                )
-        );
-
-        grabbedItemElement.setTransparent(true);
-        grabbedItemElement.setActive(false);
-        grabbedItemElement.setTexture(TEXTURE_TRANSPARENCY);
-        grabbedItemElement.setAlignAndStretch(false);
-
-        grabbedItemText = (TextUIElement) survivalMenu.addElement(
-                UIElement.create(
-                        TextUIElement.class,
-                        "selected_item_text",
-                        new Vector2f(0.0f, 0.0f),
-                        new Vector2f(16.0f, 15.5f).mul(Settings.UI_SCALE.getValue())
-                )
-        );
-
-        grabbedItemText.setTransparent(true);
-        grabbedItemText.setActive(false);
-        grabbedItemText.setText("");
-        grabbedItemText.setAlignment(
-                TextUIElement.TextAlignment.VERTICAL_CENTER,
-                TextUIElement.TextAlignment.HORIZONTAL_CENTER
-        );
-
-        grabbedItemText.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
-        grabbedItemText.setFontSize(20);
-        grabbedItemText.build();
-        grabbedItemText.setAlignAndStretch(false);
-
-        survivalMenu.setActive(false);
-
-
-        creativeMenu = UIPanel.create("creative_menu");
-        creativeMenu.setActive(false);
     }
 
     @Override
     public void update()
     {
-        if (currentSlotSelected > 8)
-            currentSlotSelected = 0;
+        menuLock.lock();
 
-        if (currentSlotSelected < 0)
-            currentSlotSelected = 8;
-
-        if (grabbedItemText.isActive())
-            grabbedItemText.setPosition(InputManager.getMousePosition().add(new Vector2f(7.5f, 7.5f)));
-
-        if (grabbedItemElement.isActive())
-            grabbedItemElement.setPosition(InputManager.getMousePosition().sub(new Vector2f(16.0f, 16.0f)));
-
-        if (!selectedItemHoveringText.getText().equals(Objects.requireNonNull(ItemRegistry.get(inventory.slots[0][currentSlotSelected])).getDisplayName()))
+        try
         {
-            selectedItemHoveringText.setText(Objects.requireNonNull(ItemRegistry.get(inventory.slots[0][currentSlotSelected])).getDisplayName());
-            selectedItemHoveringText.build();
-        }
+            if (currentSlotSelected > 8)
+                currentSlotSelected = 0;
 
-        selectedItemHoveringText.setOffset(new Vector2f(hotbarSelector.getOffset().x, -140.0f));
+            if (currentSlotSelected < 0)
+                currentSlotSelected = 8;
 
-        if (health < 20)
-        {
-            for (int h = 10; h > 0; h--)
+            if (grabbedItemText.isActive())
+                grabbedItemText.setPosition(InputManager.getMousePosition().add(new Vector2f(7.5f, 7.5f)));
+
+            if (grabbedItemElement.isActive())
+                grabbedItemElement.setPosition(InputManager.getMousePosition().sub(new Vector2f(16.0f, 16.0f)));
+
+            String itemName = Objects.requireNonNull(ItemRegistry.get(inventory.slots[0][currentSlotSelected])).getDisplayName();
+
+            if (!selectedItemHoveringText.getText().equals(itemName))
             {
-                int heartIndex = h - 1;
-                int heartValue = Math.max(0, Math.min(2, health - (heartIndex * 2)));
-
-                switch (heartValue)
-                {
-                    case 2:
-                        heartsElements[heartIndex].setActive(true);
-                        heartsElements[heartIndex].setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.full_heart")));
-                        break;
-                    case 1:
-                        heartsElements[heartIndex].setActive(true);
-                        heartsElements[heartIndex].setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.half_heart")));
-                        break;
-                    default:
-                        heartsElements[heartIndex].setActive(false);
-                        break;
-                }
+                selectedItemHoveringText.setText(itemName);
+                selectedItemHoveringText.build();
             }
+
+            selectedItemHoveringText.setOffset(new Vector2f(hotbarSelector.getOffset().x, -scale(35.0f) * 4.0f));
+
+            updateHearts();
+
+            oxygenDialPointer.setRotation(-90.0f + (oxygen * 1.8f));
+
+            updateCraftingResult();
+
+            hotbarSelector.setOffset(new Vector2f((currentSlotSelected * scale(40.0f)) - scale(160.0f), scale(-7.0f)));
         }
-
-        oxygenDialPointer.setRotation(-90 + (oxygen * 1.8f));
-
-        List<CraftingRecipe> craftingRecipes = CraftingRecipeRegistry.getAll();
-
-        boolean wasMatch = false;
-        for (CraftingRecipe recipe : craftingRecipes)
+        finally
         {
-            boolean match = CraftingRecipe.matchesRecipe(
-                    recipe,
-                    Arrays.stream(craftingSlots)
-                            .map(subArray ->
-                            {
-                                short[] primitiveSubArray = new short[subArray.length];
-
-                                for (int i = 0; i < subArray.length; i++)
-                                    primitiveSubArray[i] = subArray[i];
-
-                                return primitiveSubArray;
-                            }).toArray(short[][]::new)
-            );
-
-            if (match)
-            {
-                short oldCraftingResultSlot = craftingResultSlot;
-                byte oldCraftingResultSlotCount = craftingResultSlotCount;
-
-                craftingResultSlot = recipe.getResult().item().getId();
-                craftingResultSlotCount = recipe.getResult().count();
-
-                if (oldCraftingResultSlot != craftingResultSlot || craftingResultSlotCount != oldCraftingResultSlotCount)
-                    build();
-
-                wasMatch = true;
-                break;
-            }
+            menuLock.unlock();
         }
-
-        if (!wasMatch)
-        {
-            byte oldCraftingResultSlotCount = craftingResultSlotCount;
-            craftingResultSlotCount = 0;
-
-            if (craftingResultSlotCount != oldCraftingResultSlotCount)
-                build();
-        }
-
-        hotbarSelector.setOffset(
-                new Vector2f(
-                        (currentSlotSelected * (40 * Settings.UI_SCALE.getValue())) - 240,
-                        -5.0f
-                )
-        );
     }
 
     @Override
@@ -622,9 +152,9 @@ public class InventoryMenu extends Menu
         return "menu_inventory";
     }
 
-    public void setInventory(@NotNull Inventory inventory)
+    public void setInventory(@NotNull Inventory inv)
     {
-        this.inventory = inventory;
+        this.inventory = inv;
     }
 
     public void setSurvivalMenuActive(boolean active)
@@ -647,7 +177,493 @@ public class InventoryMenu extends Menu
         return creativeMenu.isActive();
     }
 
-    void build()
+    public void addItem(short item, byte count)
+    {
+        menuLock.lock();
+
+        try
+        {
+            for (int x = 0; x < 1; x++)
+            {
+                for (int y = 0; y < 9; y++)
+                {
+                    if (inventory.slots[x][y] == item && inventory.slotCounts[x][y] <= 63)
+                    {
+                        inventory.slotCounts[x][y] = (byte) (inventory.slotCounts[x][y] + count);
+                        build();
+
+                        return;
+                    }
+                    else if (inventory.slots[x][y] == ItemRegistry.ITEM_AIR.getId())
+                    {
+                        inventory.slots[x][y] = item;
+                        inventory.slotCounts[x][y] = count;
+                        build();
+
+                        return;
+                    }
+                }
+            }
+        }
+        finally
+        {
+            menuLock.unlock();
+        }
+    }
+
+    public void setSlot(@NotNull Vector2i position, short item, byte count)
+    {
+        menuLock.lock();
+
+        try
+        {
+            if (!isPositionValid(position))
+                return;
+
+            if (inventory.slots[position.x][position.y] == item && inventory.slotCounts[position.x][position.y] == count)
+                return;
+
+            inventory.slots[position.x][position.y] = item;
+            inventory.slotCounts[position.x][position.y] = count;
+
+            build();
+        }
+        finally
+        {
+            menuLock.unlock();
+        }
+    }
+
+    public @Nullable SlotData getSlot(@NotNull Vector2i position)
+    {
+        if (!isPositionValid(position))
+            return null;
+
+        return new SlotData(inventory.slots[position.x][position.y], inventory.slotCounts[position.x][position.y]);
+    }
+
+    public void build()
+    {
+        menuLock.lock();
+
+        try
+        {
+            buildHotbarAndInventory();
+
+            buildCraftingSlots();
+
+            buildCraftingResult();
+        }
+        finally
+        {
+            menuLock.unlock();
+        }
+    }
+
+    private void initializeCraftingData()
+    {
+        for (int x = 0; x < 2; x++)
+        {
+            for (int y = 0; y < 2; y++)
+            {
+                craftingSlots[x][y] = 0;
+                craftingSlotCounts[x][y] = 0;
+            }
+        }
+    }
+
+    private void createHudPanel()
+    {
+        hud = UIPanel.create("hud");
+    }
+
+    private void createHotbarUI()
+    {
+        hud.addElement(
+                createImageElement(
+                        "hotbar",
+                        new Vector2f(0.0f, 0.0f),
+                        scaleVector(362.0f, 42.0f),
+                        Objects.requireNonNull(TextureManager.get("ui.hotbar")),
+                        true,
+                        UIElement.Alignment.BOTTOM,
+                        new Vector2f(0.0f, -scale(8.0f))
+                )
+        );
+
+        hotbarSelector = hud.addElement(
+                createImageElement(
+                        "hotbar_selector",
+                        new Vector2f(0.0f, 0.0f),
+                        scaleVector(46.0f, 46.0f),
+                        Objects.requireNonNull(TextureManager.get("ui.hotbar_selector")),
+                        true,
+                        UIElement.Alignment.BOTTOM,
+                        new Vector2f(0.0f, 0.0f)
+                )
+        );
+
+        for (int y = 0; y < 9; y++)
+        {
+            UIElement slotElement = hud.addElement(
+                    createImageElement(
+                            "slot_0_" + y,
+                            new Vector2f(0.0f, 0.0f),
+                            scaleVector(28.0f, 28.0f),
+                            textureTransparency,
+                            true,
+                            UIElement.Alignment.BOTTOM,
+                            new Vector2f(y * scale(40.0f) - scale(160.0f), -scale(14.0f))
+                    )
+            );
+
+            hotbarElements[y] = slotElement;
+        }
+
+        for (int y = 0; y < 9; y++)
+        {
+            TextUIElement textElement = (TextUIElement) hud.addElement(
+                    createTextElement(
+                            "slot_text_0_" + y,
+                            new Vector2f(0.0f, 0.0f),
+                            scaleVector(18.0f, 18.0f),
+                            "",
+                            scaleFont(20),
+                            new Vector3f(1.0f),
+                            true,
+                            true,
+                            UIElement.Alignment.BOTTOM,
+                            new Vector2f(y * scale(40.0f) - scale(144.5f), -scale(9.45f))
+                    )
+            );
+
+            textElement.setActive(false);
+            hotbarElementTexts[y] = textElement;
+        }
+    }
+
+    private void createOxygenAndHeartsUI()
+    {
+        hud.addElement(
+                createImageElement(
+                        "oxygen_dial",
+                        new Vector2f(0.0f, 0.0f),
+                        scaleVector(35.0f, 19.0f),
+                        Objects.requireNonNull(TextureManager.get("ui.menu.oxygen_dial")),
+                        true,
+                        UIElement.Alignment.BOTTOM,
+                        new Vector2f(-262.0f + scale(20.0f), -scale(110.0f))
+                )
+        );
+
+        hud.addElement(
+                createTextElement(
+                        "oxygen_dial_text",
+                        new Vector2f(0.0f, 0.0f),
+                        new Vector2f(50, 50),
+                        "O₂",
+                        scaleFont(14),
+                        new Vector3f(0.0f, 0.45f, 0.75f),
+                        true,
+                        true,
+                        UIElement.Alignment.BOTTOM,
+                        scaleVector(-141.0f, -93.0f)
+                )
+        );
+
+        oxygenDialPointer = hud.addElement(
+                createImageElement(
+                        "oxygen_pointer",
+                        new Vector2f(0.0f, 0.0f),
+                        scaleVector(2.0f, 12.0f),
+                        Objects.requireNonNull(TextureManager.get("ui.menu.oxygen_pointer")),
+                        true,
+                        UIElement.Alignment.BOTTOM,
+                        new Vector2f(-262.0f + scale(20.0f), -scale(113.0f))
+                )
+        );
+        oxygenDialPointer.setPivot(new Vector2f(0.5f, 0.9f));
+        oxygenDialPointer.setRotation(-90.0f);
+
+        hud.addElement(
+                createImageElement(
+                        "oxygen_dial_ball",
+                        new Vector2f(0.0f, 0.0f),
+                        scaleVector(35.0f, 19.0f),
+                        Objects.requireNonNull(TextureManager.get("ui.menu.oxygen_dial_ball")),
+                        true,
+                        UIElement.Alignment.BOTTOM,
+                        new Vector2f(-262.0f + scale(20.0f), -scale(110.0f))
+                )
+        );
+
+        for (int h = 0; h < 10; h++)
+        {
+            hud.addElement(
+                    createImageElement(
+                            "empty_heart_" + h,
+                            new Vector2f(0.0f, 0.0f),
+                            scaleVector(17.0f, 16.0f),
+                            Objects.requireNonNull(TextureManager.get("ui.menu.empty_heart")),
+                            true,
+                            UIElement.Alignment.BOTTOM,
+                            new Vector2f(((19.5f * scale(9.0f / 11.0f)) * h) - 262.0f, -scale(75.0f))
+                    )
+            );
+        }
+
+        for (int h = 0; h < 10; h++)
+        {
+            UIElement fullHeart = hud.addElement(
+                    createImageElement(
+                            "heart_" + h,
+                            new Vector2f(0.0f, 0.0f),
+                            scaleVector(15.0f, 14.0f),
+                            Objects.requireNonNull(TextureManager.get("ui.menu.full_heart")),
+                            true,
+                            UIElement.Alignment.BOTTOM,
+                            new Vector2f(((19.5f * scale(9.0f / 11.0f)) * h) - 262.0f, -scale(77.0f))
+                    )
+            );
+
+            heartsElements[h] = fullHeart;
+        }
+    }
+
+    private void createSelectedItemHoveringText()
+    {
+        selectedItemHoveringText = (TextUIElement) hud.addElement(
+                createTextElement(
+                        "selected_item_hovering_text",
+                        new Vector2f(0.0f, 0.0f),
+                        new Vector2f(300, 20),
+                        "",
+                        scaleFont(15),
+                        new Vector3f(1.0f, 1.0f, 1.0f),
+                        true,
+                        true,
+                        UIElement.Alignment.BOTTOM,
+                        new Vector2f(0.0f, 0.0f)
+                )
+        );
+    }
+
+    private void createSurvivalMenu()
+    {
+        survivalMenu = UIPanel.create("survival_menu");
+
+        UIElement background = survivalMenu.addElement(
+                createImageElement(
+                        "background",
+                        new Vector2f(0.0f, 0.0f),
+                        new Vector2f(100.0f, 100.0f),
+                        Objects.requireNonNull(TextureManager.get("ui.background")),
+                        true,
+                        null,
+                        new Vector2f(0.0f, 0.0f)
+                )
+        );
+        background.setStretch(List.of(
+                UIElement.Stretch.LEFT,
+                UIElement.Stretch.RIGHT,
+                UIElement.Stretch.TOP,
+                UIElement.Stretch.BOTTOM
+        ));
+
+        survivalMenu.addElement(
+                createImageElement(
+                        "inventory",
+                        new Vector2f(0.0f, 0.0f),
+                        scaleVector(352.0f * (9.0f/11.0f), 332.0f * (9.0f/11.0f)),
+                        Objects.requireNonNull(TextureManager.get("ui.menu.survival_inventory")),
+                        true,
+                        null,
+                        new Vector2f(0.0f, -scale(35.0f))
+                )
+        );
+
+        for (int x = 0; x < 4; x++)
+        {
+            for (int y = 0; y < 9; y++)
+            {
+                ButtonUIElement button = (ButtonUIElement) survivalMenu.addElement(
+                        createButtonElement(
+                                "survival_slot_" + x + "_" + y,
+                                scaleVector(32.0f * (9.0f/11.0f), 32.0f * (9.0f/11.0f))
+                        )
+                );
+
+                setupInventorySlotEvents(button, x, y);
+
+                if (x == 0)
+                {
+                    button.setOffset(new Vector2f(
+                            y * scale(36.0f * (9.0f/11.0f)) - scale(117.5f),
+                            scale(75.0f)
+                    ));
+                }
+                else
+                {
+                    button.setOffset(new Vector2f(
+                            y * scale(36.0f * (9.0f/11.0f)) - scale(117.5f),
+                            scale(68.0f) - (x * scale(36.0f * (9.0f/11.0f)))
+                    ));
+                }
+
+                slotElements[x][y] = button;
+
+                TextUIElement text = (TextUIElement) survivalMenu.addElement(
+                        createTextElement(
+                                "survival_slot_text_" + x + "_" + y,
+                                new Vector2f(0.0f, 0.0f),
+                                scaleVector(18.0f, 18.0f),
+                                "",
+                                scaleFont(18),
+                                new Vector3f(1.0f),
+                                true,
+                                false,
+                                null,
+                                new Vector2f(0.0f, 0.0f)
+                        )
+                );
+
+                text.setAlignment(TextUIElement.TextAlignment.VERTICAL_CENTER, TextUIElement.TextAlignment.HORIZONTAL_CENTER);
+
+                if (x == 0)
+                {
+                    text.setOffset(new Vector2f(
+                            y * scale(29.5f) - scale(111.0f),
+                            scale(71.0f) + scale(12.45f)
+                    ));
+                }
+                else
+                {
+                    text.setOffset(new Vector2f(
+                            y * scale(29.5f) - scale(111.0f),
+                            (scale(65.0f) + scale(12.45f)) - (x * scale(36.0f * (9.0f/11.0f)))
+                    ));
+                }
+
+                slotElementTexts[x][y] = text;
+            }
+        }
+
+        for (int x = 0; x < 2; x++)
+        {
+            for (int y = 0; y < 2; y++)
+            {
+                ButtonUIElement button = (ButtonUIElement) survivalMenu.addElement(
+                        createButtonElement(
+                                "crafting_slot_" + x + "_" + y,
+                                scaleVector(32.0f * (9.0f/11.0f), 32.0f * (9.0f/11.0f))
+                        )
+                );
+
+                setupCraftingSlotEvents(button, x, y);
+
+                button.setOffset(new Vector2f(
+                        (y * scale(36.0f * (9.0f/11.0f))) + scale(13.0f),
+                        (x * scale(36.0f * (9.0f/11.0f))) - scale(115.0f)
+                ));
+
+                craftingSlotElements[x][y] = button;
+
+                TextUIElement text = (TextUIElement) survivalMenu.addElement(
+                        createTextElement(
+                                "crafting_slot_text_" + x + "_" + y,
+                                new Vector2f(0.0f, 0.0f),
+                                scaleVector(18.0f, 18.0f),
+                                "",
+                                scaleFont(18),
+                                new Vector3f(1.0f),
+                                true,
+                                false,
+                                null,
+                                new Vector2f(0.0f, 0.0f)
+                        )
+                );
+
+                text.setAlignment(TextUIElement.TextAlignment.VERTICAL_CENTER, TextUIElement.TextAlignment.HORIZONTAL_CENTER);
+
+                text.setOffset(new Vector2f(
+                        y * scale(29.5f) + scale(19.0f),
+                        (x * scale(36.0f * (9.0f/11.0f))) - (scale(95.0f) + scale(12.45f))
+                ));
+
+                craftingSlotTexts[x][y] = text;
+            }
+        }
+
+        ButtonUIElement craftingResultButton = (ButtonUIElement) survivalMenu.addElement(
+                createButtonElement(
+                        "crafting_result_slot",
+                        scaleVector(32.0f * (9.0f/11.0f), 32.0f * (9.0f/11.0f))
+                )
+        );
+
+        setupCraftingResultSlotEvents(craftingResultButton);
+        craftingResultButton.setOffset(new Vector2f(scale(104.5f), scale(-99.0f)));
+        craftingResultElement = craftingResultButton;
+
+        TextUIElement resultText = (TextUIElement) survivalMenu.addElement(
+                createTextElement(
+                        "crafting_result_slot_text",
+                        new Vector2f(0.0f, 0.0f),
+                        scaleVector(18.0f, 18.0f),
+                        "",
+                        scaleFont(18),
+                        new Vector3f(1.0f),
+                        true,
+                        false,
+                        null,
+                        scaleVector(112.0f, -87.0f)
+                )
+        );
+
+        resultText.setAlignment(TextUIElement.TextAlignment.VERTICAL_CENTER, TextUIElement.TextAlignment.HORIZONTAL_CENTER);
+        craftingResultText = resultText;
+
+        grabbedItemElement = survivalMenu.addElement(
+                createImageElement(
+                        "selected_item",
+                        new Vector2f(0.0f, 0.0f),
+                        scaleVector(32.0f * (9.0f/11.0f), 32.0f * (9.0f/11.0f)),
+                        textureTransparency,
+                        true,
+                        null,
+                        new Vector2f(0.0f, 0.0f)
+                )
+        );
+        grabbedItemElement.setActive(false);
+        grabbedItemElement.setAlignAndStretch(false);
+
+        grabbedItemText = (TextUIElement) survivalMenu.addElement(
+                createTextElement(
+                        "selected_item_text",
+                        new Vector2f(0.0f, 0.0f),
+                        scaleVector(16.0f, 15.5f),
+                        "",
+                        scaleFont(20),
+                        new Vector3f(1.0f),
+                        true,
+                        false,
+                        null,
+                        new Vector2f(0.0f, 0.0f)
+                )
+        );
+
+        grabbedItemText.setAlignment(TextUIElement.TextAlignment.VERTICAL_CENTER, TextUIElement.TextAlignment.HORIZONTAL_CENTER);
+        grabbedItemText.setAlignAndStretch(false);
+        grabbedItemText.setActive(false);
+    }
+
+    private void createCreativeMenu()
+    {
+        creativeMenu = UIPanel.create("creative_menu");
+        creativeMenu.setActive(false);
+    }
+
+    private void buildHotbarAndInventory()
     {
         for (int x = 0; x < 4; x++)
         {
@@ -657,13 +673,14 @@ public class InventoryMenu extends Menu
                 {
                     if (x == 0)
                     {
-                        hotbarElements[y].setTexture(TEXTURE_TRANSPARENCY);
+                        hotbarElements[y].setTexture(textureTransparency);
                         hotbarElementTexts[y].setActive(false);
                     }
 
-                    slotElements[x][y].setTexture(TEXTURE_TRANSPARENCY);
+                    slotElements[x][y].setTexture(textureTransparency);
                     slotElementTexts[x][y].setText("");
                     slotElementTexts[x][y].build();
+
                     continue;
                 }
 
@@ -682,11 +699,11 @@ public class InventoryMenu extends Menu
 
                     if (x == 0)
                     {
-                        hotbarElements[y].setTexture(TEXTURE_TRANSPARENCY);
+                        hotbarElements[y].setTexture(textureTransparency);
                         hotbarElementTexts[y].setActive(false);
                     }
 
-                    slotElements[x][y].setTexture(TEXTURE_TRANSPARENCY);
+                    slotElements[x][y].setTexture(textureTransparency);
                     slotElementTexts[x][y].setText("");
                     slotElementTexts[x][y].build();
 
@@ -724,26 +741,31 @@ public class InventoryMenu extends Menu
 
                 if (inventory.slotCounts[x][y] > 1)
                 {
+                    String countStr = String.valueOf(inventory.slotCounts[x][y]);
+
                     if (x == 0)
                     {
                         hotbarElementTexts[y].setActive(true);
-                        hotbarElementTexts[y].setText(String.valueOf(inventory.slotCounts[x][y]));
+                        hotbarElementTexts[y].setText(countStr);
                         hotbarElementTexts[y].build();
                     }
 
-                    slotElementTexts[x][y].setText(String.valueOf(inventory.slotCounts[x][y]));
+                    slotElementTexts[x][y].setText(countStr);
                     slotElementTexts[x][y].build();
                 }
             }
         }
+    }
 
+    private void buildCraftingSlots()
+    {
         for (int x = 0; x < 2; x++)
         {
             for (int y = 0; y < 2; y++)
             {
                 if (craftingSlots[x][y] == ItemRegistry.ITEM_AIR.getId())
                 {
-                    craftingSlotElements[x][y].setTexture(TEXTURE_TRANSPARENCY);
+                    craftingSlotElements[x][y].setTexture(textureTransparency);
                     craftingSlotTexts[x][y].setText("");
                     craftingSlotTexts[x][y].build();
 
@@ -754,7 +776,7 @@ public class InventoryMenu extends Menu
 
                 if (item == null)
                 {
-                    System.err.println("Invalid item detected in menu!");
+                    System.err.println("Invalid item in crafting!");
                     continue;
                 }
 
@@ -762,7 +784,7 @@ public class InventoryMenu extends Menu
                 {
                     craftingSlots[x][y] = ItemRegistry.ITEM_AIR.getId();
                     craftingSlotCounts[x][y] = 0;
-                    craftingSlotElements[x][y].setTexture(TEXTURE_TRANSPARENCY);
+                    craftingSlotElements[x][y].setTexture(textureTransparency);
                     craftingSlotTexts[x][y].setText("");
                     craftingSlotTexts[x][y].build();
 
@@ -776,27 +798,27 @@ public class InventoryMenu extends Menu
                 }
 
                 TextureAtlas atlas = Objects.requireNonNull(TextureAtlasManager.get("items"));
-
                 craftingSlotElements[x][y].setTexture(atlas);
 
                 Vector2f[] uvs = atlas.getSubTextureCoordinates(item.getTexture(), 90);
-
-                if (uvs == null)
-                {
-                    System.err.println("Invalid UVs detected in menu!");
+                if (uvs == null) {
+                    System.err.println("Invalid UVs in crafting!");
                     continue;
                 }
-
                 craftingSlotElements[x][y].setUVs(uvs);
 
                 if (craftingSlotCounts[x][y] > 1)
                 {
-                    craftingSlotTexts[x][y].setText(String.valueOf(craftingSlotCounts[x][y]));
+                    String countStr = String.valueOf(craftingSlotCounts[x][y]);
+                    craftingSlotTexts[x][y].setText(countStr);
                     craftingSlotTexts[x][y].build();
                 }
             }
         }
+    }
 
+    private void buildCraftingResult()
+    {
         if (craftingResultSlot == ItemRegistry.ITEM_AIR.getId())
             return;
 
@@ -804,7 +826,7 @@ public class InventoryMenu extends Menu
 
         if (resultItem == null)
         {
-            System.err.println("Invalid item detected in menu!");
+            System.err.println("Invalid item in crafting result!");
             return;
         }
 
@@ -812,13 +834,13 @@ public class InventoryMenu extends Menu
         {
             craftingResultSlot = ItemRegistry.ITEM_AIR.getId();
             craftingResultSlotCount = 0;
-
-            craftingResultElement.setTexture(TEXTURE_TRANSPARENCY);
+            craftingResultElement.setTexture(textureTransparency);
             craftingResultText.setText("");
             craftingResultText.build();
 
             return;
         }
+
         if (craftingResultSlotCount == 1)
         {
             craftingResultText.setText("");
@@ -826,14 +848,12 @@ public class InventoryMenu extends Menu
         }
 
         TextureAtlas atlas = Objects.requireNonNull(TextureAtlasManager.get("items"));
-
         craftingResultElement.setTexture(atlas);
-
         Vector2f[] uvs = atlas.getSubTextureCoordinates(resultItem.getTexture(), 90);
 
         if (uvs == null)
         {
-            System.err.println("Invalid uvs detected in menu!");
+            System.err.println("Invalid UVs for crafting result!");
             return;
         }
 
@@ -846,82 +866,104 @@ public class InventoryMenu extends Menu
         }
     }
 
-    public void addItem(short item, byte count)
+    private void updateHearts()
     {
-        for (int x = 0; x < 1; x++)
+        if (health >= 20)
         {
-            for (int y = 0; y < 9; y++)
+            for (int h = 0; h < 10; h++)
             {
-                if (inventory.slots[x][y] == item && inventory.slotCounts[x][y] <= 63)
-                {
-                    inventory.slotCounts[x][y] = (byte) (inventory.slotCounts[x][y] + count);
-                    build();
+                heartsElements[h].setActive(true);
+                heartsElements[h].setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.full_heart")));
+            }
 
-                    return;
-                }
-                else if (inventory.slots[x][y] == ItemRegistry.ITEM_AIR.getId())
-                {
-                    inventory.slots[x][y] = item;
-                    inventory.slotCounts[x][y] = count;
-                    build();
+            return;
+        }
 
-                    return;
+        for (int h = 10; h > 0; h--)
+        {
+            int heartIndex = h - 1;
+            int heartValue = Math.max(0, Math.min(2, health - (heartIndex * 2)));
+
+            switch (heartValue)
+            {
+                case 2 ->
+                {
+                    heartsElements[heartIndex].setActive(true);
+                    heartsElements[heartIndex].setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.full_heart")));
                 }
+
+                case 1 ->
+                {
+                    heartsElements[heartIndex].setActive(true);
+                    heartsElements[heartIndex].setTexture(Objects.requireNonNull(TextureManager.get("ui.menu.half_heart")));
+                }
+
+                default -> heartsElements[heartIndex].setActive(false);
             }
         }
     }
 
-    public void setSlot(@NotNull Vector2i position, short item, byte count)
+    private void updateCraftingResult()
     {
-        if (!isPositionValid(position))
-            return;
+        List<CraftingRecipe> recipes = CraftingRecipeRegistry.getAll();
+        boolean wasMatch = false;
 
-        if (inventory.slots[position.x][position.y] == item && inventory.slotCounts[position.x][position.y] == count)
-            return;
+        for (CraftingRecipe recipe : recipes)
+        {
+            boolean match = CraftingRecipe.matchesRecipe(
+                    recipe,
+                    Arrays.stream(craftingSlots)
+                            .map(subArray ->
+                            {
+                                short[] arr = new short[subArray.length];
 
-        inventory.slots[position.x][position.y] = item;
-        inventory.slotCounts[position.x][position.y] = count;
+                                for (int i = 0; i < subArray.length; i++)
+                                    arr[i] = subArray[i];
 
-        build();
-    }
+                                return arr;
+                            })
+                            .toArray(short[][]::new)
+            );
+            if (match)
+            {
+                short oldSlot = craftingResultSlot;
+                byte oldCount = craftingResultSlotCount;
 
-    public @Nullable SlotData getSlot(@NotNull Vector2i position)
-    {
-        if (!isPositionValid(position))
-            return null;
+                craftingResultSlot = recipe.getResult().item().getId();
+                craftingResultSlotCount = recipe.getResult().count();
 
-        return new SlotData(inventory.slots[position.x][position.y], inventory.slotCounts[position.x][position.y]);
-    }
+                if (oldSlot != craftingResultSlot || craftingResultSlotCount != oldCount)
+                    build();
 
-    private boolean isPositionValid(@NotNull Vector2i position)
-    {
-        return position.x >= 0 && position.x < inventory.slots.length && position.y >= 0 && position.y < inventory.slots[0].length;
+                wasMatch = true;
+
+                break;
+            }
+        }
+
+        if (!wasMatch)
+        {
+            byte oldCount = craftingResultSlotCount;
+
+            craftingResultSlotCount = 0;
+
+            if (oldCount != 0)
+                build();
+        }
     }
 
     private void setupInventorySlotEvents(@NotNull ButtonUIElement button, int x, int y)
     {
-        button.addOnLeftClickedEvent(() -> handleSlotLeftClick(
-                x, y, inventory.slots, inventory.slotCounts, slotElements, button, false
-        ));
-
-        button.addOnRightClickedEvent(() -> handleSlotRightClick(
-                x, y, inventory.slots, inventory.slotCounts, slotElements, button, false
-        ));
-
+        button.addOnLeftClickedEvent(() -> handleSlotLeftClick(x, y, inventory.slots, inventory.slotCounts, slotElements, button, false));
+        button.addOnRightClickedEvent(() -> handleSlotRightClick(x, y, inventory.slots, inventory.slotCounts, slotElements, button, false));
         button.addOnHoveringBeginEvent(() -> handleSlotHoverBegin(button));
         button.addOnHoveringEndEvent(() -> handleSlotHoverEnd(button));
     }
 
     private void setupCraftingSlotEvents(@NotNull ButtonUIElement button, int x, int y)
     {
-        button.addOnLeftClickedEvent(() -> handleSlotLeftClick(
-                x, y, craftingSlots, craftingSlotCounts, craftingSlotElements, button, true
-        ));
-
-        button.addOnRightClickedEvent(() -> handleSlotRightClick(
-                x, y, craftingSlots, craftingSlotCounts, craftingSlotElements, button, true
-        ));
-
+        button.addOnLeftClickedEvent(() -> handleSlotLeftClick(x, y, craftingSlots, craftingSlotCounts, craftingSlotElements, button, true));
+        button.addOnRightClickedEvent(() -> handleSlotRightClick(x, y, craftingSlots, craftingSlotCounts, craftingSlotElements, button, true));
         button.addOnHoveringBeginEvent(() -> handleSlotHoverBegin(button));
         button.addOnHoveringEndEvent(() -> handleSlotHoverEnd(button));
     }
@@ -930,7 +972,7 @@ public class InventoryMenu extends Menu
     {
         button.addOnLeftClickedEvent(() ->
         {
-            if (grabbedItemId == 0 && (button.getTexture() == TEXTURE_TRANSPARENCY || button.getTexture() == TEXTURE_SLOT_DARKEN))
+            if (grabbedItemId == 0 && (button.getTexture() == textureTransparency || button.getTexture() == textureSlotDarken))
                 return;
 
             if (craftingResultSlot != ItemRegistry.ITEM_AIR.getId())
@@ -942,7 +984,6 @@ public class InventoryMenu extends Menu
                 grabbedItemElement.setActive(true);
 
                 grabbedItemCount += craftingResultSlotCount;
-
                 updateGrabbedItemText();
 
                 craftingSlotCounts[0][0]--;
@@ -951,7 +992,6 @@ public class InventoryMenu extends Menu
                 craftingSlotCounts[1][1]--;
 
                 craftingResultSlotCount = 0;
-
                 build();
             }
         });
@@ -962,7 +1002,7 @@ public class InventoryMenu extends Menu
 
     private void handleSlotLeftClick(int x, int y, @NotNull Short[][] itemArr, @NotNull Byte[][] countArr, @NotNull UIElement[][] uiArr, @NotNull UIElement button, boolean crafting)
     {
-        if (grabbedItemId == 0 && (button.getTexture() == TEXTURE_TRANSPARENCY || button.getTexture() == TEXTURE_SLOT_DARKEN))
+        if (grabbedItemId == 0 && (button.getTexture() == textureTransparency || button.getTexture() == textureSlotDarken))
             return;
 
         if (itemArr[x][y] != ItemRegistry.ITEM_AIR.getId() && grabbedItemId == ItemRegistry.ITEM_AIR.getId())
@@ -973,16 +1013,8 @@ public class InventoryMenu extends Menu
             grabbedItemElement.setPosition(InputManager.getMousePosition());
             grabbedItemElement.setActive(true);
 
-            if (countArr[x][y] > 1)
-            {
-                grabbedItemCount = countArr[x][y];
-                updateGrabbedItemText();
-            }
-            else
-            {
-                grabbedItemCount = countArr[x][y];
-                updateGrabbedItemText();
-            }
+            grabbedItemCount = countArr[x][y];
+            updateGrabbedItemText();
 
             countArr[x][y] = 0;
             build();
@@ -992,17 +1024,16 @@ public class InventoryMenu extends Menu
 
         if (itemArr[x][y] == ItemRegistry.ITEM_AIR.getId() && grabbedItemElement.isActive())
         {
-            grabbedItemElement.setTexture(TEXTURE_TRANSPARENCY);
+            grabbedItemElement.setTexture(textureTransparency);
             grabbedItemElement.setActive(false);
 
             countArr[x][y] = grabbedItemCount;
-
-            grabbedItemCount = 0;
-            updateGrabbedItemText();
-
             itemArr[x][y] = grabbedItemId;
-            grabbedItemId = ItemRegistry.ITEM_AIR.getId();
 
+            grabbedItemId = ItemRegistry.ITEM_AIR.getId();
+            grabbedItemCount = 0;
+
+            updateGrabbedItemText();
             build();
 
             return;
@@ -1023,7 +1054,7 @@ public class InventoryMenu extends Menu
 
             updateGrabbedItemText();
 
-            itemArr[x][y] = oldGrabbedId;
+            itemArr[x][y]  = oldGrabbedId;
             countArr[x][y] = oldGrabbedCount;
 
             build();
@@ -1032,22 +1063,22 @@ public class InventoryMenu extends Menu
 
         if (itemArr[x][y] == grabbedItemId)
         {
-            grabbedItemElement.setTexture(TEXTURE_TRANSPARENCY);
+            grabbedItemElement.setTexture(textureTransparency);
             grabbedItemElement.setActive(false);
 
             countArr[x][y] = (byte) (countArr[x][y] + grabbedItemCount);
 
             grabbedItemId = ItemRegistry.ITEM_AIR.getId();
             grabbedItemCount = 0;
-            updateGrabbedItemText();
 
+            updateGrabbedItemText();
             build();
         }
     }
 
     private void handleSlotRightClick(int x, int y, @NotNull Short[][] itemArr, @NotNull Byte[][] countArr, @NotNull UIElement[][] uiArr, @NotNull UIElement button, boolean crafting)
     {
-        if (grabbedItemId == 0 && (button.getTexture() == TEXTURE_TRANSPARENCY || button.getTexture() == TEXTURE_SLOT_DARKEN))
+        if (grabbedItemId == 0 && (button.getTexture() == textureTransparency || button.getTexture() == textureSlotDarken))
             return;
 
         if (grabbedItemCount > 0 && (itemArr[x][y] == ItemRegistry.ITEM_AIR.getId() || itemArr[x][y] == grabbedItemId))
@@ -1074,16 +1105,16 @@ public class InventoryMenu extends Menu
 
     private void handleSlotHoverBegin(@NotNull UIElement button)
     {
-        if (button.getTexture() == TEXTURE_TRANSPARENCY)
-            button.setTexture(TEXTURE_SLOT_DARKEN);
+        if (button.getTexture() == textureTransparency)
+            button.setTexture(textureSlotDarken);
         else
             button.setColor(new Vector3f(0.82f));
     }
 
     private void handleSlotHoverEnd(@NotNull UIElement button)
     {
-        if (button.getTexture() == TEXTURE_SLOT_DARKEN)
-            button.setTexture(TEXTURE_TRANSPARENCY);
+        if (button.getTexture() == textureSlotDarken)
+            button.setTexture(textureTransparency);
         else
             button.setColor(new Vector3f(1.0f));
     }
@@ -1104,5 +1135,75 @@ public class InventoryMenu extends Menu
         }
     }
 
+    private boolean isPositionValid(@NotNull Vector2i position)
+    {
+        return position.x >= 0 && position.x < inventory.slots.length && position.y >= 0 && position.y < inventory.slots[0].length;
+    }
+
+    private UIElement createImageElement(@NotNull String name, @NotNull Vector2f position, @NotNull Vector2f size, @NotNull Texture texture, boolean transparent, UIElement.Alignment alignment, @NotNull Vector2f offset)
+    {
+        ImageUIElement element = UIElement.create(ImageUIElement.class, name, position, size);
+
+        element.setTexture(texture);
+        element.setTransparent(transparent);
+
+        if (alignment != null)
+            element.setAlignment(alignment);
+
+        element.setOffset(offset);
+
+        return element;
+    }
+
+    private TextUIElement createTextElement(@NotNull String name, @NotNull Vector2f position, @NotNull Vector2f size, @NotNull String text, float fontSize, @NotNull Vector3f color, boolean isTransparent, boolean isActive, UIElement.Alignment alignment, @NotNull Vector2f offset)
+    {
+        TextUIElement element = UIElement.create(TextUIElement.class, name, position, size);
+
+        element.setText(text);
+        element.setTransparent(isTransparent);
+        element.setActive(isActive);
+        element.setColor(color);
+        element.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
+        element.setFontSize((int) fontSize);
+        element.build();
+        element.setAlignment(TextUIElement.TextAlignment.VERTICAL_CENTER, TextUIElement.TextAlignment.HORIZONTAL_CENTER);
+
+        if (alignment != null)
+            element.setAlignment(alignment);
+
+        element.setOffset(offset);
+
+        return element;
+    }
+
+    private ButtonUIElement createButtonElement(@NotNull String name, @NotNull Vector2f size)
+    {
+        ButtonUIElement button = UIElement.create(
+                ButtonUIElement.class,
+                name,
+                new Vector2f(0.0f, 0.0f),
+                size
+        );
+
+        button.setTexture(InventoryMenu.textureTransparency);
+        button.setTransparent(true);
+
+        return button;
+    }
+
+    private float scale(float value)
+    {
+        return value * Settings.UI_SCALE.getValue();
+    }
+
+    private @NotNull Vector2f scaleVector(float x, float y)
+    {
+        return new Vector2f(x, y).mul(Settings.UI_SCALE.getValue());
+    }
+
+    private float scaleFont(float baseSize)
+    {
+        return baseSize * (Settings.UI_SCALE.getValue() - 0.5f);
+    }
     public record SlotData(short id, byte count) implements Serializable { }
 }

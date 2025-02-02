@@ -21,7 +21,7 @@ public class Rigidbody extends Component
     public static final float GRAVITY = -6.8f;
     public static final float DRAG = 0.01f;
 
-    private static final float FIXED_DELTA = 1.0f / 60.0f;
+    private static final float FIXED_DELTA = 1.0f / 200.0f;
 
     private final @NotNull Vector3f velocity = new Vector3f(0,0,0);
 

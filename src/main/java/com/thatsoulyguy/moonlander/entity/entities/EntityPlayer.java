@@ -300,6 +300,13 @@ public class EntityPlayer extends Entity
         if (deathMenu.getActive())
             return;
 
+        if (InputManager.getKeyState(KeyCode.K, KeyState.PRESSED))
+        {
+            InputManager.setMouseMode(MouseMode.FREE);
+            craftingTableMenu.build();
+            craftingTableMenu.setActive(true);
+        }
+
         if (InputManager.getKeyState(KeyCode.E, KeyState.PRESSED) && !pauseMenu.getActive() && !craftingTableMenu.isActive() && !deathMenu.getActive() && !bookMenu.isActive())
         {
             if (!inventoryMenu.getSurvivalMenuActive())
