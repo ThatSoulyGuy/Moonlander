@@ -333,6 +333,44 @@ public class CraftingRecipeRegistry
         }
     };
 
+    public static final @NotNull CraftingRecipe REDSTONE_DUST_AND_REFINED_ALUMINUM_INGOT_AND_IRON_INGOT_AND_SOFT_MOON_ROCK_TO_COMPOSITOR_BLOCK = new CraftingRecipe()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "recipe_redstone_dust_and_refined_aluminum_ingot_and_iron_ingot_and_soft_moon_rock_to_compositor_block";
+        }
+
+        @Override
+        public @NotNull Map<Character, Item> getKeyDefinitions()
+        {
+            return Map.of
+            (
+                'r', ItemRegistry.ITEM_REDSTONE_DUST,
+                'a', ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT,
+                'i', ItemRegistry.ITEM_IRON_INGOT,
+                'm', ItemRegistry.ITEM_SOFT_MOON_ROCK_BLOCK
+            );
+        }
+
+        @Override
+        public char[][] getRecipeGrid()
+        {
+            return new char[][]
+            {
+                new char[] { 'a', 'm', 'a' },
+                new char[] { 'm', 'r', 'm' },
+                new char[] { 'i', 'm', 'i' }
+            };
+        }
+
+        @Override
+        public @NotNull Result getResult()
+        {
+            return new Result(ItemRegistry.ITEM_COMPOSITOR_BLOCK, (byte) 1);
+        }
+    };
+
     private static final @NotNull ConcurrentMap<String, CraftingRecipe> recipesByName = new ConcurrentHashMap<>();
     private static final @NotNull ConcurrentMap<Short, CraftingRecipe> recipesById = new ConcurrentHashMap<>();
     
@@ -349,6 +387,7 @@ public class CraftingRecipeRegistry
         register(IRON_INGOT_TO_BUCKET);
         register(STONE_AND_REDSTONE_TO_FURNACE);
         register(MOON_ROCK_AND_REDSTONE_TO_FURNACE);
+        register(REDSTONE_DUST_AND_REFINED_ALUMINUM_INGOT_AND_IRON_INGOT_AND_SOFT_MOON_ROCK_TO_COMPOSITOR_BLOCK);
     }
 
     public static void register(@NotNull CraftingRecipe object)

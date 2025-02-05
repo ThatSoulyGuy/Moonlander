@@ -1065,6 +1065,51 @@ public class ItemRegistry
         }
     };
 
+    public static final Item ITEM_COMPOSITOR_BLOCK = new Item()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_compositor_block";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Compositor";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "compositor_block";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+
+        @Override
+        public @NotNull Block getAssociatedBlock()
+        {
+            return BlockRegistry.BLOCK_COMPOSITOR;
+        }
+    };
+
     private static final ConcurrentMap<String, Item> itemsByName = new ConcurrentHashMap<>();
     private static final ConcurrentMap<Short, Item> itemsById = new ConcurrentHashMap<>();
 
@@ -1093,6 +1138,7 @@ public class ItemRegistry
         register(ITEM_CRAFTING_TABLE_BLOCK);
         register(ITEM_FURNACE_BLOCK);
         register(ITEM_OXYGEN_GENERATOR_BLOCK);
+        register(ITEM_COMPOSITOR_BLOCK);
     }
 
     public static void register(@NotNull Item object)

@@ -1093,6 +1093,85 @@ public class BlockRegistry
         }
     };
 
+    public static final Block BLOCK_COMPOSITOR = new Block()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "block_compositor";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Compositor";
+        }
+
+        @Override
+        public float getHardness()
+        {
+            return 2.84f;
+        }
+
+        @Override
+        public float getResistance()
+        {
+            return 0.1f;
+        }
+
+        @Override
+        public @NotNull String[] getTextures()
+        {
+            return new String[]
+            {
+                "compositor_top",
+                "moon_rock",
+                "compositor_side",
+                "compositor_side",
+                "compositor_side",
+                "compositor_side"
+            };
+        }
+
+        @Override
+        public @NotNull Vector3f[] getColors()
+        {
+            return new Vector3f[]
+            {
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(0.48f, 1.0f, 1.0f),
+                new Vector3f(0.48f, 1.0f, 1.0f),
+                new Vector3f(0.48f, 1.0f, 1.0f),
+                new Vector3f(0.48f, 1.0f, 1.0f),
+            };
+        }
+
+        @Override
+        public boolean isInteractable()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean updates()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isSolid()
+        {
+            return true;
+        }
+
+        @Override
+        public @NotNull Item getAssociatedItem()
+        {
+            return ItemRegistry.ITEM_COMPOSITOR_BLOCK;
+        }
+    };
+
     public static final Block BLOCK_OIL = new Block()
     {
         @Override
@@ -1199,6 +1278,7 @@ public class BlockRegistry
         register(BLOCK_CRAFTING_TABLE);
         register(BLOCK_FURNACE);
         register(BLOCK_OXYGEN_GENERATOR);
+        register(BLOCK_COMPOSITOR);
     }
 
     public static void register(@NotNull Block object)
