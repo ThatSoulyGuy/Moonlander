@@ -108,6 +108,7 @@ public class Moonlander
         TextureManager.register(Texture.create("ui.button_disabled", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/button_disabled.png")));
         TextureManager.register(Texture.create("ui.button_selected", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/button_selected.png")));
         TextureManager.register(Texture.create("ui.menu.survival_inventory", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/inventory_survival.png")));
+        TextureManager.register(Texture.create("ui.menu.compositor", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/compositor.png")));
         TextureManager.register(Texture.create("ui.menu.crafting_table", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/crafting_table.png")));
         TextureManager.register(Texture.create("ui.menu.slot_darken", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/slot_darken.png")));
         TextureManager.register(Texture.create("ui.menu.empty_heart", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/empty_heart.png")));
@@ -127,6 +128,7 @@ public class Moonlander
         TextureAtlasManager.register(TextureAtlas.create("items", AssetPath.create("moonlander", "texture/item/")));
 
         MenuManager.register(Menu.create(BookMenu.class));
+        MenuManager.register(Menu.create(CompositorMenu.class));
         MenuManager.register(Menu.create(CraftingTableMenu.class));
         MenuManager.register(Menu.create(InventoryMenu.class));
         MenuManager.register(Menu.create(PauseMenu.class));
@@ -408,6 +410,15 @@ public class Moonlander
             {
                 instantiation.update();
                 instantiation.render();
+
+                try
+                {
+                    Thread.sleep(1);
+                }
+                catch (InterruptedException exception)
+                {
+                    throw new RuntimeException(exception);
+                }
             }
 
             instantiation.uninitialize();

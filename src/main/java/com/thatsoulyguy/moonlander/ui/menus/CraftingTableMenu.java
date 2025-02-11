@@ -285,6 +285,7 @@ public class CraftingTableMenu extends Menu
     {
         if (grabbedItemText.isActive())
             grabbedItemText.setPosition(InputManager.getMousePosition().add(new Vector2f(7.5f, 7.5f)));
+
         if (grabbedItemElement.isActive())
             grabbedItemElement.setPosition(InputManager.getMousePosition().sub(new Vector2f(16.0f, 16.0f)));
 
@@ -404,12 +405,15 @@ public class CraftingTableMenu extends Menu
                     craftingSlotTexts[x][y].build();
                     continue;
                 }
+
                 Item item = ItemRegistry.get(craftingSlots[x][y]);
+
                 if (item == null)
                 {
                     System.err.println("Invalid item detected in menu!");
                     continue;
                 }
+
                 if (craftingSlotCounts[x][y] <= 0)
                 {
                     craftingSlots[x][y] = ItemRegistry.ITEM_AIR.getId();
@@ -419,20 +423,27 @@ public class CraftingTableMenu extends Menu
                     craftingSlotTexts[x][y].build();
                     continue;
                 }
+
                 if (craftingSlotCounts[x][y] == 1)
                 {
                     craftingSlotTexts[x][y].setText("");
                     craftingSlotTexts[x][y].build();
                 }
+
                 TextureAtlas atlas = Objects.requireNonNull(TextureAtlasManager.get("items"));
+
                 craftingSlotElements[x][y].setTexture(atlas);
+
                 Vector2f[] uvs = atlas.getSubTextureCoordinates(item.getTexture(), 90);
+
                 if (uvs == null)
                 {
                     System.err.println("Invalid UVs detected in menu!");
                     continue;
                 }
+
                 craftingSlotElements[x][y].setUVs(uvs);
+
                 if (craftingSlotCounts[x][y] > 1)
                 {
                     craftingSlotTexts[x][y].setText(String.valueOf(craftingSlotCounts[x][y]));
@@ -445,11 +456,13 @@ public class CraftingTableMenu extends Menu
             return;
 
         Item resultItem = ItemRegistry.get(craftingResultSlot);
+
         if (resultItem == null)
         {
             System.err.println("Invalid item detected in menu!");
             return;
         }
+
         if (craftingResultSlotCount <= 0)
         {
             craftingResultSlot = ItemRegistry.ITEM_AIR.getId();
@@ -457,22 +470,28 @@ public class CraftingTableMenu extends Menu
             craftingResultElement.setTexture(TEXTURE_TRANSPARENCY);
             craftingResultText.setText("");
             craftingResultText.build();
+
             return;
         }
+
         if (craftingResultSlotCount == 1)
         {
             craftingResultText.setText("");
             craftingResultText.build();
         }
+
         TextureAtlas atlas = Objects.requireNonNull(TextureAtlasManager.get("items"));
         craftingResultElement.setTexture(atlas);
         Vector2f[] uvs = atlas.getSubTextureCoordinates(resultItem.getTexture(), 90);
+
         if (uvs == null)
         {
             System.err.println("Invalid uvs detected in menu!");
             return;
         }
+
         craftingResultElement.setUVs(uvs);
+
         if (craftingResultSlotCount > 1)
         {
             craftingResultText.setText(String.valueOf(craftingResultSlotCount));

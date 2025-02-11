@@ -34,8 +34,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class InventoryMenu extends Menu
 {
-    private static final @NotNull Texture textureTransparency = Objects.requireNonNull(TextureManager.get("ui.transparency"));
-    private static final @NotNull Texture textureSlotDarken = Objects.requireNonNull(TextureManager.get("ui.menu.slot_darken"));
+    private static final @NotNull Texture TEXTURE_TRANSPARENCY = Objects.requireNonNull(TextureManager.get("ui.transparency"));
+    private static final @NotNull Texture TEXTURE_SLOT_DARKEN = Objects.requireNonNull(TextureManager.get("ui.menu.slot_darken"));
 
     public int currentSlotSelected = 0;
     public int health = 20;
@@ -310,7 +310,7 @@ public class InventoryMenu extends Menu
                             "slot_0_" + y,
                             new Vector2f(0.0f, 0.0f),
                             scaleVector(28.0f, 28.0f),
-                            textureTransparency,
+                            TEXTURE_TRANSPARENCY,
                             true,
                             UIElement.Alignment.BOTTOM,
                             new Vector2f(y * scale(40.0f) - scale(160.0f), -scale(14.0f))
@@ -628,7 +628,7 @@ public class InventoryMenu extends Menu
                         "selected_item",
                         new Vector2f(0.0f, 0.0f),
                         scaleVector(32.0f * (9.0f/11.0f), 32.0f * (9.0f/11.0f)),
-                        textureTransparency,
+                        TEXTURE_TRANSPARENCY,
                         true,
                         null,
                         new Vector2f(0.0f, 0.0f)
@@ -673,11 +673,11 @@ public class InventoryMenu extends Menu
                 {
                     if (x == 0)
                     {
-                        hotbarElements[y].setTexture(textureTransparency);
+                        hotbarElements[y].setTexture(TEXTURE_TRANSPARENCY);
                         hotbarElementTexts[y].setActive(false);
                     }
 
-                    slotElements[x][y].setTexture(textureTransparency);
+                    slotElements[x][y].setTexture(TEXTURE_TRANSPARENCY);
                     slotElementTexts[x][y].setText("");
                     slotElementTexts[x][y].build();
 
@@ -699,11 +699,11 @@ public class InventoryMenu extends Menu
 
                     if (x == 0)
                     {
-                        hotbarElements[y].setTexture(textureTransparency);
+                        hotbarElements[y].setTexture(TEXTURE_TRANSPARENCY);
                         hotbarElementTexts[y].setActive(false);
                     }
 
-                    slotElements[x][y].setTexture(textureTransparency);
+                    slotElements[x][y].setTexture(TEXTURE_TRANSPARENCY);
                     slotElementTexts[x][y].setText("");
                     slotElementTexts[x][y].build();
 
@@ -765,7 +765,7 @@ public class InventoryMenu extends Menu
             {
                 if (craftingSlots[x][y] == ItemRegistry.ITEM_AIR.getId())
                 {
-                    craftingSlotElements[x][y].setTexture(textureTransparency);
+                    craftingSlotElements[x][y].setTexture(TEXTURE_TRANSPARENCY);
                     craftingSlotTexts[x][y].setText("");
                     craftingSlotTexts[x][y].build();
 
@@ -784,7 +784,7 @@ public class InventoryMenu extends Menu
                 {
                     craftingSlots[x][y] = ItemRegistry.ITEM_AIR.getId();
                     craftingSlotCounts[x][y] = 0;
-                    craftingSlotElements[x][y].setTexture(textureTransparency);
+                    craftingSlotElements[x][y].setTexture(TEXTURE_TRANSPARENCY);
                     craftingSlotTexts[x][y].setText("");
                     craftingSlotTexts[x][y].build();
 
@@ -834,7 +834,7 @@ public class InventoryMenu extends Menu
         {
             craftingResultSlot = ItemRegistry.ITEM_AIR.getId();
             craftingResultSlotCount = 0;
-            craftingResultElement.setTexture(textureTransparency);
+            craftingResultElement.setTexture(TEXTURE_TRANSPARENCY);
             craftingResultText.setText("");
             craftingResultText.build();
 
@@ -972,7 +972,7 @@ public class InventoryMenu extends Menu
     {
         button.addOnLeftClickedEvent(() ->
         {
-            if (grabbedItemId == 0 && (button.getTexture() == textureTransparency || button.getTexture() == textureSlotDarken))
+            if (grabbedItemId == 0 && (button.getTexture() == TEXTURE_TRANSPARENCY || button.getTexture() == TEXTURE_SLOT_DARKEN))
                 return;
 
             if (craftingResultSlot != ItemRegistry.ITEM_AIR.getId())
@@ -1002,7 +1002,7 @@ public class InventoryMenu extends Menu
 
     private void handleSlotLeftClick(int x, int y, @NotNull Short[][] itemArr, @NotNull Byte[][] countArr, @NotNull UIElement[][] uiArr, @NotNull UIElement button, boolean crafting)
     {
-        if (grabbedItemId == 0 && (button.getTexture() == textureTransparency || button.getTexture() == textureSlotDarken))
+        if (grabbedItemId == 0 && (button.getTexture() == TEXTURE_TRANSPARENCY || button.getTexture() == TEXTURE_SLOT_DARKEN))
             return;
 
         if (itemArr[x][y] != ItemRegistry.ITEM_AIR.getId() && grabbedItemId == ItemRegistry.ITEM_AIR.getId())
@@ -1024,7 +1024,7 @@ public class InventoryMenu extends Menu
 
         if (itemArr[x][y] == ItemRegistry.ITEM_AIR.getId() && grabbedItemElement.isActive())
         {
-            grabbedItemElement.setTexture(textureTransparency);
+            grabbedItemElement.setTexture(TEXTURE_TRANSPARENCY);
             grabbedItemElement.setActive(false);
 
             countArr[x][y] = grabbedItemCount;
@@ -1063,7 +1063,7 @@ public class InventoryMenu extends Menu
 
         if (itemArr[x][y] == grabbedItemId)
         {
-            grabbedItemElement.setTexture(textureTransparency);
+            grabbedItemElement.setTexture(TEXTURE_TRANSPARENCY);
             grabbedItemElement.setActive(false);
 
             countArr[x][y] = (byte) (countArr[x][y] + grabbedItemCount);
@@ -1078,7 +1078,7 @@ public class InventoryMenu extends Menu
 
     private void handleSlotRightClick(int x, int y, @NotNull Short[][] itemArr, @NotNull Byte[][] countArr, @NotNull UIElement[][] uiArr, @NotNull UIElement button, boolean crafting)
     {
-        if (grabbedItemId == 0 && (button.getTexture() == textureTransparency || button.getTexture() == textureSlotDarken))
+        if (grabbedItemId == 0 && (button.getTexture() == TEXTURE_TRANSPARENCY || button.getTexture() == TEXTURE_SLOT_DARKEN))
             return;
 
         if (grabbedItemCount > 0 && (itemArr[x][y] == ItemRegistry.ITEM_AIR.getId() || itemArr[x][y] == grabbedItemId))
@@ -1105,16 +1105,16 @@ public class InventoryMenu extends Menu
 
     private void handleSlotHoverBegin(@NotNull UIElement button)
     {
-        if (button.getTexture() == textureTransparency)
-            button.setTexture(textureSlotDarken);
+        if (button.getTexture() == TEXTURE_TRANSPARENCY)
+            button.setTexture(TEXTURE_SLOT_DARKEN);
         else
             button.setColor(new Vector3f(0.82f));
     }
 
     private void handleSlotHoverEnd(@NotNull UIElement button)
     {
-        if (button.getTexture() == textureSlotDarken)
-            button.setTexture(textureTransparency);
+        if (button.getTexture() == TEXTURE_SLOT_DARKEN)
+            button.setTexture(TEXTURE_TRANSPARENCY);
         else
             button.setColor(new Vector3f(1.0f));
     }
@@ -1185,7 +1185,7 @@ public class InventoryMenu extends Menu
                 size
         );
 
-        button.setTexture(InventoryMenu.textureTransparency);
+        button.setTexture(InventoryMenu.TEXTURE_TRANSPARENCY);
         button.setTransparent(true);
 
         return button;

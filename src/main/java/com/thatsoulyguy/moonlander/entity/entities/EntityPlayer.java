@@ -49,6 +49,7 @@ public class EntityPlayer extends Entity
     private @EffectivelyNotNull Vector3i breakingBlockCoordinates;
 
     private @EffectivelyNotNull PauseMenu pauseMenu;
+    private @EffectivelyNotNull CompositorMenu compositorMenu;
     private @EffectivelyNotNull InventoryMenu inventoryMenu;
     private @EffectivelyNotNull CraftingTableMenu craftingTableMenu;
     private @EffectivelyNotNull DeathMenu deathMenu;
@@ -195,6 +196,7 @@ public class EntityPlayer extends Entity
             craftingTableMenu.setActive(false);
             pauseMenu.setActive(false);
             bookMenu.setActive(false);
+            compositorMenu.setActive(false);
             InputManager.setMouseMode(MouseMode.FREE);
         }
 
@@ -214,6 +216,7 @@ public class EntityPlayer extends Entity
         inventoryMenu.update();
         craftingTableMenu.update();
         bookMenu.update();
+        compositorMenu.update();
 
         jumpCooldownTimer -= Time.getDeltaTime();
         oxygenDepletionCooldownTimer -= Time.getDeltaTime();
@@ -251,6 +254,16 @@ public class EntityPlayer extends Entity
         assert inventoryMenu != null;
 
         inventoryMenu.setInventory(inventory);
+
+
+        compositorMenu = (CompositorMenu) MenuManager.get("menu_compositor");
+
+        assert compositorMenu != null;
+
+        compositorMenu.setInventory(inventory);
+        compositorMenu.setInventoryMenu(inventoryMenu);
+
+        compositorMenu.setActive(false);
 
 
         pauseMenu = (PauseMenu) MenuManager.get("menu_pause");
@@ -303,8 +316,8 @@ public class EntityPlayer extends Entity
         if (InputManager.getKeyState(KeyCode.K, KeyState.PRESSED))
         {
             InputManager.setMouseMode(MouseMode.FREE);
-            craftingTableMenu.build();
-            craftingTableMenu.setActive(true);
+            compositorMenu.build();
+            compositorMenu.setActive(true);
         }
 
         if (InputManager.getKeyState(KeyCode.E, KeyState.PRESSED) && !pauseMenu.getActive() && !craftingTableMenu.isActive() && !deathMenu.getActive() && !bookMenu.isActive())
@@ -355,7 +368,7 @@ public class EntityPlayer extends Entity
             }
         }
 
-        if (inventoryMenu.getSurvivalMenuActive() || inventoryMenu.getCreativeMenuActive() || pauseMenu.getActive() || craftingTableMenu.isActive() || bookMenu.isActive())
+        if (isMenuActive())
             return;
 
         int oldSlotSelected = inventoryMenu.currentSlotSelected;
@@ -566,7 +579,7 @@ public class EntityPlayer extends Entity
 
     private void updateMouselook()
     {
-        if (inventoryMenu.getSurvivalMenuActive() || inventoryMenu.getCreativeMenuActive() || pauseMenu.getActive() || craftingTableMenu.isActive() || deathMenu.getActive() || bookMenu.isActive())
+        if (isMenuActive())
             return;
 
         Vector2f mouseDelta = InputManager.getMouseDelta();
@@ -590,7 +603,7 @@ public class EntityPlayer extends Entity
 
     private void updateMovement()
     {
-        if (inventoryMenu.getSurvivalMenuActive() || inventoryMenu.getCreativeMenuActive() || pauseMenu.getActive() || craftingTableMenu.isActive() || deathMenu.getActive() || bookMenu.isActive())
+        if (isMenuActive())
             return;
 
         Rigidbody rigidbody = getGameObject().getComponent(Rigidbody.class);
@@ -789,6 +802,11 @@ public class EntityPlayer extends Entity
         }
 
         craftingTableMenu.setActive(active);
+    }
+
+    public boolean isMenuActive()
+    {
+        return inventoryMenu.getSurvivalMenuActive() || inventoryMenu.getCreativeMenuActive() || pauseMenu.getActive() || craftingTableMenu.isActive() || bookMenu.isActive() || compositorMenu.isActive();
     }
 
     public boolean isCraftingTableMenuActive()
