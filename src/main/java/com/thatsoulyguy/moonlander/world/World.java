@@ -43,6 +43,10 @@ public class World extends Component
 
     private final @NotNull List<TerrainGenerator> terrainGenerators = new ArrayList<>();
 
+    private final @NotNull Queue<Vector3i> pendingRegenerationQueue = new ConcurrentLinkedQueue<>();
+
+    private final @NotNull Set<Vector3i> pendingRegenerationSet = ConcurrentHashMap.newKeySet();
+
     private transient @EffectivelyNotNull ExecutorService chunkGenerationExecutor;
 
     private final @NotNull SerializableObject chunkLock = new SerializableObject();
@@ -61,6 +65,7 @@ public class World extends Component
     {
         loadCloseChunks();
         unloadFarChunks();
+        processPendingRegeneration();
     }
 
     public @NotNull Chunk generateChunk(@NotNull Vector3i chunkPosition)
@@ -240,29 +245,34 @@ public class World extends Component
                 {
                     ongoingChunkGenerations.remove(currentChunk);
 
-                    List<Vector3i> neighboringChunkPositions = List.of
-                            (
-                                    new Vector3i(0, 1, 0),
-                                    new Vector3i(0, -1, 0),
-                                    new Vector3i(0, 0, 1),
-                                    new Vector3i(0, 0, -1),
-                                    new Vector3i(1, 0, 0),
-                                    new Vector3i(-1, 0, 0)
-                            );
-
-                    for (final Vector3i position : neighboringChunkPositions)
+                    List<Vector3i> neighboringChunkOffsets = List.of(
+                            new Vector3i(0, 1, 0),
+                            new Vector3i(0, -1, 0),
+                            new Vector3i(0, 0, 1),
+                            new Vector3i(0, 0, -1),
+                            new Vector3i(1, 0, 0),
+                            new Vector3i(-1, 0, 0)
+                    );
+                    for (Vector3i offset : neighboringChunkOffsets)
                     {
-                        Vector3i actualPosition = position.add(currentChunk, new Vector3i());
+                        Vector3i neighborPos = new Vector3i(currentChunk.x + offset.x, currentChunk.y + offset.y, currentChunk.z + offset.z);
 
-                        Chunk chunk = getChunk(actualPosition);
-
-                        if (chunk != null)
-                            chunk.generate();
+                        if (getChunk(neighborPos) != null)
+                            scheduleRegeneration(neighborPos);
                     }
                 }
             });
 
             ongoingChunkGenerations.put(currentChunk, future);
+        }
+    }
+
+    private void scheduleRegeneration(Vector3i chunkPosition)
+    {
+        if (!pendingRegenerationSet.contains(chunkPosition))
+        {
+            pendingRegenerationSet.add(chunkPosition);
+            pendingRegenerationQueue.offer(chunkPosition);
         }
     }
 
@@ -291,6 +301,39 @@ public class World extends Component
 
                 return false;
             });
+        }
+    }
+
+    private void processPendingRegeneration()
+    {
+        int tasksToProcess = 5;
+
+        for (int i = 0; i < tasksToProcess; i++)
+        {
+            Vector3i chunkPos = pendingRegenerationQueue.poll();
+
+            if (chunkPos == null)
+                break;
+
+            pendingRegenerationSet.remove(chunkPos);
+
+            Chunk chunk = getChunk(chunkPos);
+
+            if (chunk != null)
+            {
+                chunkGenerationExecutor.submit(() ->
+                {
+                    try
+                    {
+                        chunk.generate();
+                    }
+                    catch (Exception e)
+                    {
+                        System.err.println("Error regenerating chunk " + chunkPos + ": " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                });
+            }
         }
     }
 
