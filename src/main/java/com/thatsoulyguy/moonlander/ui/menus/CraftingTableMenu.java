@@ -289,7 +289,9 @@ public class CraftingTableMenu extends Menu
         if (grabbedItemElement.isActive())
             grabbedItemElement.setPosition(InputManager.getMousePosition().sub(new Vector2f(16.0f, 16.0f)));
 
-        List<CraftingRecipe> craftingRecipes = CraftingRecipeRegistry.getAll();
+        List<CraftingRecipe> craftingRecipes = CraftingRecipeRegistry.getAll()
+                .stream().filter(self -> !self.isCompositorRecipe())
+                .toList();
         boolean wasMatch = false;
 
         for (CraftingRecipe recipe : craftingRecipes)

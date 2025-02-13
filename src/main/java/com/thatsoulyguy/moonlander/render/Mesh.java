@@ -382,7 +382,7 @@ public class Mesh extends Component
             System.err.println("OpenGL Error (updateBufferData): " + error);
     }
 
-    private <T extends Buffer> void resizeOrSubData(int target, T data)
+    private <T extends Buffer> void resizeOrSubData(int target, @NotNull T data)
     {
         int newSize = data.capacity() * (data instanceof FloatBuffer ? Float.BYTES : Integer.BYTES);
         int currentSize = GL41.glGetBufferParameteri(target, GL41.GL_BUFFER_SIZE);
@@ -396,7 +396,7 @@ public class Mesh extends Component
             GL41.glBufferSubData(target, 0, buffer);
     }
 
-    private static <T> FloatBuffer toBuffer(List<Vertex> vertices, Function<Vertex, T> extractor)
+    private static <T> FloatBuffer toBuffer(@NotNull List<Vertex> vertices, @NotNull Function<Vertex, T> extractor)
     {
         if (vertices.isEmpty())
             throw new IllegalArgumentException("The list of vertices cannot be empty.");

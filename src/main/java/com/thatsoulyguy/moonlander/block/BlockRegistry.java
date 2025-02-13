@@ -1096,6 +1096,13 @@ public class BlockRegistry
     public static final Block BLOCK_COMPOSITOR = new Block()
     {
         @Override
+        public void onInteractedWith(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
+        {
+            if (interactor instanceof EntityPlayer player)
+                player.setCompositorMenuActive(!player.isCompositorMenuActive());
+        }
+
+        @Override
         public @NotNull String getRegistryName()
         {
             return "block_compositor";

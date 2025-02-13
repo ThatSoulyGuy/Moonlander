@@ -313,13 +313,6 @@ public class EntityPlayer extends Entity
         if (deathMenu.getActive())
             return;
 
-        if (InputManager.getKeyState(KeyCode.K, KeyState.PRESSED))
-        {
-            InputManager.setMouseMode(MouseMode.FREE);
-            compositorMenu.build();
-            compositorMenu.setActive(true);
-        }
-
         if (InputManager.getKeyState(KeyCode.E, KeyState.PRESSED) && !pauseMenu.getActive() && !craftingTableMenu.isActive() && !deathMenu.getActive() && !bookMenu.isActive())
         {
             if (!inventoryMenu.getSurvivalMenuActive())
@@ -332,6 +325,14 @@ public class EntityPlayer extends Entity
 
         if (InputManager.getKeyState(KeyCode.ESCAPE, KeyState.PRESSED))
         {
+            if (compositorMenu.isActive())
+            {
+                compositorMenu.setActive(false);
+                InputManager.setMouseMode(MouseMode.LOCKED);
+
+                return;
+            }
+
             if (craftingTableMenu.isActive())
             {
                 craftingTableMenu.setActive(false);
@@ -779,6 +780,24 @@ public class EntityPlayer extends Entity
             InputManager.setMouseMode(MouseMode.LOCKED);
     }
 
+    public void setCompositorMenuActive(boolean active)
+    {
+        if (active)
+        {
+            compositorMenu.build();
+            InputManager.setMouseMode(MouseMode.FREE);
+        }
+        else
+            InputManager.setMouseMode(MouseMode.LOCKED);
+
+        compositorMenu.setActive(active);
+    }
+
+    public boolean isCompositorMenuActive()
+    {
+        return compositorMenu.isActive();
+    }
+
     public void setBookMenuActive(boolean active)
     {
         bookMenu.setActive(active);
@@ -797,9 +816,7 @@ public class EntityPlayer extends Entity
             InputManager.setMouseMode(MouseMode.FREE);
         }
         else
-        {
             InputManager.setMouseMode(MouseMode.LOCKED);
-        }
 
         craftingTableMenu.setActive(active);
     }

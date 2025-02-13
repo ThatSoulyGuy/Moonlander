@@ -2,6 +2,8 @@ package com.thatsoulyguy.moonlander.ui.menus;
 
 import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
 import com.thatsoulyguy.moonlander.core.Settings;
+import com.thatsoulyguy.moonlander.crafting.CraftingRecipe;
+import com.thatsoulyguy.moonlander.crafting.CraftingRecipeRegistry;
 import com.thatsoulyguy.moonlander.input.InputManager;
 import com.thatsoulyguy.moonlander.item.Inventory;
 import com.thatsoulyguy.moonlander.item.Item;
@@ -532,6 +534,43 @@ public class CompositorMenu extends Menu
 
         if (grabbedItemElement.isActive())
             grabbedItemElement.setPosition(InputManager.getMousePosition().sub(new Vector2f(16.0f, 16.0f)));
+
+        List<CraftingRecipe> craftingRecipes = CraftingRecipeRegistry.getAll()
+                .stream().filter(CraftingRecipe::isCompositorRecipe)
+                .toList();
+        boolean wasMatch = false;
+
+        for (CraftingRecipe recipe : craftingRecipes)
+        {
+            short[][] primitiveCraftingSlots = new short[2][1];
+
+            primitiveCraftingSlots[0][0] = upperMaterialSlot;
+            primitiveCraftingSlots[1][0] = lowerMaterialSlot;
+
+            if (CraftingRecipe.matchesRecipe(recipe, primitiveCraftingSlots))
+            {
+                short oldCraftingResultSlot = craftingResultSlot;
+                byte oldCraftingResultSlotCount = craftingResultSlotCount;
+
+                craftingResultSlot = recipe.getResult().item().getId();
+                craftingResultSlotCount = recipe.getResult().count();
+
+                if (oldCraftingResultSlot != craftingResultSlot || craftingResultSlotCount != oldCraftingResultSlotCount)
+                    build();
+
+                wasMatch = true;
+                break;
+            }
+        }
+        if (!wasMatch)
+        {
+            byte oldCraftingResultSlotCount = craftingResultSlotCount;
+
+            craftingResultSlotCount = 0;
+
+            if (craftingResultSlotCount != oldCraftingResultSlotCount)
+                build();
+        }
     }
 
     @Override

@@ -26,7 +26,9 @@ public abstract class CraftingRecipe
 
     public abstract @NotNull Result getResult();
 
-    public short getId()
+    public abstract boolean isCompositorRecipe();
+
+    public final short getId()
     {
         return id;
     }

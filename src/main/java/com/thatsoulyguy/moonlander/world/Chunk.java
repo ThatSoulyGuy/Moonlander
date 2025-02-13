@@ -35,6 +35,11 @@ public class Chunk extends Component
     @Override
     public void onLoad()
     {
+        generate();
+    }
+
+    public void generate()
+    {
         vertices = new ArrayList<>();
         indices = new ArrayList<>();
 
@@ -154,13 +159,13 @@ public class Chunk extends Component
         for (int i = 0; i < directions.length; i++)
         {
             Vector3i direction = directions[i];
-
             int colorIndex = colorIndices[i];
             int rotation = textureRotations[i];
-
             Vector3i neighborPosition = new Vector3i(x + direction.x, y + direction.y, z + direction.z);
 
-            if (shouldRenderFace(neighborPosition))
+            Block neighborBlock = BlockRegistry.get(getBlock(neighborPosition));
+
+            if (shouldRenderFace(neighborPosition) || (neighborBlock != null && !neighborBlock.isSolid()))
             {
                 addFace(
                         new Vector3i(x, y, z),
@@ -235,10 +240,12 @@ public class Chunk extends Component
 
     private boolean shouldRenderFace(@NotNull Vector3i position)
     {
-        if (!isValidPosition(position))
-            return true;
+        short block = World.getLocalWorld().getBlock(CoordinateHelper.blockToWorldCoordinates(position, CoordinateHelper.worldToChunkCoordinates(getGameObject().getTransform().getWorldPosition())));
 
-        return getBlock(position.x, position.y, position.z) == BlockRegistry.BLOCK_AIR.getId();
+        if (block == -1)
+            return false;
+        else
+            return block == BlockRegistry.BLOCK_AIR.getId();
     }
 
     private boolean isValidPosition(@NotNull Vector3i position)

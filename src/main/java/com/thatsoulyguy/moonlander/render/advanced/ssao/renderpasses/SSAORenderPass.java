@@ -42,10 +42,10 @@ public class SSAORenderPass implements RenderPass
 
         ssaoShader = ShaderManager.get("ssao.default");
 
-        ssaoKernel = new ArrayList<>(64);
+        ssaoKernel = new ArrayList<>(16);
         Random random = new Random();
 
-        for (int i = 0; i < 64; i++)
+        for (int i = 0; i < 16; i++)
         {
             float x = random.nextFloat() * 2.0f - 1.0f;
             float y = random.nextFloat() * 2.0f - 1.0f;
@@ -53,7 +53,7 @@ public class SSAORenderPass implements RenderPass
 
             Vector3f sample = new Vector3f(x, y, z).normalize();
 
-            float scale = (float) i / 64.0f;
+            float scale = (float) i / 16.0f;
 
             float lerpVal = 0.1f + (1.0f - 0.1f) * (scale * scale);
 
@@ -102,7 +102,7 @@ public class SSAORenderPass implements RenderPass
 
         ssaoShader.bind();
 
-        for (int i = 0; i < 64; i++)
+        for (int i = 0; i < 16; i++)
             ssaoShader.setUniform("samples[" + i + "]", ssaoKernel.get(i));
 
         ssaoShader.setUniform("windowWidth", (float) Window.getDimensions().x);

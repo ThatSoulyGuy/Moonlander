@@ -800,7 +800,7 @@ public class ItemRegistry
             Move to the next page to continue...
             """,
             """
-            Step one:
+            Step I:
                 Mine soft moon rock (the top layer of moon rock),
                 and then open your inventory. Once there, fill all
                 4 slots with the 4 soft moon rock you collected.
@@ -811,7 +811,7 @@ public class ItemRegistry
             Move to the next page to continue...
             """,
             """
-            Step two:
+            Step II:
                 Mine one more soft moon rock, and then place it into
                 the crafting grid. You will see it gives you 4 moon
                 rock pebbles. Once you have those, put them into the
@@ -826,7 +826,7 @@ public class ItemRegistry
             Move to the next page to continue...
             """,
             """
-            Step three:
+            Step III:
                 Using your newly acquired sticks, put them into a
                 shape which dictates that 2 sticks are in the center-
                 bottom section of the 2nd column of the crafting grid,
@@ -842,7 +842,7 @@ public class ItemRegistry
             Move to the next page to continue...
             """,
             """
-            Step four:
+            Step IV:
                 Using your newly crafted aluminum pickaxe, mine 5 moon rock
                 (The darker version of what you mined previously). Once you
                 have done that, search around until you find a redstone ore
@@ -864,7 +864,7 @@ public class ItemRegistry
             Move to the next page to continue...
             """,
             """
-            Step four:
+            Step V:
                 Place down the oxygen generator you just crafted. At this point,
                 your oxygen may be running low, so you will want to quickly find
                 and mine coal ore. Coal ore looks the same as redstone ore, except
@@ -874,6 +874,54 @@ public class ItemRegistry
                 will emit oxygen for some time. You will need to continually restock
                 the oxygen generator from time-to-time until you level it up/establish
                 a resource grid.
+            
+            Move to the next page to continue...
+            """,
+            """
+            Step VI:
+                You are going to need to craft a furnace to smelt iron and refine aluminum.
+                In order to craft this, you need 8 moon rock and 1 redstone. Moon rock is the
+                slightly darker variant of Soft Moon Rock that requires a pickaxe to mine. Place
+                the redstone in the center, and surround it with moon rock. Layout:
+                                       M M M
+                                       M R M
+                                       M M M
+                M = Moon Rock
+                R = Redstone
+            
+            Move to the next page to continue...
+            """,
+            """
+            Step VII:
+                Now, you are going to need to craft a compositor. In order to craft
+                this, you need the following materials: 2 Iron Ingots, 2 Refined
+                Aluminum Ingots, 1 Redstone, and 4 Soft Moon Rock. In order to get the
+                Iron Ingots, find iron ore. Iron ore looks like brownish-white ovals in the
+                stone you see in caves. Mine it, and right-click your furnace with coal to
+                stock it, then right click it with iron to smelt the iron. It will take a
+                few seconds for the iron to smelt. With the aluminum ore, it looks the
+                same as the iron ore except it is reddish-white and not brownish-white. The
+                difference is that you need to re-smelt the Aluminum ingot after smelting it
+                in order to get Refined Aluminum.
+            
+            Move to the next page to continue...
+            """,
+            """
+            Step VIII:
+                Once you have gotten your material, you will need put all of your
+                Aluminum Ingots in the top-right and top-left slots of the crafting grid,
+                and the 2 Iron ingots in the opposite slots. Then, place the redstone in
+                center of te grid, and fill the rest with soft moon rock. Layout:
+                                       A M A
+                                       M R M
+                                       I M I
+                A = Refined Aluminum Ingot
+                M = Soft Moon Rock
+                R = Redstone
+                I = Iron Ingot
+                \s
+                Once you have arranged the items as follows, you will have
+                created a compositor.
             
             Move to the next page to continue...
             """
@@ -1110,6 +1158,84 @@ public class ItemRegistry
         }
     };
 
+    public static final Item ITEM_IRONCOAL_COMPOSITE = new Item()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_ironcoal_composite";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Iron+Coal Composite";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "ironcoal_composite";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+    };
+
+    public static final Item ITEM_IRONALUMINUM_COMPOSITE = new Item()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_ironaluminum_composite";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Iron+Refined Aluminum Ingot Composite";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "ironaluminum_composite";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+    };
+
     private static final ConcurrentMap<String, Item> itemsByName = new ConcurrentHashMap<>();
     private static final ConcurrentMap<Short, Item> itemsById = new ConcurrentHashMap<>();
 
@@ -1139,6 +1265,8 @@ public class ItemRegistry
         register(ITEM_FURNACE_BLOCK);
         register(ITEM_OXYGEN_GENERATOR_BLOCK);
         register(ITEM_COMPOSITOR_BLOCK);
+        register(ITEM_IRONCOAL_COMPOSITE);
+        register(ITEM_IRONALUMINUM_COMPOSITE);
     }
 
     public static void register(@NotNull Item object)

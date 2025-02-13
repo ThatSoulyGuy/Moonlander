@@ -87,7 +87,7 @@ public class World extends Component
 
         object.addComponent(Chunk.create(blocks));
 
-        Objects.requireNonNull(object.getComponent(Chunk.class)).onLoad();
+        Objects.requireNonNull(object.getComponent(Chunk.class)).generate();
 
         return Objects.requireNonNull(object.getComponent(Chunk.class));
     }
@@ -239,6 +239,26 @@ public class World extends Component
                 finally
                 {
                     ongoingChunkGenerations.remove(currentChunk);
+
+                    List<Vector3i> neighboringChunkPositions = List.of
+                            (
+                                    new Vector3i(0, 1, 0),
+                                    new Vector3i(0, -1, 0),
+                                    new Vector3i(0, 0, 1),
+                                    new Vector3i(0, 0, -1),
+                                    new Vector3i(1, 0, 0),
+                                    new Vector3i(-1, 0, 0)
+                            );
+
+                    for (final Vector3i position : neighboringChunkPositions)
+                    {
+                        Vector3i actualPosition = position.add(currentChunk, new Vector3i());
+
+                        Chunk chunk = getChunk(actualPosition);
+
+                        if (chunk != null)
+                            chunk.generate();
+                    }
                 }
             });
 
