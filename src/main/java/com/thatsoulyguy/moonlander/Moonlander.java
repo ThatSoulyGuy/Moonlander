@@ -1,6 +1,9 @@
 package com.thatsoulyguy.moonlander;
 
 import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
+import com.thatsoulyguy.moonlander.audio.AudioClip;
+import com.thatsoulyguy.moonlander.audio.AudioListener;
+import com.thatsoulyguy.moonlander.audio.AudioManager;
 import com.thatsoulyguy.moonlander.block.BlockRegistry;
 import com.thatsoulyguy.moonlander.collider.Collider;
 import com.thatsoulyguy.moonlander.collider.colliders.BoxCollider;
@@ -14,6 +17,8 @@ import com.thatsoulyguy.moonlander.crafting.CraftingRecipeRegistry;
 import com.thatsoulyguy.moonlander.entity.Entity;
 import com.thatsoulyguy.moonlander.entity.entities.EntityPlayer;
 import com.thatsoulyguy.moonlander.input.InputManager;
+import com.thatsoulyguy.moonlander.input.KeyCode;
+import com.thatsoulyguy.moonlander.input.KeyState;
 import com.thatsoulyguy.moonlander.item.ItemRegistry;
 import com.thatsoulyguy.moonlander.math.Rigidbody;
 import com.thatsoulyguy.moonlander.render.*;
@@ -34,6 +39,7 @@ import com.thatsoulyguy.moonlander.ui.UIManager;
 import com.thatsoulyguy.moonlander.ui.menus.*;
 import com.thatsoulyguy.moonlander.util.AssetPath;
 import com.thatsoulyguy.moonlander.util.FileHelper;
+import com.thatsoulyguy.moonlander.util.AudioData;
 import com.thatsoulyguy.moonlander.world.TerrainGenerator;
 import com.thatsoulyguy.moonlander.world.TextureAtlas;
 import com.thatsoulyguy.moonlander.world.TextureAtlasManager;
@@ -50,6 +56,7 @@ import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 public class Moonlander
@@ -144,6 +151,24 @@ public class Moonlander
             AssetPath.create("moonlander", "texture/skybox/stars-panel.png")
         )));
 
+        AudioManager.initialize();
+
+        AudioManager.register(AudioClip.create("debug", AssetPath.create("moonlander", "audio/explosion.ogg")));
+
+        AudioManager.register(AudioClip.create("player.step.stone.0", AssetPath.create("moonlander", "audio/player/step/stone1.ogg")));
+        AudioManager.register(AudioClip.create("player.step.stone.1", AssetPath.create("moonlander", "audio/player/step/stone2.ogg")));
+        AudioManager.register(AudioClip.create("player.step.stone.2", AssetPath.create("moonlander", "audio/player/step/stone3.ogg")));
+        AudioManager.register(AudioClip.create("player.step.stone.3", AssetPath.create("moonlander", "audio/player/step/stone4.ogg")));
+        AudioManager.register(AudioClip.create("player.step.stone.4", AssetPath.create("moonlander", "audio/player/step/stone5.ogg")));
+        AudioManager.register(AudioClip.create("player.step.stone.5", AssetPath.create("moonlander", "audio/player/step/stone6.ogg")));
+        AudioManager.register(AudioClip.create("block.break.stone.0", AssetPath.create("moonlander", "audio/block/break/stone1.ogg")));
+        AudioManager.register(AudioClip.create("block.break.stone.1", AssetPath.create("moonlander", "audio/block/break/stone2.ogg")));
+        AudioManager.register(AudioClip.create("block.break.stone.2", AssetPath.create("moonlander", "audio/block/break/stone3.ogg")));
+        AudioManager.register(AudioClip.create("block.break.stone.3", AssetPath.create("moonlander", "audio/block/break/stone4.ogg")));
+        AudioManager.register(AudioClip.create("block.mining.stone.0", AssetPath.create("moonlander", "audio/block/mining/stone1.ogg")));
+        AudioManager.register(AudioClip.create("block.mining.stone.1", AssetPath.create("moonlander", "audio/block/mining/stone2.ogg")));
+        AudioManager.register(AudioClip.create("block.mining.stone.2", AssetPath.create("moonlander", "audio/block/mining/stone3.ogg")));
+        AudioManager.register(AudioClip.create("ui.click", AssetPath.create("moonlander", "audio/ui/click.ogg")));
 
         LevelRenderPass levelRenderPass = new LevelRenderPass();
 
@@ -384,6 +409,9 @@ public class Moonlander
             Skybox.CURRENT_SKYBOX.uninitialize();
 
         GameObjectManager.uninitialize();
+
+        AudioManager.uninitialize();
+        AudioData.uninitialize();
 
         RenderPassManager.uninitialize();
 

@@ -1,8 +1,13 @@
 package com.thatsoulyguy.moonlander.ui.menus;
 
 import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
+import com.thatsoulyguy.moonlander.audio.AudioClip;
+import com.thatsoulyguy.moonlander.audio.AudioListener;
+import com.thatsoulyguy.moonlander.audio.AudioManager;
 import com.thatsoulyguy.moonlander.entity.entities.EntityPlayer;
 import com.thatsoulyguy.moonlander.render.TextureManager;
+import com.thatsoulyguy.moonlander.system.GameObject;
+import com.thatsoulyguy.moonlander.system.Layer;
 import com.thatsoulyguy.moonlander.ui.Menu;
 import com.thatsoulyguy.moonlander.ui.UIElement;
 import com.thatsoulyguy.moonlander.ui.UIPanel;
@@ -11,6 +16,7 @@ import com.thatsoulyguy.moonlander.ui.uielements.ImageUIElement;
 import com.thatsoulyguy.moonlander.ui.uielements.TextUIElement;
 import com.thatsoulyguy.moonlander.util.AssetPath;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Random;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -48,6 +54,17 @@ public class DeathMenu extends Menu
 
                 host.getGameObject().getTransform().setLocalPosition(new Vector3f(0.0f, 180.0f, 0.0f));
 
+                GameObject soundObject = GameObject.create("ui.click" + new Random().nextInt(4096), Layer.DEFAULT);
+
+                soundObject.addComponent(Objects.requireNonNull(AudioManager.get("ui.click")));
+
+                soundObject.getTransform().setLocalPosition(AudioListener.getLocalListener().getGameObject().getTransform().getLocalPosition());
+
+                AudioClip clip = soundObject.getComponentNotNull(AudioClip.class);
+
+                clip.setLooping(false);
+                clip.play(true);
+
                 setActive(false);
             });
 
@@ -77,6 +94,17 @@ public class DeathMenu extends Menu
             button.addOnLeftClickedEvent(() ->
             {
                 button.setTexture(Objects.requireNonNull(TextureManager.get("ui.button_disabled")));
+
+                GameObject soundObject = GameObject.create("ui.click" + new Random().nextInt(4096), Layer.DEFAULT);
+
+                soundObject.addComponent(Objects.requireNonNull(AudioManager.get("ui.click")));
+
+                soundObject.getTransform().setLocalPosition(AudioListener.getLocalListener().getGameObject().getTransform().getLocalPosition());
+
+                AudioClip clip = soundObject.getComponentNotNull(AudioClip.class);
+
+                clip.setLooping(false);
+                clip.play(true);
 
                 //Save and quit
             });

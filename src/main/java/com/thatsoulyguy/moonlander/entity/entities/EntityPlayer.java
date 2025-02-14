@@ -2,6 +2,10 @@ package com.thatsoulyguy.moonlander.entity.entities;
 
 import com.thatsoulyguy.moonlander.annotation.CustomConstructor;
 import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
+import com.thatsoulyguy.moonlander.audio.AudioClip;
+import com.thatsoulyguy.moonlander.audio.AudioListener;
+import com.thatsoulyguy.moonlander.audio.AudioManager;
+import com.thatsoulyguy.moonlander.block.Block;
 import com.thatsoulyguy.moonlander.block.BlockRegistry;
 import com.thatsoulyguy.moonlander.collider.Collider;
 import com.thatsoulyguy.moonlander.collider.colliders.BoxCollider;
@@ -18,6 +22,7 @@ import com.thatsoulyguy.moonlander.math.Raycast;
 import com.thatsoulyguy.moonlander.math.Rigidbody;
 import com.thatsoulyguy.moonlander.render.*;
 import com.thatsoulyguy.moonlander.system.GameObject;
+import com.thatsoulyguy.moonlander.system.GameObjectManager;
 import com.thatsoulyguy.moonlander.system.Layer;
 import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
 import com.thatsoulyguy.moonlander.ui.MenuManager;
@@ -71,7 +76,12 @@ public class EntityPlayer extends Entity
     private final float oxygenRefillCooldownTimerStart = 0.25f;
     private float oxygenRefillCooldownTimer;
 
+    private final float blockMiningAudioTimerStart = 0.25f;
+    private float blockMiningAudioTimer;
+
     private int oxygen = 100;
+
+    private float footstepTimer = 0f;
 
     @Override
     public void initialize()
@@ -163,6 +173,7 @@ public class EntityPlayer extends Entity
         oxygenDepletionCooldownTimer = oxygenDepletionCooldownTimerStart;
         suffocationCooldownTimer = suffocationCooldownTimerStart;
         oxygenRefillCooldownTimer = oxygenRefillCooldownTimerStart;
+        blockMiningAudioTimer = blockMiningAudioTimerStart;
     }
 
     @Override
@@ -238,6 +249,8 @@ public class EntityPlayer extends Entity
         getGameObject().addChild(GameObject.create("default.camera", Layer.DEFAULT));
 
         GameObject cameraObject = getGameObject().getChild("default.camera");
+
+        cameraObject.addComponent(AudioListener.create());
 
         cameraObject.addComponent(Camera.create(45.0f, 0.01f, 1000.0f));
         cameraObject.getTransform().setLocalPosition(new Vector3f(0.0f, 0.86f, 0.0f));
@@ -411,11 +424,12 @@ public class EntityPlayer extends Entity
             if (InputManager.getMouseState(MouseCode.MOUSE_LEFT, MouseState.HELD))
             {
                 Vector3f point = hit.center();
-                short blockID = World.getLocalWorld().getBlock(point);
-
+                short blockId = World.getLocalWorld().getBlock(point);
+                Block block = BlockRegistry.get(blockId);
+                
                 blockBreakageMesh.getGameObject().setActive(true);
 
-                if (blockID != BlockRegistry.BLOCK_AIR.getId() && blockID != -1 && Objects.requireNonNull(BlockRegistry.get(blockID)).isSolid())
+                if (blockId != BlockRegistry.BLOCK_AIR.getId() && blockId != -1 && block.isSolid())
                 {
                     Vector3i blockCoordinates = CoordinateHelper.worldToBlockCoordinates(point);
 
@@ -430,13 +444,29 @@ public class EntityPlayer extends Entity
                     float blockHardness;
                     if (currentlySelectedSlot != null)
                     {
-                        blockHardness = Objects.requireNonNull(BlockRegistry.get(blockID)).getHardness() *
+                        blockHardness = block.getHardness() *
                                 Objects.requireNonNull(ItemRegistry.get(currentlySelectedSlot.id())).getBreakageSpeedModifier();
                     }
                     else
-                        blockHardness = Objects.requireNonNull(BlockRegistry.get(blockID)).getHardness();
+                        blockHardness = block.getHardness();
 
                     breakingProgress += Time.getDeltaTime();
+
+                    if (blockMiningAudioTimer < 0)
+                    {
+                        GameObject soundObject = GameObject.create("block.mining" + new Random().nextInt(4096), Layer.DEFAULT);
+
+                        soundObject.addComponent(block.getMiningAudioClips().get(new Random().nextInt(block.getMiningAudioClips().size() - 1)));
+
+                        soundObject.getTransform().setLocalPosition(new Vector3f(blockCoordinates));
+
+                        AudioClip clip = soundObject.getComponentNotNull(AudioClip.class);
+
+                        clip.setLooping(false);
+                        clip.play(true);
+
+                        blockMiningAudioTimer = blockMiningAudioTimerStart;
+                    }
 
                     int totalStages = 9;
                     int currentStage = Math.min((int) ((breakingProgress / blockHardness) * totalStages), totalStages - 1);
@@ -453,7 +483,7 @@ public class EntityPlayer extends Entity
                         else
                             toolPossessed = Tool.NONE;
 
-                        if (Objects.requireNonNull(BlockRegistry.get(blockID)).toolRequired() == Tool.NONE || Objects.requireNonNull(BlockRegistry.get(blockID)).toolRequired() == toolPossessed)
+                        if (block.toolRequired() == Tool.NONE || block.toolRequired() == toolPossessed)
                         {
                             inventoryMenu.addItem(Objects.requireNonNull(
                                     BlockRegistry.get(World.getLocalWorld().getBlock(point))
@@ -461,6 +491,18 @@ public class EntityPlayer extends Entity
                         }
 
                         World.getLocalWorld().setBlock(this, point, BlockRegistry.BLOCK_AIR.getId());
+
+                        GameObject soundObject = GameObject.create("block.break" + new Random().nextInt(4096), Layer.DEFAULT);
+
+                        soundObject.addComponent(block.getBrokenAudioClips().get(new Random().nextInt(block.getBrokenAudioClips().size() - 1)));
+
+                        soundObject.getTransform().setLocalPosition(new Vector3f(blockCoordinates));
+
+                        AudioClip clip = soundObject.getComponentNotNull(AudioClip.class);
+
+                        clip.setLooping(false);
+                        clip.setVolume(30.0f);
+                        clip.play(true);
 
                         breakingProgress = 0;
                         breakingBlockCoordinates = null;
@@ -565,6 +607,8 @@ public class EntityPlayer extends Entity
 
         if (inventoryMenu.currentSlotSelected != oldSlotSelected)
             resetBlockBreaking();
+
+        blockMiningAudioTimer -= Time.getDeltaTime();
     }
 
     /**
@@ -611,7 +655,7 @@ public class EntityPlayer extends Entity
 
         if (rigidbody == null)
         {
-            System.err.println("No RigidBody component found on game object: '" + getGameObject().getName() + "'!");
+            System.err.println("No RigidBody component found on player!");
             return;
         }
 
@@ -650,6 +694,30 @@ public class EntityPlayer extends Entity
         }
 
         rigidbody.addForce(movement);
+
+        if (rigidbody.isGrounded() && movement.lengthSquared() > 0.001f)
+        {
+            footstepTimer -= Time.getDeltaTime();
+
+            if (footstepTimer <= 0f)
+            {
+                GameObject soundObject = GameObject.create("player.step.stone" + new Random().nextInt(4096), Layer.DEFAULT);
+
+                soundObject.addComponent(Objects.requireNonNull(AudioManager.get("player.step.stone." + new Random().nextInt(6))));
+
+                soundObject.getTransform().setLocalPosition(AudioListener.getLocalListener().getGameObject().getTransform().getLocalPosition());
+
+                AudioClip clip = soundObject.getComponentNotNull(AudioClip.class);
+
+                clip.setLooping(false);
+                clip.setVolume(movement.length() * 1.35f);
+                clip.play(true);
+
+                footstepTimer = 0.5f;
+            }
+        }
+        else
+            footstepTimer = 0f;
     }
 
     public void updateDestroyStages(int index)

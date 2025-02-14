@@ -2,6 +2,8 @@ package com.thatsoulyguy.moonlander.block;
 
 import com.thatsoulyguy.moonlander.annotation.Manager;
 import com.thatsoulyguy.moonlander.annotation.Static;
+import com.thatsoulyguy.moonlander.audio.AudioClip;
+import com.thatsoulyguy.moonlander.audio.AudioManager;
 import com.thatsoulyguy.moonlander.core.Time;
 import com.thatsoulyguy.moonlander.entity.Entity;
 import com.thatsoulyguy.moonlander.entity.entities.EntityPlayer;
@@ -94,6 +96,18 @@ public class BlockRegistry
         {
             return true;
         }
+
+        @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
+        }
     };
 
     public static final Block BLOCK_SOFT_MOON_ROCK = new Block()
@@ -166,6 +180,18 @@ public class BlockRegistry
         public boolean isSolid()
         {
             return true;
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
         }
 
         @Override
@@ -245,6 +271,18 @@ public class BlockRegistry
         public boolean isSolid()
         {
             return true;
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
         }
 
         @Override
@@ -333,6 +371,18 @@ public class BlockRegistry
         }
 
         @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
+        }
+
+        @Override
         public @NotNull Item getAssociatedItem()
         {
             return ItemRegistry.ITEM_STONE_BLOCK;
@@ -415,6 +465,18 @@ public class BlockRegistry
         public boolean isSolid()
         {
             return true;
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
         }
 
         @Override
@@ -503,6 +565,18 @@ public class BlockRegistry
         }
 
         @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
+        }
+
+        @Override
         public @NotNull Item getAssociatedItem()
         {
             return ItemRegistry.ITEM_COAL;
@@ -588,6 +662,18 @@ public class BlockRegistry
         }
 
         @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
+        }
+
+        @Override
         public @NotNull Item getAssociatedItem()
         {
             return ItemRegistry.ITEM_ALUMINUM_ORE_BLOCK;
@@ -670,6 +756,18 @@ public class BlockRegistry
         public boolean isSolid()
         {
             return true;
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
         }
 
         @Override
@@ -762,6 +860,18 @@ public class BlockRegistry
         public boolean isSolid()
         {
             return true;
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
         }
 
         @Override
@@ -948,6 +1058,18 @@ public class BlockRegistry
         }
 
         @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
+        }
+
+        @Override
         public @NotNull Item getAssociatedItem()
         {
             return ItemRegistry.ITEM_FURNACE_BLOCK;
@@ -1087,6 +1209,18 @@ public class BlockRegistry
         }
 
         @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
+        }
+
+        @Override
         public @NotNull Item getAssociatedItem()
         {
             return ItemRegistry.ITEM_OXYGEN_GENERATOR_BLOCK;
@@ -1170,6 +1304,18 @@ public class BlockRegistry
         public boolean isSolid()
         {
             return true;
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
         }
 
         @Override
@@ -1263,6 +1409,18 @@ public class BlockRegistry
         public boolean isSolid()
         {
             return false;
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
         }
     };
 

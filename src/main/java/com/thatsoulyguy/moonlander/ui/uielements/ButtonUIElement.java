@@ -1,6 +1,5 @@
 package com.thatsoulyguy.moonlander.ui.uielements;
 
-import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
 import com.thatsoulyguy.moonlander.input.InputManager;
 import com.thatsoulyguy.moonlander.input.MouseCode;
 import com.thatsoulyguy.moonlander.input.MouseState;

@@ -3,14 +3,18 @@ package com.thatsoulyguy.moonlander.math;
 import com.thatsoulyguy.moonlander.annotation.CustomConstructor;
 import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
 import com.thatsoulyguy.moonlander.system.Component;
+import com.thatsoulyguy.moonlander.util.SerializableConsumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @CustomConstructor("create")
 public class Transform extends Component
@@ -22,6 +26,10 @@ public class Transform extends Component
     private @Nullable transient Transform parent;
     private @NotNull Matrix4f cachedModelMatrix = new Matrix4f();
 
+    private final @NotNull Map<Object, SerializableConsumer<Vector3f>> onPositionChangedCallbacks = new ConcurrentHashMap<>();
+    private final @NotNull Map<Object, SerializableConsumer<Vector3f>> onRotationChangedCallbacks = new ConcurrentHashMap<>();
+    private final @NotNull Map<Object, SerializableConsumer<Vector3f>> onScaleChangedCallbacks = new ConcurrentHashMap<>();
+
     private transient @NotNull List<Transform> children = new ArrayList<>();
 
     private boolean dirty = true;
@@ -32,6 +40,36 @@ public class Transform extends Component
     public void initialize()
     {
         children = new ArrayList<>();
+    }
+
+    public <T extends Serializable> void addOnPositionChangedCallback(@NotNull T object, @NotNull SerializableConsumer<Vector3f> consumer)
+    {
+        onPositionChangedCallbacks.put(object, consumer);
+    }
+
+    public <T extends Serializable> void removeOnPositionChangedCallback(@NotNull T object)
+    {
+        onPositionChangedCallbacks.remove(object);
+    }
+
+    public <T extends Serializable> void addOnRotationChangedCallback(@NotNull T object, @NotNull SerializableConsumer<Vector3f> consumer)
+    {
+        onRotationChangedCallbacks.put(object, consumer);
+    }
+
+    public <T extends Serializable> void removeOnRotationChangedCallback(@NotNull T object)
+    {
+        onRotationChangedCallbacks.remove(object);
+    }
+
+    public <T extends Serializable> void addOnScaleChangedCallback(@NotNull T object, @NotNull SerializableConsumer<Vector3f> consumer)
+    {
+        onScaleChangedCallbacks.put(object, consumer);
+    }
+
+    public <T extends Serializable> void removeOnScaleChangedCallback(@NotNull T object)
+    {
+        onScaleChangedCallbacks.remove(object);
     }
 
     public void addChild(@NotNull Transform child)
@@ -54,18 +92,27 @@ public class Transform extends Component
             return;
 
         localPosition.add(translation);
+
+        onPositionChangedCallbacks.values().forEach(consumer -> consumer.accept(localPosition));
+
         markDirty();
     }
 
     public void rotate(@NotNull Vector3f rotation)
     {
         this.localRotation.add(rotation);
+
+        onRotationChangedCallbacks.values().forEach(consumer -> consumer.accept(localRotation));
+
         markDirty();
     }
 
     public void scale(@NotNull Vector3f scale)
     {
         this.localScale.add(scale);
+
+        onScaleChangedCallbacks.values().forEach(consumer -> consumer.accept(localScale));
+
         markDirty();
     }
 
@@ -77,6 +124,9 @@ public class Transform extends Component
     public void setLocalPosition(@NotNull Vector3f localPosition)
     {
         this.localPosition = new Vector3f(localPosition);
+
+        onPositionChangedCallbacks.values().forEach(consumer -> consumer.accept(localPosition));
+
         markDirty();
     }
 
@@ -88,6 +138,9 @@ public class Transform extends Component
     public void setLocalRotation(@NotNull Vector3f localRotation)
     {
         this.localRotation = new Vector3f(localRotation);
+
+        onRotationChangedCallbacks.values().forEach(consumer -> consumer.accept(localRotation));
+
         markDirty();
     }
 
@@ -99,6 +152,9 @@ public class Transform extends Component
     public void setLocalScale(@NotNull Vector3f localScale)
     {
         this.localScale = new Vector3f(localScale);
+
+        onScaleChangedCallbacks.values().forEach(consumer -> consumer.accept(localScale));
+
         markDirty();
     }
 

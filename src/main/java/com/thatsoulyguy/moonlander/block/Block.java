@@ -1,5 +1,6 @@
 package com.thatsoulyguy.moonlander.block;
 
+import com.thatsoulyguy.moonlander.audio.AudioClip;
 import com.thatsoulyguy.moonlander.entity.Entity;
 import com.thatsoulyguy.moonlander.item.Item;
 import com.thatsoulyguy.moonlander.item.ItemRegistry;
@@ -9,6 +10,8 @@ import com.thatsoulyguy.moonlander.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
+
+import java.util.List;
 
 public abstract class Block
 {
@@ -46,6 +49,10 @@ public abstract class Block
     public abstract boolean updates();
 
     public abstract boolean isSolid();
+
+    public abstract @NotNull List<AudioClip> getMiningAudioClips();
+
+    public abstract @NotNull List<AudioClip> getBrokenAudioClips();
 
     public @NotNull Item getAssociatedItem()
     {
