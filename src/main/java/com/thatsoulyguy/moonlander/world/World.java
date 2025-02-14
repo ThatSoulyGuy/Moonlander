@@ -253,6 +253,7 @@ public class World extends Component
                             new Vector3i(1, 0, 0),
                             new Vector3i(-1, 0, 0)
                     );
+
                     for (Vector3i offset : neighboringChunkOffsets)
                     {
                         Vector3i neighborPos = new Vector3i(currentChunk.x + offset.x, currentChunk.y + offset.y, currentChunk.z + offset.z);
@@ -267,7 +268,7 @@ public class World extends Component
         }
     }
 
-    private void scheduleRegeneration(Vector3i chunkPosition)
+    public void scheduleRegeneration(Vector3i chunkPosition)
     {
         if (!pendingRegenerationSet.contains(chunkPosition))
         {

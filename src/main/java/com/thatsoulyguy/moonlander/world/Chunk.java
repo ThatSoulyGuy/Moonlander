@@ -214,6 +214,23 @@ public class Chunk extends Component
             BlockRegistry.get(type).onPlaced(interactor, World.getLocalWorld(), this, globalBlockCoordinates);
         }
 
+        List<Vector3i> neighboringChunkOffsets = List.of(
+                new Vector3i(0, 1, 0),
+                new Vector3i(0, -1, 0),
+                new Vector3i(0, 0, 1),
+                new Vector3i(0, 0, -1),
+                new Vector3i(1, 0, 0),
+                new Vector3i(-1, 0, 0)
+        );
+
+        for (final Vector3i offset : neighboringChunkOffsets)
+        {
+            Vector3i position = CoordinateHelper.worldToChunkCoordinates(getGameObject().getTransform().getWorldPosition()).add(offset, new Vector3i());
+
+            if (World.getLocalWorld().getChunk(position) != null)
+                World.getLocalWorld().scheduleRegeneration(position);
+        }
+
         rebuildMeshAndCollider();
     }
 
