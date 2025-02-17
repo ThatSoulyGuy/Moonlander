@@ -173,6 +173,18 @@ public class GameObject implements Serializable
         return layer;
     }
 
+    public void onLoad()
+    {
+        try
+        {
+            componentMap.values().forEach(Component::onLoad);
+        }
+        catch (Exception e)
+        {
+            System.err.println("Failed to load game object: " + name + "'s components due to exception: " + e);
+        }
+    }
+
     public void updateMainThread()
     {
         if (!isUpdating.compareAndSet(false, true))
@@ -470,8 +482,6 @@ public class GameObject implements Serializable
                     result.addChild(child);
 
                 System.out.println("Children loaded for game object: " + result.name);
-
-                result.componentMap.values().forEach(Component::onLoad);
 
                 System.out.println("Deserialized game object '" + result.name + "' at position/rotation/scale: " + result.getTransform());
             }

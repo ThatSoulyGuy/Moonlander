@@ -1424,6 +1424,434 @@ public class BlockRegistry
         }
     };
 
+    public static final Block BLOCK_FUEL = new Block()
+    {
+        @Override
+        public void onInteractedWith(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
+        {
+            if (interactor instanceof EntityPlayer player)
+            {
+                if (Objects.requireNonNull(player.getInventoryMenu().getSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected))).id() == ItemRegistry.ITEM_EMPTY_BUCKET.getId())
+                {
+                    player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), ItemRegistry.ITEM_FUEL_BUCKET.getId(), (byte) 1);
+
+                    World.getLocalWorld().setBlock(interactor, new Vector3f(globalBlockPosition), BlockRegistry.BLOCK_AIR.getId());
+                }
+            }
+        }
+
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "block_fuel";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Fuel";
+        }
+
+        @Override
+        public float getHardness()
+        {
+            return 0.0f;
+        }
+
+        @Override
+        public float getResistance()
+        {
+            return 0.1f;
+        }
+
+        @Override
+        public @NotNull String[] getTextures()
+        {
+            return new String[]
+            {
+                "fuel",
+                "fuel",
+                "fuel",
+                "fuel",
+                "fuel",
+                "fuel"
+            };
+        }
+
+        @Override
+        public @NotNull Vector3f[] getColors()
+        {
+            return new Vector3f[]
+            {
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+            };
+        }
+
+        @Override
+        public boolean isInteractable()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean updates()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isSolid()
+        {
+            return false;
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
+        }
+    };
+
+    public static final Block BLOCK_FUEL_REFINER = new Block()
+    {
+        public static final @NotNull Map<Vector3i, Boolean> moonRockHasBeenSupplied = new ConcurrentHashMap<>();
+        public static final @NotNull Map<Vector3i, Boolean> oilHasBeenSupplied = new ConcurrentHashMap<>();
+
+        private static @Nullable EntityPlayer lastInteractor;
+
+        @Override
+        public void onInteractedWith(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
+        {
+            if (interactor instanceof EntityPlayer player)
+            {
+                InventoryMenu.SlotData slot = player.getInventoryMenu().getSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected));
+
+                assert slot != null;
+
+                if (slot.id() == ItemRegistry.ITEM_MOON_ROCK_BLOCK.getId() && !moonRockHasBeenSupplied.containsKey(globalBlockPosition))
+                {
+                    moonRockHasBeenSupplied.put(globalBlockPosition, true);
+                    player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), ItemRegistry.ITEM_AIR.getId(), (byte) 1);
+                }
+                else if (slot.id() == ItemRegistry.ITEM_OIL_BUCKET.getId() && !oilHasBeenSupplied.containsKey(globalBlockPosition))
+                {
+                    oilHasBeenSupplied.put(globalBlockPosition, true);
+                    player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), ItemRegistry.ITEM_EMPTY_BUCKET.getId(), (byte) 1);
+                }
+
+                lastInteractor = player;
+            }
+        }
+
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "block_fuel_refiner";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Fuel Refiner";
+        }
+
+        @Override
+        public float getHardness()
+        {
+            return 2.84f;
+        }
+
+        @Override
+        public float getResistance()
+        {
+            return 0.1f;
+        }
+
+        @Override
+        public @NotNull String[] getTextures()
+        {
+            return new String[]
+            {
+                "fuel_refiner_top",
+                "moon_rock",
+                "fuel_refiner_side",
+                "fuel_refiner_side",
+                "fuel_refiner_side",
+                "fuel_refiner_side"
+            };
+        }
+
+        @Override
+        public @NotNull Vector3f[] getColors()
+        {
+            return new Vector3f[]
+            {
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+            };
+        }
+
+        @Override
+        public void onTick(@NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
+        {
+            if (lastInteractor == null || !moonRockHasBeenSupplied.containsKey(globalBlockPosition) || !oilHasBeenSupplied.containsKey(globalBlockPosition))
+                return;
+
+            if (moonRockHasBeenSupplied.get(globalBlockPosition) && oilHasBeenSupplied.get(globalBlockPosition))
+            {
+                lastInteractor.getInventoryMenu().addItem(ItemRegistry.ITEM_FUEL_BUCKET.getId(), (byte) 1);
+
+                moonRockHasBeenSupplied.remove(globalBlockPosition);
+                oilHasBeenSupplied.remove(globalBlockPosition);
+            }
+        }
+
+        @Override
+        public boolean isInteractable()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean updates()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean isSolid()
+        {
+            return true;
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
+        }
+
+        @Override
+        public @NotNull Item getAssociatedItem()
+        {
+            return ItemRegistry.ITEM_FUEL_REFINER;
+        }
+    };
+
+    public static final Block BLOCK_IRON_BLOCK = new Block()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "block_iron_block";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Iron Block";
+        }
+
+        @Override
+        public float getHardness()
+        {
+            return 15.25f;
+        }
+
+        @Override
+        public float getResistance()
+        {
+            return 0.1f;
+        }
+
+        @Override
+        public @NotNull String[] getTextures()
+        {
+            return new String[]
+            {
+                "iron_block",
+                "iron_block",
+                "iron_block",
+                "iron_block",
+                "iron_block",
+                "iron_block"
+            };
+        }
+
+        @Override
+        public @NotNull Vector3f[] getColors()
+        {
+            return new Vector3f[]
+            {
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+            };
+        }
+
+        @Override
+        public boolean isInteractable()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean updates()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isSolid()
+        {
+            return true;
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
+        }
+
+        @Override
+        public @NotNull Item getAssociatedItem()
+        {
+            return ItemRegistry.ITEM_IRON_BLOCK;
+        }
+
+        @Override
+        public @NotNull Tool toolRequired()
+        {
+            return Tool.PICKAXE;
+        }
+    };
+
+    public static final Block BLOCK_ALUMINUM_BLOCK = new Block()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "block_aluminum_block";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Aluminum Block";
+        }
+
+        @Override
+        public float getHardness()
+        {
+            return 15.25f;
+        }
+
+        @Override
+        public float getResistance()
+        {
+            return 0.1f;
+        }
+
+        @Override
+        public @NotNull String[] getTextures()
+        {
+            return new String[]
+            {
+                "aluminum_block",
+                "aluminum_block",
+                "aluminum_block",
+                "aluminum_block",
+                "aluminum_block",
+                "aluminum_block"
+            };
+        }
+
+        @Override
+        public @NotNull Vector3f[] getColors()
+        {
+            return new Vector3f[]
+            {
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+                new Vector3f(1.0f),
+            };
+        }
+
+        @Override
+        public boolean isInteractable()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean updates()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isSolid()
+        {
+            return true;
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
+        }
+
+        @Override
+        public @NotNull Item getAssociatedItem()
+        {
+            return ItemRegistry.ITEM_ALUMINUM_BLOCK;
+        }
+
+        @Override
+        public @NotNull Tool toolRequired()
+        {
+            return Tool.PICKAXE;
+        }
+    };
+
     private static final ConcurrentMap<String, Block> blocksByName = new ConcurrentHashMap<>();
     private static final ConcurrentMap<Short, Block> blocksById = new ConcurrentHashMap<>();
 
@@ -1440,10 +1868,14 @@ public class BlockRegistry
         register(BLOCK_ALUMINUM_ORE);
         register(BLOCK_IRON_ORE);
         register(BLOCK_OIL);
+        register(BLOCK_FUEL);
         register(BLOCK_CRAFTING_TABLE);
         register(BLOCK_FURNACE);
         register(BLOCK_OXYGEN_GENERATOR);
         register(BLOCK_COMPOSITOR);
+        register(BLOCK_FUEL_REFINER);
+        register(BLOCK_IRON_BLOCK);
+        register(BLOCK_ALUMINUM_BLOCK);
     }
 
     public static void register(@NotNull Block object)

@@ -44,7 +44,7 @@ public class AudioManager
 
     public static void register(@NotNull AudioClip object)
     {
-        audioClipMap.put(object.getName(), object);
+        audioClipMap.putIfAbsent(object.getName(), object);
     }
 
     public static void unregister(@NotNull String name)

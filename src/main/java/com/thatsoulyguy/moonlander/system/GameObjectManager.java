@@ -70,6 +70,18 @@ public class GameObjectManager
         return List.copyOf(gameObjectMap.values());
     }
 
+    public static void loadAll()
+    {
+        try
+        {
+            gameObjectMap.values().forEach(GameObject::onLoad);
+        }
+        catch (Exception e)
+        {
+            System.err.println("Failed to load all game objects' components due to exception: " + e);
+        }
+    }
+
     public static void stop()
     {
         gameObjectMap.values().forEach(GameObject::uninitialize);

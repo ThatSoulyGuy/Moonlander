@@ -431,6 +431,175 @@ public class CraftingRecipeRegistry
         }
     };
 
+    public static final @NotNull CraftingRecipe REFINED_ALUMINUM_INGOT_AND_MOON_ROCK_AND_IRON_INGOT_TO_FUEL_REFINER = new CraftingRecipe()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "recipe_refined_aluminum_ingot_and_moon_rock_and_iron_ingot_to_fuel_refiner";
+        }
+
+        @Override
+        public @NotNull Map<Character, Item> getKeyDefinitions()
+        {
+            return Map.of
+            (
+                'a', ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT,
+                'm', ItemRegistry.ITEM_MOON_ROCK_BLOCK,
+                'i', ItemRegistry.ITEM_IRON_INGOT
+            );
+        }
+
+        @Override
+        public char[][] getRecipeGrid()
+        {
+            return new char[][]
+            {
+                new char[] { 'a', 'a', 'a' },
+                new char[] { 'm', 'm', 'm' },
+                new char[] { 'i', 'i', 'i' }
+            };
+        }
+
+        @Override
+        public @NotNull Result getResult()
+        {
+            return new Result(ItemRegistry.ITEM_FUEL_REFINER, (byte) 1);
+        }
+
+        @Override
+        public boolean isCompositorRecipe()
+        {
+            return false;
+        }
+    };
+
+    public static final @NotNull CraftingRecipe REFINED_ALUMINUM_INGOT_TO_ALUMINUM_BLOCK = new CraftingRecipe()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "recipe_refined_aluminum_ingot_to_aluminum_block";
+        }
+
+        @Override
+        public @NotNull Map<Character, Item> getKeyDefinitions()
+        {
+            return Map.of
+            (
+                'a', ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT
+            );
+        }
+
+        @Override
+        public char[][] getRecipeGrid()
+        {
+            return new char[][]
+            {
+                new char[] { 'a', 'a', 'a' },
+                new char[] { 'a', 'a', 'a' },
+                new char[] { 'a', 'a', 'a' }
+            };
+        }
+
+        @Override
+        public @NotNull Result getResult()
+        {
+            return new Result(ItemRegistry.ITEM_ALUMINUM_BLOCK, (byte) 1);
+        }
+
+        @Override
+        public boolean isCompositorRecipe()
+        {
+            return false;
+        }
+    };
+
+    public static final @NotNull CraftingRecipe IRON_INGOT_TO_IRON_BLOCK = new CraftingRecipe()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "recipe_iron_ingot_to_iron_block";
+        }
+
+        @Override
+        public @NotNull Map<Character, Item> getKeyDefinitions()
+        {
+            return Map.of
+            (
+                'i', ItemRegistry.ITEM_IRON_INGOT
+            );
+        }
+
+        @Override
+        public char[][] getRecipeGrid()
+        {
+            return new char[][]
+            {
+                new char[] { 'i', 'i', 'i' },
+                new char[] { 'i', 'i', 'i' },
+                new char[] { 'i', 'i', 'i' }
+            };
+        }
+
+        @Override
+        public @NotNull Result getResult()
+        {
+            return new Result(ItemRegistry.ITEM_FUEL_REFINER, (byte) 1);
+        }
+
+        @Override
+        public boolean isCompositorRecipe()
+        {
+            return false;
+        }
+    };
+
+    public static final @NotNull CraftingRecipe IRON_BLOCK_AND_ALUMINUM_BLOCK_AND_IRONCOAL_COMPOSITE_AND_IRONALUMINUM_COMPOSITE_TO_ROCKET_ENTITY = new CraftingRecipe()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "recipe_iron_block_and_aluminum_block_and_ironcoad_composite_and_ironaluminum_composite_to_rocket_entity";
+        }
+
+        @Override
+        public @NotNull Map<Character, Item> getKeyDefinitions()
+        {
+            return Map.of
+            (
+                'i', ItemRegistry.ITEM_IRON_BLOCK,
+                'a', ItemRegistry.ITEM_ALUMINUM_BLOCK,
+                'c', ItemRegistry.ITEM_IRONCOAL_COMPOSITE,
+                'v', ItemRegistry.ITEM_IRONALUMINUM_COMPOSITE
+            );
+        }
+
+        @Override
+        public char[][] getRecipeGrid()
+        {
+            return new char[][]
+            {
+                new char[] { 'i', 'a', 'i' },
+                new char[] { 'i', 'a', 'i' },
+                new char[] { 'c', 'v', 'c' }
+            };
+        }
+
+        @Override
+        public @NotNull Result getResult()
+        {
+            return new Result(ItemRegistry.ITEM_ROCKET_ENTITY, (byte) 1);
+        }
+
+        @Override
+        public boolean isCompositorRecipe()
+        {
+            return false;
+        }
+    };
+
     public static final @NotNull CraftingRecipe COMPOSITOR_IRON_AND_COAL_TO_IRONCOAL_COMPOSITE = new CraftingRecipe()
     {
         @Override
@@ -530,6 +699,10 @@ public class CraftingRecipeRegistry
         register(STONE_AND_REDSTONE_TO_FURNACE);
         register(MOON_ROCK_AND_REDSTONE_TO_FURNACE);
         register(REDSTONE_DUST_AND_REFINED_ALUMINUM_INGOT_AND_IRON_INGOT_AND_SOFT_MOON_ROCK_TO_COMPOSITOR_BLOCK);
+        register(REFINED_ALUMINUM_INGOT_AND_MOON_ROCK_AND_IRON_INGOT_TO_FUEL_REFINER);
+        register(REFINED_ALUMINUM_INGOT_TO_ALUMINUM_BLOCK);
+        register(IRON_INGOT_TO_IRON_BLOCK);
+        register(IRON_BLOCK_AND_ALUMINUM_BLOCK_AND_IRONCOAL_COMPOSITE_AND_IRONALUMINUM_COMPOSITE_TO_ROCKET_ENTITY);
         register(COMPOSITOR_IRON_AND_COAL_TO_IRONCOAL_COMPOSITE);
         register(COMPOSITOR_IRON_AND_REFINED_ALUMINUM_INGOT_TO_IRONALUMINUM_COMPOSITE);
     }

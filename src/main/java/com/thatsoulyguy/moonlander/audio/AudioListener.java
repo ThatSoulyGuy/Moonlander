@@ -43,8 +43,8 @@ public class AudioListener extends Component
 
             assert rigidbody != null;
 
-            if (rigidbody.getVelocity().x > 0.01f && rigidbody.getVelocity().y > 0.01f && rigidbody.getVelocity().z > 0.01f)
-                AL10.alListener3f(AL10.AL_VELOCITY, rigidbody.getVelocity().x, rigidbody.getVelocity().y, rigidbody.getVelocity().z);
+            if (rigidbody.getDesiredVelocity().x > 0.01f && rigidbody.getDesiredVelocity().y > 0.01f && rigidbody.getDesiredVelocity().z > 0.01f)
+                AL10.alListener3f(AL10.AL_VELOCITY, rigidbody.getDesiredVelocity().x, rigidbody.getDesiredVelocity().y, rigidbody.getDesiredVelocity().z);
         }
     }
 

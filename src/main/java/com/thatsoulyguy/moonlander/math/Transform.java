@@ -22,6 +22,7 @@ public class Transform extends Component
     private @EffectivelyNotNull Vector3f localPosition;
     private @EffectivelyNotNull Vector3f localRotation;
     private @EffectivelyNotNull Vector3f localScale;
+    private @EffectivelyNotNull Vector3f localPivot = new Vector3f(0, 0, 0);
 
     private @Nullable transient Transform parent;
     private @NotNull Matrix4f cachedModelMatrix = new Matrix4f();
@@ -29,9 +30,9 @@ public class Transform extends Component
     private final @NotNull Map<Object, SerializableConsumer<Vector3f>> onPositionChangedCallbacks = new ConcurrentHashMap<>();
     private final @NotNull Map<Object, SerializableConsumer<Vector3f>> onRotationChangedCallbacks = new ConcurrentHashMap<>();
     private final @NotNull Map<Object, SerializableConsumer<Vector3f>> onScaleChangedCallbacks = new ConcurrentHashMap<>();
+    private final @NotNull Map<Object, SerializableConsumer<Vector3f>> onPivotChangedCallbacks = new ConcurrentHashMap<>();
 
     private transient @NotNull List<Transform> children = new ArrayList<>();
-
     private boolean dirty = true;
 
     private Transform() { }
@@ -72,17 +73,25 @@ public class Transform extends Component
         onScaleChangedCallbacks.remove(object);
     }
 
+    public <T extends Serializable> void addOnPivotChangedCallback(@NotNull T object, @NotNull SerializableConsumer<Vector3f> consumer)
+    {
+        onPivotChangedCallbacks.put(object, consumer);
+    }
+
+    public <T extends Serializable> void removeOnPivotChangedCallback(@NotNull T object)
+    {
+        onPivotChangedCallbacks.remove(object);
+    }
+
     public void addChild(@NotNull Transform child)
     {
         child.setParent(this);
-
         children.add(child);
     }
 
     public void removeChild(@NotNull Transform child)
     {
         child.setParent(null);
-
         children.remove(child);
     }
 
@@ -92,7 +101,6 @@ public class Transform extends Component
             return;
 
         localPosition.add(translation);
-
         onPositionChangedCallbacks.values().forEach(consumer -> consumer.accept(localPosition));
 
         markDirty();
@@ -100,8 +108,7 @@ public class Transform extends Component
 
     public void rotate(@NotNull Vector3f rotation)
     {
-        this.localRotation.add(rotation);
-
+        localRotation.add(rotation);
         onRotationChangedCallbacks.values().forEach(consumer -> consumer.accept(localRotation));
 
         markDirty();
@@ -109,8 +116,7 @@ public class Transform extends Component
 
     public void scale(@NotNull Vector3f scale)
     {
-        this.localScale.add(scale);
-
+        localScale.add(scale);
         onScaleChangedCallbacks.values().forEach(consumer -> consumer.accept(localScale));
 
         markDirty();
@@ -123,9 +129,9 @@ public class Transform extends Component
 
     public void setLocalPosition(@NotNull Vector3f localPosition)
     {
-        this.localPosition = new Vector3f(localPosition);
+        this.localPosition.set(localPosition);
 
-        onPositionChangedCallbacks.values().forEach(consumer -> consumer.accept(localPosition));
+        onPositionChangedCallbacks.values().forEach(consumer -> consumer.accept(this.localPosition));
 
         markDirty();
     }
@@ -134,12 +140,11 @@ public class Transform extends Component
     {
         return new Vector3f(localRotation);
     }
-
     public void setLocalRotation(@NotNull Vector3f localRotation)
     {
-        this.localRotation = new Vector3f(localRotation);
+        this.localRotation.set(localRotation);
 
-        onRotationChangedCallbacks.values().forEach(consumer -> consumer.accept(localRotation));
+        onRotationChangedCallbacks.values().forEach(consumer -> consumer.accept(this.localRotation));
 
         markDirty();
     }
@@ -148,12 +153,25 @@ public class Transform extends Component
     {
         return new Vector3f(localScale);
     }
-
     public void setLocalScale(@NotNull Vector3f localScale)
     {
-        this.localScale = new Vector3f(localScale);
+        this.localScale.set(localScale);
 
-        onScaleChangedCallbacks.values().forEach(consumer -> consumer.accept(localScale));
+        onScaleChangedCallbacks.values().forEach(consumer -> consumer.accept(this.localScale));
+
+        markDirty();
+    }
+
+    public @NotNull Vector3f getLocalPivot()
+    {
+        return new Vector3f(localPivot);
+    }
+
+    public void setLocalPivot(@NotNull Vector3f pivot)
+    {
+        this.localPivot.set(pivot);
+
+        onPivotChangedCallbacks.values().forEach(consumer -> consumer.accept(this.localPivot));
 
         markDirty();
     }
@@ -166,6 +184,7 @@ public class Transform extends Component
     public void setParent(@Nullable Transform parent)
     {
         this.parent = parent;
+
         markDirty();
     }
 
@@ -191,13 +210,12 @@ public class Transform extends Component
 
     public @NotNull Vector3f getWorldRotation()
     {
-        Quaternionf rotation = getModelMatrix().getNormalizedRotation(new Quaternionf());
+        Quaternionf normalizedRotation = getModelMatrix().getNormalizedRotation(new Quaternionf());
 
         Vector3f eulerAngles = new Vector3f();
+        normalizedRotation.getEulerAnglesXYZ(eulerAngles);
 
-        rotation.getEulerAnglesXYZ(eulerAngles);
-
-        return eulerAngles.mul((float) Math.toDegrees(1.0));
+        return eulerAngles.mul((float)Math.toDegrees(1.0));
     }
 
     public @NotNull Vector3f getWorldScale()
@@ -216,13 +234,14 @@ public class Transform extends Component
             Matrix4f localMatrix = new Matrix4f()
                     .identity()
                     .translate(localPosition)
+                    .translate(localPivot)
                     .rotateY(ry)
                     .rotateX(rx)
                     .rotateZ(rz)
-                    .scale(localScale);
+                    .scale(localScale)
+                    .translate(new Vector3f(localPivot).negate());
 
             cachedModelMatrix = localMatrix;
-
             dirty = false;
 
             if (parent != null)
@@ -242,7 +261,6 @@ public class Transform extends Component
     private void markDirty()
     {
         dirty = true;
-
         children.forEach(Transform::markDirty);
     }
 
@@ -251,7 +269,8 @@ public class Transform extends Component
     {
         return "\nPosition: [" + localPosition.x + ", " + localPosition.y + ", " + localPosition.z + "]\n" +
                 "Rotation: [" + localRotation.x + ", " + localRotation.y + ", " + localRotation.z + "]\n" +
-                "Scale: [" + localScale.x + ", " + localScale.y + ", " + localScale.z + "]";
+                "Scale: ["    + localScale.x    + ", " + localScale.y    + ", " + localScale.z    + "]\n" +
+                "Pivot: ["    + localPivot.x    + ", " + localPivot.y    + ", " + localPivot.z    + "]\n";
     }
 
     public static @NotNull Transform create(@NotNull Vector3f position, @NotNull Vector3f rotation, @NotNull Vector3f scale)
@@ -261,6 +280,7 @@ public class Transform extends Component
         result.localPosition = new Vector3f(position);
         result.localRotation = new Vector3f(rotation);
         result.localScale = new Vector3f(scale);
+        result.localPivot = new Vector3f(0, 0, 0);
 
         return result;
     }

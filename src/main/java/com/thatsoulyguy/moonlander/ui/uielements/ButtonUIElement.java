@@ -88,7 +88,7 @@ public class ButtonUIElement extends UIElement
         object.addComponent(Mesh.create(DEFAULT_VERTICES, DEFAULT_INDICES));
 
         object.getComponentNotNull(Mesh.class).setTransparent(true);
-        object.getComponentNotNull(Mesh.class).onLoad();
+        object.getComponentNotNull(Mesh.class).generate();
     }
 
     public void addOnLeftClickedEvent(@NotNull SerializableRunnable runnable)

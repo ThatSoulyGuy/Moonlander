@@ -24,12 +24,12 @@ public abstract class Component implements Serializable
     public void onLoad() { }
     public void onUnload() { }
 
-    public void setGameObject(@NotNull GameObject gameObject)
+    public final void setGameObject(@NotNull GameObject gameObject)
     {
         this.gameObject = gameObject;
     }
 
-    public @NotNull GameObject getGameObject()
+    public final @NotNull GameObject getGameObject()
     {
         return gameObject;
     }
@@ -46,12 +46,12 @@ public abstract class Component implements Serializable
         in.defaultReadObject();
     }
 
-    public void setTransient(boolean isTransient)
+    public final void setTransient(boolean isTransient)
     {
         this.isTransient = isTransient;
     }
 
-    public boolean getTransient()
+    public final boolean getTransient()
     {
         return isTransient;
     }

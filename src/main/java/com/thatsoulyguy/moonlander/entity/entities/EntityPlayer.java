@@ -10,7 +10,8 @@ import com.thatsoulyguy.moonlander.block.BlockRegistry;
 import com.thatsoulyguy.moonlander.collider.Collider;
 import com.thatsoulyguy.moonlander.collider.colliders.BoxCollider;
 import com.thatsoulyguy.moonlander.core.Time;
-import com.thatsoulyguy.moonlander.entity.Entity;
+import com.thatsoulyguy.moonlander.entity.LivingEntity;
+import com.thatsoulyguy.moonlander.entity.model.EntityModel;
 import com.thatsoulyguy.moonlander.gameplay.OxygenBubble;
 import com.thatsoulyguy.moonlander.gameplay.OxygenBubbleManager;
 import com.thatsoulyguy.moonlander.input.*;
@@ -22,7 +23,6 @@ import com.thatsoulyguy.moonlander.math.Raycast;
 import com.thatsoulyguy.moonlander.math.Rigidbody;
 import com.thatsoulyguy.moonlander.render.*;
 import com.thatsoulyguy.moonlander.system.GameObject;
-import com.thatsoulyguy.moonlander.system.GameObjectManager;
 import com.thatsoulyguy.moonlander.system.Layer;
 import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
 import com.thatsoulyguy.moonlander.ui.MenuManager;
@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class EntityPlayer extends Entity
+public class EntityPlayer extends LivingEntity
 {
     private @EffectivelyNotNull Camera camera;
 
@@ -82,6 +82,8 @@ public class EntityPlayer extends Entity
     private int oxygen = 100;
 
     private float footstepTimer = 0f;
+
+    private static EntityPlayer instance;
 
     @Override
     public void initialize()
@@ -159,7 +161,7 @@ public class EntityPlayer extends Entity
 
         blockBreakageObject.getComponentNotNull(Mesh.class).setTransparent(true);
 
-        blockBreakageObject.getComponentNotNull(Mesh.class).onLoad();
+        blockBreakageObject.getComponentNotNull(Mesh.class).generate();
 
         blockBreakageMesh = blockBreakageObject.getComponentNotNull(Mesh.class);
 
@@ -168,12 +170,15 @@ public class EntityPlayer extends Entity
         inventoryMenu.addItem(ItemRegistry.ITEM_FURNACE_BLOCK.getId(), (byte) 1);
         inventoryMenu.addItem(ItemRegistry.ITEM_ALUMINIUM_PICKAXE.getId(), (byte) 1);
         inventoryMenu.addItem(ItemRegistry.ITEM_COAL.getId(), (byte) 10);
-        inventoryMenu.addItem(ItemRegistry.ITEM_IRON_ORE_BLOCK.getId(), (byte) 10);
+        inventoryMenu.addItem(ItemRegistry.ITEM_OIL_BUCKET.getId(), (byte) 10);
+        inventoryMenu.addItem(ItemRegistry.ITEM_FUEL_REFINER.getId(), (byte) 1);
 
         oxygenDepletionCooldownTimer = oxygenDepletionCooldownTimerStart;
         suffocationCooldownTimer = suffocationCooldownTimerStart;
         oxygenRefillCooldownTimer = oxygenRefillCooldownTimerStart;
         blockMiningAudioTimer = blockMiningAudioTimerStart;
+
+        instance = this;
     }
 
     @Override
@@ -442,11 +447,9 @@ public class EntityPlayer extends Entity
                     InventoryMenu.SlotData currentlySelectedSlot = inventoryMenu.getSlot(new Vector2i(0, inventoryMenu.currentSlotSelected));
 
                     float blockHardness;
+
                     if (currentlySelectedSlot != null)
-                    {
-                        blockHardness = block.getHardness() *
-                                Objects.requireNonNull(ItemRegistry.get(currentlySelectedSlot.id())).getBreakageSpeedModifier();
-                    }
+                        blockHardness = block.getHardness() * Objects.requireNonNull(ItemRegistry.get(currentlySelectedSlot.id())).getBreakageSpeedModifier();
                     else
                         blockHardness = block.getHardness();
 
@@ -572,7 +575,21 @@ public class EntityPlayer extends Entity
                     if (slot.count() <= 0 || !item.isBlockItem())
                         return;
 
+                    Block block = BlockRegistry.get(currentBlock);
+
                     World.getLocalWorld().setBlock(this, point, item.getAssociatedBlock().getId());
+
+                    GameObject soundObject = GameObject.create("block.break" + new Random().nextInt(4096), Layer.DEFAULT);
+
+                    soundObject.addComponent(block.getBrokenAudioClips().get(new Random().nextInt(block.getBrokenAudioClips().size() - 1)));
+
+                    soundObject.getTransform().setLocalPosition(new Vector3f(CoordinateHelper.worldToBlockCoordinates(point)));
+
+                    AudioClip clip = soundObject.getComponentNotNull(AudioClip.class);
+
+                    clip.setLooping(false);
+                    clip.setVolume(30.0f);
+                    clip.play(true);
 
                     if (Objects.requireNonNull(ItemRegistry.get(slot.id())).getToolType() == Tool.BUCKET)
                         inventoryMenu.setSlot(new Vector2i(new Vector2i(0, inventoryMenu.currentSlotSelected)),
@@ -697,23 +714,37 @@ public class EntityPlayer extends Entity
 
         if (rigidbody.isGrounded() && movement.lengthSquared() > 0.001f)
         {
-            footstepTimer -= Time.getDeltaTime();
+            float currentSpeed = (rigidbody.getActualMovement().length() * 100) * 2;
 
-            if (footstepTimer <= 0f)
+            if (currentSpeed > 0.2f)
             {
-                GameObject soundObject = GameObject.create("player.step.stone" + new Random().nextInt(4096), Layer.DEFAULT);
+                footstepTimer -= Time.getDeltaTime();
 
-                soundObject.addComponent(Objects.requireNonNull(AudioManager.get("player.step.stone." + new Random().nextInt(6))));
+                if (footstepTimer <= 0f)
+                {
+                    GameObject soundObject = GameObject.create("player.step.stone" + new Random().nextInt(4096), Layer.DEFAULT);
 
-                soundObject.getTransform().setLocalPosition(AudioListener.getLocalListener().getGameObject().getTransform().getLocalPosition());
+                    soundObject.addComponent(Objects.requireNonNull(AudioManager.get("player.step.stone." + new Random().nextInt(6))));
 
-                AudioClip clip = soundObject.getComponentNotNull(AudioClip.class);
+                    soundObject.getTransform().setLocalPosition(AudioListener.getLocalListener().getGameObject().getTransform().getLocalPosition());
 
-                clip.setLooping(false);
-                clip.setVolume(movement.length() * 1.35f);
-                clip.play(true);
+                    AudioClip clip = soundObject.getComponentNotNull(AudioClip.class);
+                    clip.setLooping(false);
 
-                footstepTimer = 0.5f;
+                    float maxSpeed = 10.0f;
+                    float volume = Math.min(currentSpeed / maxSpeed, 1.0f);
+
+                    clip.setVolume(volume);
+
+                    clip.play(true);
+
+                    float minInterval = 0.3f;
+                    float maxInterval = 0.7f;
+
+                    float clampedSpeed = Math.min(currentSpeed, maxSpeed);
+
+                    footstepTimer = maxInterval - (clampedSpeed / maxSpeed) * (maxInterval - minInterval);
+                }
             }
         }
         else
@@ -782,17 +813,17 @@ public class EntityPlayer extends Entity
             )
         );
 
-        blockBreakageMesh.onLoad();
+        blockBreakageMesh.generate();
     }
 
     @Override
-    public String getDisplayName()
+    public @NotNull String getDisplayName()
     {
         return "Player**";
     }
 
     @Override
-    public String getRegistryName()
+    public @NotNull String getRegistryName()
     {
         return "entity_player";
     }
@@ -813,6 +844,18 @@ public class EntityPlayer extends Entity
     public int getMaximumHealth()
     {
         return 20;
+    }
+
+    @Override
+    public @NotNull Vector3f getBoundingBoxSize()
+    {
+        return new Vector3f(0.65f, 1.89f, 0.65f);
+    }
+
+    @Override
+    public <T extends EntityModel> @Nullable T getModel()
+    {
+        return null;
     }
 
     public @NotNull Camera getCamera()
@@ -905,25 +948,30 @@ public class EntityPlayer extends Entity
         selectorMesh.uninitialize();
     }
 
+    public static @NotNull EntityPlayer getInstance()
+    {
+        return instance;
+    }
+
     @CustomConstructor("create")
     public static class SelectorMesh implements Serializable
     {
         private static final float[] BOX_VERTICES =
         {
-            -0.5f, -0.5f, -0.5f,   0.5f, -0.5f, -0.5f,
-             0.5f, -0.5f, -0.5f,   0.5f,  0.5f, -0.5f,
-             0.5f,  0.5f, -0.5f,  -0.5f,  0.5f, -0.5f,
-            -0.5f,  0.5f, -0.5f,  -0.5f, -0.5f, -0.5f,
+            -0.51f, -0.51f, -0.51f,   0.51f, -0.51f, -0.51f,
+             0.51f, -0.51f, -0.51f,   0.51f,  0.51f, -0.51f,
+             0.51f,  0.51f, -0.51f,  -0.51f,  0.51f, -0.51f,
+            -0.51f,  0.51f, -0.51f,  -0.51f, -0.51f, -0.51f,
 
-            -0.5f, -0.5f,  0.5f,   0.5f, -0.5f,  0.5f,
-             0.5f, -0.5f,  0.5f,   0.5f,  0.5f,  0.5f,
-             0.5f,  0.5f,  0.5f,  -0.5f,  0.5f,  0.5f,
-            -0.5f,  0.5f,  0.5f,  -0.5f, -0.5f,  0.5f,
+            -0.51f, -0.51f,  0.51f,   0.51f, -0.51f,  0.51f,
+             0.51f, -0.51f,  0.51f,   0.51f,  0.51f,  0.51f,
+             0.51f,  0.51f,  0.51f,  -0.51f,  0.51f,  0.51f,
+            -0.51f,  0.51f,  0.51f,  -0.51f, -0.51f,  0.51f,
 
-            -0.5f, -0.5f, -0.5f,  -0.5f, -0.5f,  0.5f,
-             0.5f, -0.5f, -0.5f,   0.5f, -0.5f,  0.5f,
-             0.5f,  0.5f, -0.5f,   0.5f,  0.5f,  0.5f,
-            -0.5f,  0.5f, -0.5f,  -0.5f,  0.5f,  0.5f,
+            -0.51f, -0.51f, -0.51f,  -0.51f, -0.51f,  0.51f,
+             0.51f, -0.51f, -0.51f,   0.51f, -0.51f,  0.51f,
+             0.51f,  0.51f, -0.51f,   0.51f,  0.51f,  0.51f,
+            -0.51f,  0.51f, -0.51f,  -0.51f,  0.51f,  0.51f,
         };
 
         private final List<Vector3f> vertices = new CopyOnWriteArrayList<>();

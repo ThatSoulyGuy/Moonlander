@@ -9,7 +9,6 @@ import com.thatsoulyguy.moonlander.system.Component;
 import com.thatsoulyguy.moonlander.system.GameObject;
 import com.thatsoulyguy.moonlander.system.Layer;
 import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
-import com.thatsoulyguy.moonlander.util.ManagerLinkedClass;
 import com.thatsoulyguy.moonlander.world.TextureAtlas;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -275,7 +274,7 @@ public abstract class UIElement implements Serializable
     public void setColor(@NotNull Vector3f color)
     {
         object.getComponentNotNull(Mesh.class).setVertices(object.getComponentNotNull(Mesh.class).getVertices().stream().map(vertex -> Vertex.create(vertex.getPosition(), color, vertex.getNormal(), vertex.getUVs())).collect(Collectors.toList()));
-        object.getComponentNotNull(Mesh.class).onLoad();
+        object.getComponentNotNull(Mesh.class).generate();
     }
 
     public boolean getTransparent()
@@ -354,7 +353,7 @@ public abstract class UIElement implements Serializable
         });
 
         object.getComponentNotNull(Mesh.class).setVertices(vertices);
-        MainThreadExecutor.submit(() -> object.getComponentNotNull(Mesh.class).onLoad());
+        MainThreadExecutor.submit(() -> object.getComponentNotNull(Mesh.class).generate());
     }
 
     public static <T extends UIElement> @NotNull T create(@NotNull Class<T> clazz, @NotNull String name, @NotNull Vector2f position, @NotNull Vector2f dimensions)

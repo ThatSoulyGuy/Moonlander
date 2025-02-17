@@ -148,6 +148,8 @@ public class LevelManager
             for (int n = 0; n < gameObjectNamesCount; n++)
                 GameObjectManager.register(GameObject.load(new File(gameObjectsDirectory, level.getGameObjectNames().get(n) + ".bin")));
 
+            GameObjectManager.loadAll();
+
             objectInputStream.close();
 
             levels.putIfAbsent(level.getName(), level);

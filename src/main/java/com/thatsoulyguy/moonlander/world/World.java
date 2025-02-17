@@ -3,9 +3,11 @@ package com.thatsoulyguy.moonlander.world;
 import com.thatsoulyguy.moonlander.annotation.CustomConstructor;
 import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
 import com.thatsoulyguy.moonlander.collider.Collider;
+import com.thatsoulyguy.moonlander.collider.colliders.BoxCollider;
 import com.thatsoulyguy.moonlander.collider.colliders.VoxelMeshCollider;
 import com.thatsoulyguy.moonlander.core.Settings;
 import com.thatsoulyguy.moonlander.entity.Entity;
+import com.thatsoulyguy.moonlander.math.Rigidbody;
 import com.thatsoulyguy.moonlander.math.Transform;
 import com.thatsoulyguy.moonlander.render.Mesh;
 import com.thatsoulyguy.moonlander.render.ShaderManager;
@@ -14,6 +16,7 @@ import com.thatsoulyguy.moonlander.system.GameObject;
 import com.thatsoulyguy.moonlander.system.GameObjectManager;
 import com.thatsoulyguy.moonlander.system.Layer;
 import com.thatsoulyguy.moonlander.util.CoordinateHelper;
+import com.thatsoulyguy.moonlander.util.Pair;
 import com.thatsoulyguy.moonlander.util.SerializableObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,6 +53,8 @@ public class World extends Component
     private transient @EffectivelyNotNull ExecutorService chunkGenerationExecutor;
 
     private final @NotNull SerializableObject chunkLock = new SerializableObject();
+
+    private final @NotNull Map<Pair<Integer, Class<? extends Entity>>, Entity> entities = new ConcurrentHashMap<>();
 
     private World() { }
 
@@ -157,7 +162,12 @@ public class World extends Component
             return -1;
         else
         {
-            return Objects.requireNonNull(getChunk(chunkCoordinates)).getBlock(blockCoordinates);
+            Chunk chunk = getChunk(chunkCoordinates);
+
+            if (chunk == null)
+                return -1;
+            else
+                return chunk.getBlock(blockCoordinates);
         }
     }
 
@@ -176,16 +186,73 @@ public class World extends Component
             return -1;
         else
         {
-            return Objects.requireNonNull(getChunk(chunkCoordinates)).getBlock(blockPosition);
+            Chunk chunk = getChunk(chunkCoordinates);
+
+            if (chunk == null)
+                return -1;
+            else
+                return chunk.getBlock(blockPosition);
         }
     }
 
     public @Nullable Chunk getChunk(@NotNull Vector3i chunkPosition)
     {
-        if (!loadedChunks.contains(chunkPosition))
-            return null;
+        String chunkName = "default.chunk_" + chunkPosition.x + "_" + chunkPosition.y + "_" + chunkPosition.z;
 
-        return Objects.requireNonNull(GameObjectManager.get("default.chunk_" + chunkPosition.x + "_" + chunkPosition.y + "_" + chunkPosition.z)).getComponent(Chunk.class);
+        if (GameObjectManager.has(chunkName) && loadedChunks.contains(chunkPosition))
+            return Objects.requireNonNull(GameObjectManager.get(chunkName)).getComponent(Chunk.class);
+        else
+            return null;
+    }
+
+    public <T extends Entity> int spawnEntity(@NotNull Vector3f position, @NotNull Class<T> type)
+    {
+        Entity entity = Entity.create(type);
+
+        int randomNumber = new Random().nextInt(4096);
+
+        entity.setId(randomNumber);
+
+        GameObject object = GameObject.create("default." + type.getName() + "_" + randomNumber, Layer.DEFAULT);
+
+        object.getTransform().setLocalPosition(position);
+        object.addComponent(Collider.create(BoxCollider.class).setSize(entity.getBoundingBoxSize()));
+        object.addComponent(Rigidbody.create());
+        object.addComponent(entity);
+
+        entity.onSpawned(this);
+
+        entities.putIfAbsent(new Pair<>(randomNumber, type), entity);
+
+        return randomNumber;
+    }
+
+    public <T extends Entity> @Nullable Entity getEntity(int id, @NotNull Class<T> type)
+    {
+        if (!entities.containsKey(new Pair<Integer, Class<? extends Entity>>(id, type)))
+        {
+            System.err.println("Couldn't find entity: '" + id + "' with type: '" + type + "'!");
+            return null;
+        }
+
+        return entities.get(new Pair<Integer, Class<? extends Entity>>(id, type));
+    }
+
+    public <T extends Entity> void killEntity(@NotNull Entity killer, int id, @NotNull Class<T> type)
+    {
+        if (!entities.containsKey(new Pair<Integer, Class<? extends Entity>>(id, type)))
+        {
+            System.err.println("Couldn't find entity: '" + id + "' with type: '" + type + "'!");
+            return;
+        }
+
+        Entity entity = entities.get(new Pair<Integer, Class<? extends Entity>>(id, type));
+
+        entity.onKilled(this, killer);
+
+        entities.remove(new Pair<Integer, Class<? extends Entity>>(id, type));
+
+        GameObjectManager.unregister(entity.getGameObject().getName());
     }
 
     public static @NotNull World getLocalWorld()

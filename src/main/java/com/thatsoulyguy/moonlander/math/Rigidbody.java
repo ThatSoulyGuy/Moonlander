@@ -21,10 +21,13 @@ public class Rigidbody extends Component
     public static final float GRAVITY = -6.8f;
     public static final float DRAG = 0.01f;
 
-    private final @NotNull Vector3f velocity = new Vector3f(0,0,0);
+    private final @NotNull Vector3f desiredVelocity = new Vector3f(0,0,0);
 
     private boolean isGrounded = false;
     private @EffectivelyNotNull BoxCollider groundedCheck;
+
+    private final Vector3f previousPosition = new Vector3f();
+    private final Vector3f currentPosition = new Vector3f();
 
     private Rigidbody() { }
 
@@ -39,6 +42,8 @@ public class Rigidbody extends Component
             return;
         }
 
+        previousPosition.set(getGameObject().getTransform().getWorldPosition());
+
         GameObject groundedCheckObject = getGameObject().addChild(GameObject.create("default.grounded_check", Layer.DEFAULT));
 
         groundedCheck = groundedCheckObject.addComponent(Collider.create(BoxCollider.class).setSize(new Vector3f(self.getSize().x - 0.001f, self.getSize().y, self.getSize().z - 0.001f)));
@@ -52,6 +57,7 @@ public class Rigidbody extends Component
     public void update()
     {
         Collider self = getGameObject().getComponent(BoxCollider.class);
+
         if (self == null)
         {
             System.err.println("Collider component missing from GameObject: '" + getGameObject().getName() + "'!");
@@ -59,18 +65,20 @@ public class Rigidbody extends Component
         }
 
         if (!isGrounded)
-            velocity.y += GRAVITY * Time.getDeltaTime();
+            desiredVelocity.y += GRAVITY * Time.getDeltaTime();
 
-        velocity.x *= (float) Math.pow(DRAG, Time.getDeltaTime());
-        velocity.z *= (float) Math.pow(DRAG, Time.getDeltaTime());
+        desiredVelocity.x *= (float) Math.pow(DRAG, Time.getDeltaTime());
+        desiredVelocity.z *= (float) Math.pow(DRAG, Time.getDeltaTime());
 
         Transform transform = getGameObject().getTransform();
         Vector3f currentPosition = transform.getWorldPosition();
 
+        previousPosition.set(currentPosition);
+
         Vector3f newPosition = new Vector3f(
-                currentPosition.x + velocity.x * Time.getDeltaTime(),
-                currentPosition.y + velocity.y * Time.getDeltaTime(),
-                currentPosition.z + velocity.z * Time.getDeltaTime()
+                currentPosition.x + desiredVelocity.x * Time.getDeltaTime(),
+                currentPosition.y + desiredVelocity.y * Time.getDeltaTime(),
+                currentPosition.z + desiredVelocity.z * Time.getDeltaTime()
         );
 
         transform.setLocalPosition(newPosition);
@@ -105,15 +113,15 @@ public class Rigidbody extends Component
                             resolution.normalize().mul(1.0f);
 
                         transform.translate(resolution);
-                        velocity.set(0.0f, 0.0f, 0.0f);
+                        desiredVelocity.set(0.0f, 0.0f, 0.0f);
 
                         if (resolution.y > 0)
                         {
                             collidedFromBelow = true;
-                            velocity.y = 0.0f;
+                            desiredVelocity.y = 0.0f;
                         }
                         else if (resolution.y < 0)
-                            velocity.y = 0.0f;
+                            desiredVelocity.y = 0.0f;
                     }
                 }
             }
@@ -161,9 +169,22 @@ public class Rigidbody extends Component
         isGrounded = collidedFromBelow || groundCheckHit;
 
         if (isGrounded)
-            velocity.y = 0.0f;
+            desiredVelocity.y = 0.0f;
+
+        this.currentPosition.set(transform.getWorldPosition());
     }
 
+    /**
+     * Calculates and returns the actual movement vector that was applied during the current update.
+     * This is computed as the difference between the object's world position at the end of the update
+     * and its position at the beginning.
+     *
+     * @return The actual displacement vector.
+     */
+    public Vector3f getActualMovement()
+    {
+        return new Vector3f(currentPosition).sub(previousPosition, new Vector3f());
+    }
 
     /**
      * Adds force to the Rigidbody
@@ -172,9 +193,9 @@ public class Rigidbody extends Component
      */
     public void addForce(@NotNull Vector3f force)
     {
-        velocity.x += force.x;
-        velocity.y += force.y;
-        velocity.z += force.z;
+        desiredVelocity.x += force.x;
+        desiredVelocity.y += force.y;
+        desiredVelocity.z += force.z;
     }
 
     /**
@@ -191,11 +212,11 @@ public class Rigidbody extends Component
      * Sets the velocity of the Rigidbody.
      * This can be used to apply external forces or impulses.
      *
-     * @param velocity The new velocity vector.
+     * @param desiredVelocity The new velocity vector.
      */
-    public void setVelocity(Vector3f velocity)
+    public void setDesiredVelocity(Vector3f desiredVelocity)
     {
-        this.velocity.set(velocity);
+        this.desiredVelocity.set(desiredVelocity);
     }
 
     /**
@@ -203,9 +224,9 @@ public class Rigidbody extends Component
      *
      * @return The velocity vector.
      */
-    public Vector3f getVelocity()
+    public Vector3f getDesiredVelocity()
     {
-        return new Vector3f(velocity);
+        return new Vector3f(desiredVelocity);
     }
 
     public static @NotNull Rigidbody create()

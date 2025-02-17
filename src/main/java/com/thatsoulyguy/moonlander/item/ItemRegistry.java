@@ -6,8 +6,11 @@ import com.thatsoulyguy.moonlander.block.Block;
 import com.thatsoulyguy.moonlander.block.BlockRegistry;
 import com.thatsoulyguy.moonlander.entity.Entity;
 import com.thatsoulyguy.moonlander.entity.entities.EntityPlayer;
+import com.thatsoulyguy.moonlander.entity.entities.EntityRocket;
+import com.thatsoulyguy.moonlander.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 import java.util.List;
@@ -771,6 +774,57 @@ public class ItemRegistry
         }
     };
 
+    public static final Item ITEM_FUEL_BUCKET = new Item()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_fuel_bucket";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Fuel Bucket";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "fuel_bucket";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+
+        @Override
+        public @NotNull Block getAssociatedBlock()
+        {
+            return BlockRegistry.BLOCK_FUEL;
+        }
+
+        @Override
+        public @NotNull Tool getToolType()
+        {
+            return Tool.BUCKET;
+        }
+    };
+
     public static final Item ITEM_KNOWLEDGE_BOOK = new Item()
     {
         public final @NotNull List<String> pages = List.of
@@ -1158,6 +1212,190 @@ public class ItemRegistry
         }
     };
 
+    public static final Item ITEM_FUEL_REFINER = new Item()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_fuel_refiner";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Fuel Refiner";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "fuel_refiner_block";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+
+        @Override
+        public @NotNull Block getAssociatedBlock()
+        {
+            return BlockRegistry.BLOCK_FUEL_REFINER;
+        }
+    };
+
+    public static final Item ITEM_ALUMINUM_BLOCK = new Item()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_aluminum_block";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Aluminum Block";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "aluminum_block";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+
+        @Override
+        public @NotNull Block getAssociatedBlock()
+        {
+            return BlockRegistry.BLOCK_ALUMINUM_BLOCK;
+        }
+    };
+
+    public static final Item ITEM_IRON_BLOCK = new Item()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_iron_block";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Iron Block";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "iron_block";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+
+        @Override
+        public @NotNull Block getAssociatedBlock()
+        {
+            return BlockRegistry.BLOCK_IRON_BLOCK;
+        }
+    };
+
+    public static final Item ITEM_ROCKET_ENTITY = new Item()
+    {
+        @Override
+        public void onInteractedWith(@NotNull Entity interactor)
+        {
+            if (interactor instanceof EntityPlayer player)
+            {
+                World.getLocalWorld().spawnEntity(player.getGameObject().getTransform().getWorldPosition().add(new Vector3f(0.0f, 0.0f, 10.0f)), EntityRocket.class);
+                player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), ItemRegistry.ITEM_AIR.getId(), (byte) 1);
+            }
+        }
+
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_rocket_entity";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Rocket (completes the game)";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "rocket_entity";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+    };
+
     public static final Item ITEM_IRONCOAL_COMPOSITE = new Item()
     {
         @Override
@@ -1260,11 +1498,16 @@ public class ItemRegistry
         register(ITEM_COAL);
         register(ITEM_EMPTY_BUCKET);
         register(ITEM_OIL_BUCKET);
+        register(ITEM_FUEL_BUCKET);
         register(ITEM_KNOWLEDGE_BOOK);
         register(ITEM_CRAFTING_TABLE_BLOCK);
         register(ITEM_FURNACE_BLOCK);
         register(ITEM_OXYGEN_GENERATOR_BLOCK);
         register(ITEM_COMPOSITOR_BLOCK);
+        register(ITEM_FUEL_REFINER);
+        register(ITEM_ALUMINUM_BLOCK);
+        register(ITEM_IRON_BLOCK);
+        register(ITEM_ROCKET_ENTITY);
         register(ITEM_IRONCOAL_COMPOSITE);
         register(ITEM_IRONALUMINUM_COMPOSITE);
     }

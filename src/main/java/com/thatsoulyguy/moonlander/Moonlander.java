@@ -16,6 +16,7 @@ import com.thatsoulyguy.moonlander.core.Window;
 import com.thatsoulyguy.moonlander.crafting.CraftingRecipeRegistry;
 import com.thatsoulyguy.moonlander.entity.Entity;
 import com.thatsoulyguy.moonlander.entity.entities.EntityPlayer;
+import com.thatsoulyguy.moonlander.entity.entities.EntityRocket;
 import com.thatsoulyguy.moonlander.input.InputManager;
 import com.thatsoulyguy.moonlander.input.KeyCode;
 import com.thatsoulyguy.moonlander.input.KeyState;
@@ -55,8 +56,6 @@ import org.lwjgl.glfw.GLFWVidMode;
 import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 public class Moonlander
@@ -106,6 +105,7 @@ public class Moonlander
 
         TextureManager.register(Texture.create("debug", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/debug.png")));
         TextureManager.register(Texture.create("error", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/error.png")));
+        TextureManager.register(Texture.create("entity.rocket", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/entity/rocket.png")));
         TextureManager.register(Texture.create("ui.hotbar", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/hotbar.png")));
         TextureManager.register(Texture.create("ui.hotbar_selector", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/hotbar_selector.png")));
         TextureManager.register(Texture.create("ui.transparency", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/transparency.png")));
@@ -219,18 +219,10 @@ public class Moonlander
 
     public void initialize()
     {
-        //LevelManager.loadLevel(FileHelper.getPersistentDataPath("Invasion2") + "/overworld", true);
+        //LevelManager.loadLevel(FileHelper.getPersistentDataPath("Moonlander") + "/overworld", true);
 
         //*
         LevelManager.createLevel("overworld", true);
-
-        GameObject player = GameObject.create("default.player", Layer.DEFAULT);
-
-        player.getTransform().setLocalPosition(new Vector3f(0.0f, 180.0f, 0.0f));
-
-        player.addComponent(Collider.create(BoxCollider.class).setSize(new Vector3f(0.65f, 1.89f, 0.65f)));
-        player.addComponent(Rigidbody.create());
-        player.addComponent(Entity.create(EntityPlayer.class));
 
         GameObject overworld = GameObject.create("default.world", Layer.DEFAULT);
 
@@ -240,16 +232,20 @@ public class Moonlander
 
         world.addTerrainGenerator(TerrainGenerator.create(GroundTerrainGenerator.class));
         world.addTerrainGenerator(TerrainGenerator.create(CaveTerrainGenerator.class));
+
+        world.spawnEntity(new Vector3f(0.0f, 180.0f, 0.0f), EntityPlayer.class);
+
+        world.spawnEntity(new Vector3f(0.0f, 120.0f, 0.0f), EntityRocket.class);
         //*/
 
-        camera = Objects.requireNonNull(GameObjectManager.get("default.player")).getComponentNotNull(EntityPlayer.class).getCamera();
+        camera = EntityPlayer.getInstance().getCamera();
     }
 
     public void update()
     {
         Time.update();
 
-        World.getLocalWorld().chunkLoader = Objects.requireNonNull(GameObjectManager.get("default.player")).getTransform();
+        World.getLocalWorld().chunkLoader = EntityPlayer.getInstance().getGameObject().getTransform();
 
         GameObjectManager.updateMainThread();
         GameObjectManager.update();
@@ -288,6 +284,10 @@ public class Moonlander
 
             Vector3f minB = new Vector3f(posB).sub(new Vector3f(sizeB).mul(0.5f));
             Vector3f maxB = new Vector3f(posB).add(new Vector3f(sizeB).mul(0.5f));
+
+            DebugRenderer.addBox(minA, maxA, new Vector3f(0.0f, 1.0f, 0.0f));
+
+            DebugRenderer.addBox(minB, maxB, new Vector3f(0.0f, 0.0f, 1.0f));
 
             boolean intersects = Collider.intersectsGeneric(minA, maxA, minB, maxB);
 
@@ -403,7 +403,7 @@ public class Moonlander
 
     public void uninitialize()
     {
-        LevelManager.saveLevel("overworld", FileHelper.getPersistentDataPath("Invasion2"));
+        LevelManager.saveLevel("overworld", FileHelper.getPersistentDataPath("Moonlander"));
 
         if (Skybox.CURRENT_SKYBOX != null)
             Skybox.CURRENT_SKYBOX.uninitialize();

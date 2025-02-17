@@ -56,6 +56,11 @@ public class Mesh extends Component
     @Override
     public void onLoad()
     {
+        generate();
+    }
+
+    public void generate()
+    {
         if (vao == -1)
         {
             MainThreadExecutor.submit(() ->
