@@ -81,7 +81,7 @@ public class EntityPlayer extends LivingEntity
     private final float blockMiningAudioTimerStart = 0.25f;
     private float blockMiningAudioTimer;
 
-    private int oxygen = 3;
+    private int oxygen = 100;
 
     private float footstepTimer = 0f;
 

@@ -25,6 +25,7 @@ import org.joml.Random;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
@@ -99,7 +100,7 @@ public class Levels
 
             TextUIElement text = (TextUIElement) panel.addElement(UIElement.create(TextUIElement.class, "new_save_text", new Vector2f(0.0f, 0.0f), new Vector2f(400.0f, 40.0f).mul(0.5f).mul(Settings.UI_SCALE.getValue())));
 
-            text.setText("New Save");
+            text.setText("New Game");
             text.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
             text.setFontSize((int) (10 * Settings.UI_SCALE.getValue()));
             text.setAlignment(TextUIElement.TextAlignment.VERTICAL_CENTER, TextUIElement.TextAlignment.HORIZONTAL_CENTER);
@@ -112,40 +113,45 @@ public class Levels
         {
             ButtonUIElement loadSave = (ButtonUIElement) panel.addElement(UIElement.create(ButtonUIElement.class, "load_save", new Vector2f(0.0f, 0.0f), new Vector2f(400.0f, 40.0f).mul(0.5f).mul(Settings.UI_SCALE.getValue())));
 
-            loadSave.setTexture(Objects.requireNonNull(TextureManager.get("ui.button_default")));
-
-            loadSave.addOnLeftClickedEvent(() ->
+            if (new File(FileHelper.getPersistentDataPath("Moonlander") + "/overworld").exists())
             {
+                loadSave.setTexture(Objects.requireNonNull(TextureManager.get("ui.button_default")));
+
+                loadSave.addOnLeftClickedEvent(() ->
+                {
+                    loadSave.setTexture(Objects.requireNonNull(TextureManager.get("ui.button_disabled")));
+
+                    GameObject soundObject = GameObject.create("ui.click" + new Random().nextInt(4096), Layer.DEFAULT);
+
+                    soundObject.addComponent(Objects.requireNonNull(AudioManager.get("ui.click")));
+
+                    soundObject.getTransform().setLocalPosition(AudioListener.getLocalListener().getGameObject().getTransform().getLocalPosition());
+
+                    AudioClip clip = soundObject.getComponentNotNull(AudioClip.class);
+
+                    clip.setLooping(false);
+                    clip.play(true);
+
+                    LevelManager.unloadCurrentLevel();
+
+                    AudioListener.reset();
+
+                    UIManager.initialize();
+
+                    LevelManager.loadLevel(FileHelper.getPersistentDataPath("Moonlander") + "/overworld", true);
+                });
+
+                loadSave.addOnHoveringBeginEvent(() -> loadSave.setTexture(Objects.requireNonNull(TextureManager.get("ui.button_selected"))));
+                loadSave.addOnHoveringEndEvent(() -> loadSave.setTexture(Objects.requireNonNull(TextureManager.get("ui.button_default"))));
+            }
+            else
                 loadSave.setTexture(Objects.requireNonNull(TextureManager.get("ui.button_disabled")));
-
-                GameObject soundObject = GameObject.create("ui.click" + new Random().nextInt(4096), Layer.DEFAULT);
-
-                soundObject.addComponent(Objects.requireNonNull(AudioManager.get("ui.click")));
-
-                soundObject.getTransform().setLocalPosition(AudioListener.getLocalListener().getGameObject().getTransform().getLocalPosition());
-
-                AudioClip clip = soundObject.getComponentNotNull(AudioClip.class);
-
-                clip.setLooping(false);
-                clip.play(true);
-
-                LevelManager.unloadCurrentLevel();
-
-                AudioListener.reset();
-
-                UIManager.initialize();
-
-                LevelManager.loadLevel(FileHelper.getPersistentDataPath("Moonlander") + "/overworld", true);
-            });
-
-            loadSave.addOnHoveringBeginEvent(() -> loadSave.setTexture(Objects.requireNonNull(TextureManager.get("ui.button_selected"))));
-            loadSave.addOnHoveringEndEvent(() -> loadSave.setTexture(Objects.requireNonNull(TextureManager.get("ui.button_default"))));
 
             loadSave.setOffset(new Vector2f(0.0f, 10.0f));
 
             TextUIElement text = (TextUIElement) panel.addElement(UIElement.create(TextUIElement.class, "load_save_text", new Vector2f(0.0f, 0.0f), new Vector2f(400.0f, 40.0f).mul(0.5f).mul(Settings.UI_SCALE.getValue())));
 
-            text.setText("Load Save");
+            text.setText("Load Last Game");
             text.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
             text.setFontSize((int) (10 * Settings.UI_SCALE.getValue()));
             text.setAlignment(TextUIElement.TextAlignment.VERTICAL_CENTER, TextUIElement.TextAlignment.HORIZONTAL_CENTER);

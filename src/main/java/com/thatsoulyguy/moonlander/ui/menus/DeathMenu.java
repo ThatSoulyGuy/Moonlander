@@ -43,6 +43,19 @@ public class DeathMenu extends Menu
         background.setStretch(List.of(UIElement.Stretch.LEFT, UIElement.Stretch.RIGHT, UIElement.Stretch.TOP, UIElement.Stretch.BOTTOM));
 
         {
+            TextUIElement text = (TextUIElement) menu.addElement(UIElement.create(TextUIElement.class, "information_text", new Vector2f(0.0f, 0.0f), new Vector2f(400.0f, 80.0f)));
+
+            text.setText("You Died!");
+            text.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
+            text.setFontSize(50);
+            text.setAlignment(TextUIElement.TextAlignment.VERTICAL_CENTER, TextUIElement.TextAlignment.HORIZONTAL_CENTER);
+
+            text.build();
+
+            text.setOffset(new Vector2f(0.0f, -120.0f));
+        }
+
+        {
             ButtonUIElement button = (ButtonUIElement) menu.addElement(UIElement.create(ButtonUIElement.class, "back_to_game", new Vector2f(0.0f, 0.0f), new Vector2f(400.0f, 40.0f)));
 
             button.setTexture(Objects.requireNonNull(TextureManager.get("ui.button_default")));
