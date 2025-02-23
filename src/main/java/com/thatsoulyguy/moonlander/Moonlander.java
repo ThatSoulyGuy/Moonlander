@@ -167,6 +167,9 @@ public class Moonlander
         AudioManager.register(AudioClip.create("block.mining.stone.0", AssetPath.create("moonlander", "audio/block/mining/stone1.ogg")));
         AudioManager.register(AudioClip.create("block.mining.stone.1", AssetPath.create("moonlander", "audio/block/mining/stone2.ogg")));
         AudioManager.register(AudioClip.create("block.mining.stone.2", AssetPath.create("moonlander", "audio/block/mining/stone3.ogg")));
+        AudioManager.register(AudioClip.create("entity.damage.0", AssetPath.create("moonlander", "audio/entity/damage1.ogg")));
+        AudioManager.register(AudioClip.create("entity.damage.1", AssetPath.create("moonlander", "audio/entity/damage2.ogg")));
+        AudioManager.register(AudioClip.create("entity.damage.2", AssetPath.create("moonlander", "audio/entity/damage3.ogg")));
         AudioManager.register(AudioClip.create("entity.rocket_blowoff", AssetPath.create("moonlander", "audio/entity/rocket_blowoff.ogg")));
         AudioManager.register(AudioClip.create("ui.click", AssetPath.create("moonlander", "audio/ui/click.ogg")));
 

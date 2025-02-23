@@ -81,7 +81,7 @@ public class EntityPlayer extends LivingEntity
     private final float blockMiningAudioTimerStart = 0.25f;
     private float blockMiningAudioTimer;
 
-    private int oxygen = 100;
+    private int oxygen = 3;
 
     private float footstepTimer = 0f;
 
@@ -212,7 +212,7 @@ public class EntityPlayer extends LivingEntity
 
         if (suffocationCooldownTimer < 0 && oxygen <= 0)
         {
-            setCurrentHealth(getCurrentHealth() - 3);
+            damage(this, 3);
             suffocationCooldownTimer = suffocationCooldownTimerStart;
         }
 
@@ -428,7 +428,7 @@ public class EntityPlayer extends LivingEntity
                 {
                     if (collider.getGameObject().hasComponent(clazz))
                     {
-                        collider.getGameObject().getComponentNotNull(clazz).onInteractedWith(World.getLocalWorld(), this);
+                        collider.getGameObject().getComponentNotNull(clazz).onInteractedWith(Objects.requireNonNull(World.getLocalWorld()), this);
 
                         return;
                     }
@@ -442,7 +442,7 @@ public class EntityPlayer extends LivingEntity
         {
             {
                 Vector3f point = hit.center();
-                short block = World.getLocalWorld().getBlock(point);
+                short block = Objects.requireNonNull(World.getLocalWorld()).getBlock(point);
 
                 if (block != BlockRegistry.BLOCK_AIR.getId() && block != -1 && Objects.requireNonNull(BlockRegistry.get(block)).isSolid())
                 {
