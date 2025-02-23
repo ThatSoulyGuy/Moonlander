@@ -348,17 +348,17 @@ public class EntityPlayer extends LivingEntity
             return;
         }
 
-        if (deathMenu.getActive() || winConditionMenu.isActive())
+        if (deathMenu.isActive() || winConditionMenu.isActive())
             return;
 
-        if (InputManager.getKeyState(KeyCode.E, KeyState.PRESSED) && !pauseMenu.getActive() && !craftingTableMenu.isActive() && !deathMenu.getActive() && !bookMenu.isActive())
+        if (InputManager.getKeyState(KeyCode.E, KeyState.PRESSED) && !pauseMenu.isActive() && !craftingTableMenu.isActive() && !deathMenu.isActive() && !bookMenu.isActive())
         {
-            if (!inventoryMenu.getSurvivalMenuActive())
+            if (!inventoryMenu.isSurvivalMenuActive())
                 InputManager.setMouseMode(MouseMode.FREE);
             else
                 InputManager.setMouseMode(MouseMode.LOCKED);
 
-            inventoryMenu.setSurvivalMenuActive(!inventoryMenu.getSurvivalMenuActive());
+            inventoryMenu.setSurvivalMenuActive(!inventoryMenu.isSurvivalMenuActive());
         }
 
         if (InputManager.getKeyState(KeyCode.ESCAPE, KeyState.PRESSED))
@@ -379,7 +379,7 @@ public class EntityPlayer extends LivingEntity
                 return;
             }
 
-            if (inventoryMenu.getSurvivalMenuActive())
+            if (inventoryMenu.isSurvivalMenuActive())
             {
                 inventoryMenu.setSurvivalMenuActive(false);
                 InputManager.setMouseMode(MouseMode.LOCKED);
@@ -395,7 +395,7 @@ public class EntityPlayer extends LivingEntity
                 return;
             }
 
-            if (pauseMenu.getActive())
+            if (pauseMenu.isActive())
             {
                 pauseMenu.setActive(false);
                 InputManager.setMouseMode(MouseMode.LOCKED);
@@ -1003,7 +1003,7 @@ public class EntityPlayer extends LivingEntity
 
     public boolean isMenuActive()
     {
-        return inventoryMenu.getSurvivalMenuActive() || inventoryMenu.getCreativeMenuActive() || pauseMenu.getActive() || craftingTableMenu.isActive() || bookMenu.isActive() || compositorMenu.isActive() || winConditionMenu.isActive();
+        return inventoryMenu.isSurvivalMenuActive() || inventoryMenu.isCreativeMenuActive() || pauseMenu.isActive() || craftingTableMenu.isActive() || bookMenu.isActive() || compositorMenu.isActive() || deathMenu.isActive() || winConditionMenu.isActive();
     }
 
     public boolean isCraftingTableMenuActive()

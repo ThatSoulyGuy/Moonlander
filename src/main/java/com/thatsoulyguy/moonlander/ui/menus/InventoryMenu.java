@@ -182,7 +182,7 @@ public class InventoryMenu extends Menu
         survivalMenu.setActive(active);
     }
 
-    public boolean getSurvivalMenuActive()
+    public boolean isSurvivalMenuActive()
     {
         return survivalMenu.isActive();
     }
@@ -192,7 +192,7 @@ public class InventoryMenu extends Menu
         creativeMenu.setActive(active);
     }
 
-    public boolean getCreativeMenuActive()
+    public boolean isCreativeMenuActive()
     {
         return creativeMenu.isActive();
     }
@@ -203,7 +203,7 @@ public class InventoryMenu extends Menu
 
         try
         {
-            for (int x = 0; x < 1; x++)
+            for (int x = 0; x < 4; x++)
             {
                 for (int y = 0; y < 9; y++)
                 {

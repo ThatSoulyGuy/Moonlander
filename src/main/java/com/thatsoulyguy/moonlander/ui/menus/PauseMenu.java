@@ -11,7 +11,6 @@ import com.thatsoulyguy.moonlander.system.Layer;
 import com.thatsoulyguy.moonlander.system.LevelManager;
 import com.thatsoulyguy.moonlander.system.Levels;
 import com.thatsoulyguy.moonlander.ui.Menu;
-import com.thatsoulyguy.moonlander.ui.MenuManager;
 import com.thatsoulyguy.moonlander.ui.UIElement;
 import com.thatsoulyguy.moonlander.ui.UIPanel;
 import com.thatsoulyguy.moonlander.ui.uielements.ButtonUIElement;
@@ -19,7 +18,6 @@ import com.thatsoulyguy.moonlander.ui.uielements.ImageUIElement;
 import com.thatsoulyguy.moonlander.ui.uielements.TextUIElement;
 import com.thatsoulyguy.moonlander.util.AssetPath;
 import com.thatsoulyguy.moonlander.util.FileHelper;
-import com.thatsoulyguy.moonlander.util.ManagerLinkedClass;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Random;
 import org.joml.Vector2f;
@@ -152,7 +150,7 @@ public class PauseMenu extends Menu
         menu.setActive(active);
     }
 
-    public boolean getActive()
+    public boolean isActive()
     {
         return menu.isActive();
     }

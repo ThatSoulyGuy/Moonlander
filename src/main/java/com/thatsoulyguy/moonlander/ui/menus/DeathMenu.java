@@ -156,7 +156,7 @@ public class DeathMenu extends Menu
         menu.setActive(active);
     }
 
-    public boolean getActive()
+    public boolean isActive()
     {
         return menu.isActive();
     }
