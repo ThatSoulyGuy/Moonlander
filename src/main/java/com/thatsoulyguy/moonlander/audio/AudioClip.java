@@ -34,6 +34,8 @@ public class AudioClip extends Component implements Cloneable
         getGameObject().getTransform().addOnPositionChangedCallback(this, this::setPositionInternal);
         getGameObject().getTransform().addOnRotationChangedCallback(this, this::setDirectionInternal);
 
+        getGameObject().setTransient(true);
+
         generate();
     }
 

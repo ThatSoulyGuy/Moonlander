@@ -1542,12 +1542,20 @@ public class BlockRegistry
                 if (slot.id() == ItemRegistry.ITEM_MOON_ROCK_BLOCK.getId() && !moonRockHasBeenSupplied.containsKey(globalBlockPosition))
                 {
                     moonRockHasBeenSupplied.put(globalBlockPosition, true);
-                    player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), ItemRegistry.ITEM_AIR.getId(), (byte) 1);
+
+                    if (slot.count() > 1)
+                        player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), slot.id(), (byte) (slot.count() - 1));
+                    else
+                        player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), ItemRegistry.ITEM_AIR.getId(), (byte) 1);
                 }
                 else if (slot.id() == ItemRegistry.ITEM_OIL_BUCKET.getId() && !oilHasBeenSupplied.containsKey(globalBlockPosition))
                 {
                     oilHasBeenSupplied.put(globalBlockPosition, true);
-                    player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), ItemRegistry.ITEM_EMPTY_BUCKET.getId(), (byte) 1);
+
+                    if (slot.count() > 1)
+                        player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), slot.id(), (byte) (slot.count() - 1));
+                    else
+                        player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), ItemRegistry.ITEM_EMPTY_BUCKET.getId(), (byte) 1);
                 }
 
                 lastInteractor = player;

@@ -8,6 +8,8 @@ import com.thatsoulyguy.moonlander.entity.entities.EntityPlayer;
 import com.thatsoulyguy.moonlander.render.TextureManager;
 import com.thatsoulyguy.moonlander.system.GameObject;
 import com.thatsoulyguy.moonlander.system.Layer;
+import com.thatsoulyguy.moonlander.system.LevelManager;
+import com.thatsoulyguy.moonlander.system.Levels;
 import com.thatsoulyguy.moonlander.ui.Menu;
 import com.thatsoulyguy.moonlander.ui.UIElement;
 import com.thatsoulyguy.moonlander.ui.UIPanel;
@@ -15,6 +17,7 @@ import com.thatsoulyguy.moonlander.ui.uielements.ButtonUIElement;
 import com.thatsoulyguy.moonlander.ui.uielements.ImageUIElement;
 import com.thatsoulyguy.moonlander.ui.uielements.TextUIElement;
 import com.thatsoulyguy.moonlander.util.AssetPath;
+import com.thatsoulyguy.moonlander.util.FileHelper;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Random;
 import org.joml.Vector2f;
@@ -106,7 +109,11 @@ public class DeathMenu extends Menu
                 clip.setLooping(false);
                 clip.play(true);
 
-                //Save and quit
+                LevelManager.saveLevel("overworld", FileHelper.getPersistentDataPath("Moonlander"));
+
+                LevelManager.unloadCurrentLevel();
+
+                Levels.createMainMenu();
             });
 
             button.addOnHoveringBeginEvent(() -> button.setTexture(Objects.requireNonNull(TextureManager.get("ui.button_selected"))));

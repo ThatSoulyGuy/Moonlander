@@ -7,6 +7,7 @@ import com.thatsoulyguy.moonlander.render.Texture;
 import com.thatsoulyguy.moonlander.render.Vertex;
 import com.thatsoulyguy.moonlander.system.Component;
 import com.thatsoulyguy.moonlander.system.GameObject;
+import com.thatsoulyguy.moonlander.system.GameObjectManager;
 import com.thatsoulyguy.moonlander.system.Layer;
 import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
 import com.thatsoulyguy.moonlander.world.TextureAtlas;
@@ -354,6 +355,13 @@ public abstract class UIElement implements Serializable
 
         object.getComponentNotNull(Mesh.class).setVertices(vertices);
         MainThreadExecutor.submit(() -> object.getComponentNotNull(Mesh.class).generate());
+    }
+
+    public void uninitialize()
+    {
+        GameObjectManager.unregister(object.getName(), true);
+
+        object = null;
     }
 
     public static <T extends UIElement> @NotNull T create(@NotNull Class<T> clazz, @NotNull String name, @NotNull Vector2f position, @NotNull Vector2f dimensions)

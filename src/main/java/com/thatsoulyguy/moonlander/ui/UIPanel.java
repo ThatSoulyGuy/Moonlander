@@ -185,6 +185,16 @@ public class UIPanel implements Serializable
         isActive = active;
     }
 
+    public void uninitialize()
+    {
+        GameObjectManager.unregister(object.getName(), true);
+
+        uiElementsMap.values().forEach(UIElement::uninitialize);
+        uiElementsMap.clear();
+
+        object = null;
+    }
+
     public static @NotNull UIPanel create(@NotNull String name)
     {
         UIPanel result = new UIPanel();

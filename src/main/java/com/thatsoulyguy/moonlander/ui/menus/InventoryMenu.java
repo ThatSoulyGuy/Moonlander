@@ -76,6 +76,8 @@ public class InventoryMenu extends Menu
 
     private @EffectivelyNotNull TextUIElement selectedItemHoveringText;
 
+    private @EffectivelyNotNull TextUIElement floatingTitleText;
+
     private final ReentrantLock menuLock = new ReentrantLock(true);
 
     @Override
@@ -87,6 +89,22 @@ public class InventoryMenu extends Menu
         {
             initializeCraftingData();
             createHudPanel();
+
+            floatingTitleText = (TextUIElement) hud.addElement(createTextElement(
+                    "hovering_title_text",
+                    new Vector2f(0.0f, 0.0f),
+                    scaleVector(100.0f, 50.0f),
+                    "",
+                    scaleFont(18),
+                    new Vector3f(1.0f),
+                    true,
+                    false,
+                    UIElement.Alignment.CENTER,
+                    new Vector2f(0.0f, -50.0f)
+            ));
+
+            floatingTitleText.setAlignment(TextUIElement.TextAlignment.VERTICAL_CENTER, TextUIElement.TextAlignment.HORIZONTAL_CENTER);
+
             createHotbarUI();
             createOxygenAndHeartsUI();
             createSelectedItemHoveringText();
@@ -96,6 +114,8 @@ public class InventoryMenu extends Menu
 
             survivalMenu.setActive(false);
             creativeMenu.setActive(false);
+
+            floatingTitleText.setActive(true);
         }
         finally
         {
@@ -240,6 +260,12 @@ public class InventoryMenu extends Menu
             return null;
 
         return new SlotData(inventory.slots[position.x][position.y], inventory.slotCounts[position.x][position.y]);
+    }
+
+    public void setFloatingTitleText(@NotNull String text)
+    {
+        floatingTitleText.setText(text);
+        floatingTitleText.build();
     }
 
     public void build()
@@ -436,7 +462,7 @@ public class InventoryMenu extends Menu
                 createTextElement(
                         "selected_item_hovering_text",
                         new Vector2f(0.0f, 0.0f),
-                        new Vector2f(300, 20),
+                        new Vector2f(400, 20),
                         "",
                         scaleFont(15),
                         new Vector3f(1.0f, 1.0f, 1.0f),

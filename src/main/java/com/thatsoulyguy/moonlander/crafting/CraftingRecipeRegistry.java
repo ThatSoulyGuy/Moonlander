@@ -561,7 +561,7 @@ public class CraftingRecipeRegistry
         @Override
         public @NotNull String getRegistryName()
         {
-            return "recipe_iron_block_and_aluminum_block_and_ironcoad_composite_and_ironaluminum_composite_to_rocket_entity";
+            return "recipe_iron_block_and_aluminum_block_and_ironcoal_composite_and_ironaluminum_composite_to_rocket_entity";
         }
 
         @Override

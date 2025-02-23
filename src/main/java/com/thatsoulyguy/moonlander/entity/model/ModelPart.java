@@ -11,6 +11,7 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
+import java.io.Serializable;
 import java.util.*;
 
 @CustomConstructor("create")
@@ -178,7 +179,7 @@ public class ModelPart extends Component
     }
 
     @CustomConstructor("create")
-    public static class Cube
+    public static class Cube implements Serializable
     {
         private Vector3f position;
         private Vector3f size;

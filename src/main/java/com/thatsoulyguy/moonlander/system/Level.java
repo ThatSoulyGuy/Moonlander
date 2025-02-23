@@ -5,7 +5,6 @@ import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @CustomConstructor("create")
@@ -41,7 +40,7 @@ public class Level
 
     public @NotNull List<String> getGameObjectNames()
     {
-        return Collections.unmodifiableList(gameObjectNames);
+        return List.copyOf(gameObjectNames);
     }
 
     public @NotNull String getName()

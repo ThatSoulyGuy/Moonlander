@@ -4,6 +4,7 @@ import com.thatsoulyguy.moonlander.annotation.CustomConstructor;
 import com.thatsoulyguy.moonlander.core.Window;
 import com.thatsoulyguy.moonlander.system.Component;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -14,7 +15,15 @@ public class Camera extends Component
     private float nearPlane;
     private float farPlane;
 
+    private static @Nullable Camera instance = null;
+
     private Camera() { }
+
+    @Override
+    public void initialize()
+    {
+        instance = this;
+    }
 
     public @NotNull Matrix4f getProjectionMatrix()
     {
@@ -24,6 +33,17 @@ public class Camera extends Component
     public @NotNull Matrix4f getViewMatrix()
     {
         return new Matrix4f().lookAt(getGameObject().getTransform().getWorldPosition(), getGameObject().getTransform().getWorldPosition().add(getGameObject().getTransform().getForward(), new Vector3f()), new Vector3f(0.0f, 1.0f, 0.0f));
+    }
+
+    @Override
+    public void uninitialize()
+    {
+        instance = null;
+    }
+
+    public static @Nullable Camera getLocalCamera()
+    {
+        return instance;
     }
 
     public static @NotNull Camera create(float fieldOfView, float nearPlane, float farPlane)

@@ -29,10 +29,7 @@ import com.thatsoulyguy.moonlander.render.advanced.core.renderpasses.LevelRender
 import com.thatsoulyguy.moonlander.render.advanced.ssao.renderpasses.SSAOBlurRenderPass;
 import com.thatsoulyguy.moonlander.render.advanced.ssao.renderpasses.SSAOConcludingRenderPass;
 import com.thatsoulyguy.moonlander.render.advanced.ssao.renderpasses.SSAORenderPass;
-import com.thatsoulyguy.moonlander.system.GameObject;
-import com.thatsoulyguy.moonlander.system.GameObjectManager;
-import com.thatsoulyguy.moonlander.system.Layer;
-import com.thatsoulyguy.moonlander.system.LevelManager;
+import com.thatsoulyguy.moonlander.system.*;
 import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
 import com.thatsoulyguy.moonlander.ui.Menu;
 import com.thatsoulyguy.moonlander.ui.MenuManager;
@@ -60,8 +57,6 @@ import java.util.stream.Collectors;
 
 public class Moonlander
 {
-    private @EffectivelyNotNull Camera camera;
-
     public void preInitialize()
     {
         InputManager.initialize();
@@ -111,6 +106,7 @@ public class Moonlander
         TextureManager.register(Texture.create("ui.transparency", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/transparency.png")));
         TextureManager.register(Texture.create("ui.background", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/background.png")));
         TextureManager.register(Texture.create("ui.death_red", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/death_red.png")));
+        TextureManager.register(Texture.create("ui.win_green", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/win_green.png")));
         TextureManager.register(Texture.create("ui.button_default", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/button_default.png")));
         TextureManager.register(Texture.create("ui.button_disabled", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/button_disabled.png")));
         TextureManager.register(Texture.create("ui.button_selected", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/button_selected.png")));
@@ -130,6 +126,8 @@ public class Moonlander
         TextureManager.register(Texture.create("ui.menu.oxygen_dial_ball", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/oxygen_dial_ball.png")));
         TextureManager.register(Texture.create("ui.menu.oxygen_pointer", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/oxygen_pointer.png")));
         TextureManager.register(Texture.create("ui.block_lookover", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/block_lookover.png")));
+        TextureManager.register(Texture.create("ui.title", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/title.png")));
+        TextureManager.register(Texture.create("ui.menu.main_menu_background", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/main_menu_background.png")));
 
         TextureAtlasManager.register(TextureAtlas.create("blocks", AssetPath.create("moonlander", "texture/block/")));
         TextureAtlasManager.register(TextureAtlas.create("items", AssetPath.create("moonlander", "texture/item/")));
@@ -140,6 +138,7 @@ public class Moonlander
         MenuManager.register(Menu.create(InventoryMenu.class));
         MenuManager.register(Menu.create(PauseMenu.class));
         MenuManager.register(Menu.create(DeathMenu.class));
+        MenuManager.register(Menu.create(WinConditionMenu.class));
 
         Skybox.CURRENT_SKYBOX = Skybox.create(Texture.createCubeMap("skybox", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, List.of
         (
@@ -168,6 +167,7 @@ public class Moonlander
         AudioManager.register(AudioClip.create("block.mining.stone.0", AssetPath.create("moonlander", "audio/block/mining/stone1.ogg")));
         AudioManager.register(AudioClip.create("block.mining.stone.1", AssetPath.create("moonlander", "audio/block/mining/stone2.ogg")));
         AudioManager.register(AudioClip.create("block.mining.stone.2", AssetPath.create("moonlander", "audio/block/mining/stone3.ogg")));
+        AudioManager.register(AudioClip.create("entity.rocket_blowoff", AssetPath.create("moonlander", "audio/entity/rocket_blowoff.ogg")));
         AudioManager.register(AudioClip.create("ui.click", AssetPath.create("moonlander", "audio/ui/click.ogg")));
 
         LevelRenderPass levelRenderPass = new LevelRenderPass();
@@ -212,40 +212,20 @@ public class Moonlander
 
         InputManager.update();
 
-        UIManager.initialize();
-
         Time.reset();
     }
 
     public void initialize()
     {
-        //LevelManager.loadLevel(FileHelper.getPersistentDataPath("Moonlander") + "/overworld", true);
-
-        //*
-        LevelManager.createLevel("overworld", true);
-
-        GameObject overworld = GameObject.create("default.world", Layer.DEFAULT);
-
-        overworld.addComponent(World.create("overworld"));
-
-        World world = overworld.getComponentNotNull(World.class);
-
-        world.addTerrainGenerator(TerrainGenerator.create(GroundTerrainGenerator.class));
-        world.addTerrainGenerator(TerrainGenerator.create(CaveTerrainGenerator.class));
-
-        world.spawnEntity(new Vector3f(0.0f, 180.0f, 0.0f), EntityPlayer.class);
-
-        world.spawnEntity(new Vector3f(0.0f, 120.0f, 0.0f), EntityRocket.class);
-        //*/
-
-        camera = EntityPlayer.getInstance().getCamera();
+        Levels.createMainMenu();
     }
 
     public void update()
     {
         Time.update();
 
-        World.getLocalWorld().chunkLoader = EntityPlayer.getInstance().getGameObject().getTransform();
+        if (World.getLocalWorld() != null && Camera.getLocalCamera() != null)
+            World.getLocalWorld().chunkLoader = Camera.getLocalCamera().getGameObject().getTransform();
 
         GameObjectManager.updateMainThread();
         GameObjectManager.update();
@@ -260,7 +240,7 @@ public class Moonlander
     {
         Window.preRender();
 
-        GameObjectManager.renderDefault(camera);
+        GameObjectManager.renderDefault(Camera.getLocalCamera());
 
         GameObjectManager.renderUI();
 
@@ -284,10 +264,6 @@ public class Moonlander
 
             Vector3f minB = new Vector3f(posB).sub(new Vector3f(sizeB).mul(0.5f));
             Vector3f maxB = new Vector3f(posB).add(new Vector3f(sizeB).mul(0.5f));
-
-            DebugRenderer.addBox(minA, maxA, new Vector3f(0.0f, 1.0f, 0.0f));
-
-            DebugRenderer.addBox(minB, maxB, new Vector3f(0.0f, 0.0f, 1.0f));
 
             boolean intersects = Collider.intersectsGeneric(minA, maxA, minB, maxB);
 
@@ -403,7 +379,8 @@ public class Moonlander
 
     public void uninitialize()
     {
-        LevelManager.saveLevel("overworld", FileHelper.getPersistentDataPath("Moonlander"));
+        if (LevelManager.hasLevel("overworld"))
+            LevelManager.saveLevel("overworld", FileHelper.getPersistentDataPath("Moonlander"));
 
         if (Skybox.CURRENT_SKYBOX != null)
             Skybox.CURRENT_SKYBOX.uninitialize();
@@ -457,12 +434,7 @@ public class Moonlander
                     .map(StackTraceElement::toString)
                     .collect(Collectors.joining("\n"));
 
-            JOptionPane.showMessageDialog(
-                    null,
-                    exception.getMessage() + "\n\n" + stackTrace,
-                    "Exception!",
-                    JOptionPane.ERROR_MESSAGE
-            );
+            System.err.println(stackTrace);
 
             System.exit(-1);
         }

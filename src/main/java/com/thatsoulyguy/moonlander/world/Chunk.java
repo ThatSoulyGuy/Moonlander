@@ -28,6 +28,7 @@ public class Chunk extends Component
 
     private Map<Integer, Short> blocks = new HashMap<>();
 
+    private boolean modified = false;
     private boolean needsToUpdate = false;
 
     private Chunk() { }
@@ -199,6 +200,8 @@ public class Chunk extends Component
         if (!isValidPosition(blockPosition))
             return;
 
+        modified = true;
+
         int index = toIndex(blockPosition.x, blockPosition.y, blockPosition.z);
 
         Vector3i globalBlockCoordinates = CoordinateHelper.worldToGlobalBlockCoordinates(CoordinateHelper.blockToWorldCoordinates(blockPosition, CoordinateHelper.worldToChunkCoordinates(getGameObject().getTransform().getWorldPosition())));
@@ -247,6 +250,30 @@ public class Chunk extends Component
             return -1;
 
         return getBlock(blockPosition.x, blockPosition.y, blockPosition.z);
+    }
+
+    public short[][][] getBlocks()
+    {
+        short[][][] blocks = new short[16][16][16];
+
+        for (Map.Entry<Integer, Short> entry : this.blocks.entrySet())
+        {
+            Vector3i position = fromIndex(entry.getKey());
+
+            blocks[position.x][position.y][position.z] = entry.getValue();
+        }
+
+        return blocks;
+    }
+
+    public boolean isModified()
+    {
+        return modified;
+    }
+
+    public void setModified(boolean modified)
+    {
+        this.modified = modified;
     }
 
     private short getBlock(int x, int y, int z)

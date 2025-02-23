@@ -4,6 +4,7 @@ import com.thatsoulyguy.moonlander.annotation.CustomConstructor;
 import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
 import com.thatsoulyguy.moonlander.math.Rigidbody;
 import com.thatsoulyguy.moonlander.system.Component;
+import com.thatsoulyguy.moonlander.system.GameObjectManager;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -18,20 +19,22 @@ public class AudioListener extends Component
 
     private static final AtomicBoolean alreadyExists = new AtomicBoolean(false);
 
-    private AudioListener()
-    {
-        if (alreadyExists.get())
-            throw new IllegalStateException("Attempt to add more than 1 audio listener into the scene!");
-
-        alreadyExists.set(true);
-        localListener = this;
-    }
+    private AudioListener() { }
 
     @Override
     public void initialize()
     {
         getGameObject().getTransform().addOnPositionChangedCallback(this, this::onPositionChanged);
         getGameObject().getTransform().addOnRotationChangedCallback(this, this::onRotationChanged);
+
+        if (alreadyExists.get())
+        {
+            System.err.println("Attempt to add more than 1 audio listener into the scene!");
+            GameObjectManager.unregister(localListener.getGameObject().getName(), true);
+        }
+
+        alreadyExists.set(true);
+        localListener = this;
     }
 
     @Override
@@ -71,11 +74,19 @@ public class AudioListener extends Component
         AL10.alListenerfv(AL10.AL_ORIENTATION, new float[] { forward.x, forward.y, forward.z, up.x, up.y, up.z });
     }
 
+    public static void reset()
+    {
+        localListener = null;
+        alreadyExists.set(false);
+    }
+
     @Override
     public void uninitialize()
     {
         getGameObject().getTransform().removeOnPositionChangedCallback(this);
         getGameObject().getTransform().removeOnRotationChangedCallback(this);
+
+        alreadyExists.set(false);
     }
 
     public static @NotNull AudioListener create()

@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
@@ -19,7 +20,6 @@ public class LevelManager
 {
     private static final ConcurrentMap<String, Level> levels = new ConcurrentHashMap<>();
     private static @Nullable Level currentLevel = null;
-    private static final AtomicBoolean isLoading = new AtomicBoolean(false);
     private static final ConcurrentLinkedQueue<Runnable> actionQueue = new ConcurrentLinkedQueue<>();
 
     private LevelManager() { }
@@ -74,7 +74,12 @@ public class LevelManager
         File saveFile = new File(path, "level.bin");
 
         Level level = levels.get(name);
+
         List<GameObject> gameObjects = GameObjectManager.getAll();
+
+        List<String> gameObjectNames = level.getGameObjectNames().stream()
+                .filter(objectName -> GameObjectManager.has(objectName) && !Objects.requireNonNull(GameObjectManager.get(objectName)).isTransient())
+                .toList();
 
         try (FileOutputStream fileOutputStream = new FileOutputStream(saveFile))
         {
@@ -82,9 +87,9 @@ public class LevelManager
 
             objectOutputStream.writeUTF(level.getName());
 
-            objectOutputStream.writeInt(level.getGameObjectNames().size());
+            objectOutputStream.writeInt(gameObjectNames.size());
 
-            level.getGameObjectNames().forEach((object ->
+            gameObjectNames.forEach((object ->
             {
                 try
                 {
@@ -108,6 +113,11 @@ public class LevelManager
         }
 
         System.out.println("Level '" + name + "' saved!");
+    }
+
+    public static boolean hasLevel(@NotNull String name)
+    {
+        return levels.containsKey(name);
     }
 
     public static void loadLevel(@NotNull String path, boolean setCurrent)
@@ -174,11 +184,12 @@ public class LevelManager
         }
 
         levels.get(name).setGameObjectNames(new ArrayList<>());
+
+        UIManager.stop();
+
         GameObjectManager.stop();
 
         levels.remove(name);
-
-        currentLevel = null;
     }
 
     public static boolean deleteLevel(@NotNull String name, @NotNull String path)
@@ -228,10 +239,8 @@ public class LevelManager
             return;
         }
 
-        for (String gameObjectName : currentLevel.getGameObjectNames())
-            GameObjectManager.unregister(gameObjectName);
+        unloadLevel(currentLevel.getName());
 
-        System.out.println("Level '" + currentLevel.getName() + "' unloaded.");
         currentLevel = null;
     }
 

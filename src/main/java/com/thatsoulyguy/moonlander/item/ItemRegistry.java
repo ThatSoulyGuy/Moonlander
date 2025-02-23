@@ -978,6 +978,55 @@ public class ItemRegistry
                 created a compositor.
             
             Move to the next page to continue...
+            """,
+            """
+            Step IX:
+                Now, you are going to need to create a fuel refiner, in order to refine fuel
+                for the rocket you are going to make. For this, you will need 3 refined aluminum
+                ingots, 3 moon rock, and 3 iron ingots. They must be laid out as such:
+                                       A A A
+                                       M M M
+                                       I I I
+                A = Refined Aluminum Ingot
+                M = Moon Rock
+                I = Iron Ingot
+                \s
+                Once you have arranged the items as follows, you will have
+                created a fuel refiner.
+            
+            Move to the next page to continue...
+            """,
+            """
+            Step X:
+                You now have all the machines you need to create a rocket ship to get the h-e-double-l
+                out of here! The materials you need to create the rocket are 4 iron blocks, 2 aluminum
+                blocks, 2 iron+coal composites, and 1 iron+aluminum composite. Crafting the iron and
+                aluminum blocks is as you would expect, just fill the entire grid with iron ingots, and
+                for aluminum blocks, fill the entire grid with refined (keyword 'refined') iron ingots.
+                As for the iron+coal and iron+aluminum composites, you need to go into your compositor,
+                and place 1 iron ingot in the top slot for both, and then have the bottom slot be
+                refined aluminum ingots or coal depending on what you want to make. This is the recipe
+                for the final rocket ship:
+                                       I A A
+                                       I A I
+                                       C V C
+                A = Aluminum Block
+                C = Iron+Coal Composite
+                V = Iron+Aluminum Composite
+                I = Iron Block
+                \s
+                Once you have arranged the items as follows, you will have
+                created the rocket.
+            
+            Move to the next page to continue...
+            """,
+            """
+            Step XI - FINAL:
+                Congratulations for making it this far! Now, all you need to do is place the rocket by
+                right-clicking the ground whilst holding it, and you will have beaten the game. Thank you
+                so much for playing!
+                \s
+            END
             """
         );
 

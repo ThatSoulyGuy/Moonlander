@@ -32,7 +32,7 @@ public class World extends Component
     public static final int WORLD_HEIGHT = 256;
     public static final int VERTICAL_CHUNKS = WORLD_HEIGHT / Chunk.SIZE;
 
-    public long seed = 354576879657L;
+    public long seed = -1;
 
     private @EffectivelyNotNull String name;
 
@@ -54,6 +54,8 @@ public class World extends Component
 
     private final @NotNull SerializableObject chunkLock = new SerializableObject();
 
+    private final Map<Vector3i, ChunkSaveData> chunkSaveMap = new ConcurrentHashMap<>();
+
     private final @NotNull Map<Pair<Integer, Class<? extends Entity>>, Entity> entities = new ConcurrentHashMap<>();
 
     private World() { }
@@ -63,6 +65,15 @@ public class World extends Component
     {
         generatingChunks.clear();
         chunkGenerationExecutor = Executors.newFixedThreadPool(3);
+
+        if (seed == -1)
+            seed = new Random().nextLong(9999999);
+    }
+
+    @Override
+    public void onUnload()
+    {
+        chunkSaveMap.clear();
     }
 
     @Override
@@ -71,6 +82,51 @@ public class World extends Component
         loadCloseChunks();
         unloadFarChunks();
         processPendingRegeneration();
+    }
+
+    public @NotNull Chunk loadOrGenerateChunk(@NotNull Vector3i chunkPosition)
+    {
+        if (chunkSaveMap.containsKey(chunkPosition))
+        {
+            ChunkSaveData saved = chunkSaveMap.get(chunkPosition);
+
+            String chunkName = "default.chunk_" + chunkPosition.x + "_" + chunkPosition.y + "_" + chunkPosition.z;
+            GameObject object = GameObject.create(chunkName, Layer.DEFAULT);
+
+            object.getTransform().setLocalPosition(CoordinateHelper.chunkToWorldCoordinates(chunkPosition));
+
+            object.addComponent(Collider.create(VoxelMeshCollider.class));
+            object.addComponent(Objects.requireNonNull(ShaderManager.get("pass.geometry")));
+            object.addComponent(Objects.requireNonNull(TextureAtlasManager.get("blocks")));
+            object.addComponent(Mesh.create(new ArrayList<>(), new ArrayList<>()));
+
+            Chunk chunk = Chunk.create(saved.blocks());
+            object.addComponent(chunk);
+
+            chunk.generate();
+            chunk.setModified(false);
+
+            for (EntitySaveData eData : saved.entities())
+            {
+                Entity entity = Entity.create(eData.type());
+                entity.setId(eData.id());
+
+                String entityName = "default." + eData.type().getName() + "_" + eData.id();
+                GameObject entityObject = GameObject.create(entityName, Layer.DEFAULT);
+
+                entityObject.getTransform().setLocalPosition(eData.position());
+                entityObject.setActive(true);
+
+                entityObject.addComponent(entity);
+                entity.onSpawned(this);
+
+                entities.put(new Pair<>(eData.id(), eData.type()), entity);
+            }
+
+            return chunk;
+        }
+        else
+            return generateChunk(chunkPosition);
     }
 
     public @NotNull Chunk generateChunk(@NotNull Vector3i chunkPosition)
@@ -110,7 +166,53 @@ public class World extends Component
             return;
         }
 
-        GameObjectManager.unregister("default.chunk_" + chunkPosition.x + "_" + chunkPosition.y + "_" + chunkPosition.z, true);
+        Chunk chunk = getChunk(chunkPosition);
+
+        if (chunk == null)
+        {
+            loadedChunks.remove(chunkPosition);
+
+            return;
+        }
+
+        List<Entity> entitiesInChunk = new ArrayList<>();
+
+        for (Entity entity : entities.values())
+        {
+            Vector3i entityChunkPosition = CoordinateHelper.worldToChunkCoordinates(entity.getGameObject().getTransform().getWorldPosition());
+
+            if (entityChunkPosition.equals(chunkPosition))
+                entitiesInChunk.add(entity);
+        }
+
+        if (chunk.isModified() || !entitiesInChunk.isEmpty())
+        {
+            short[][][] blocks = chunk.getBlocks();
+            List<EntitySaveData> entityDataList = new ArrayList<>();
+
+            for (Entity entity : entitiesInChunk)
+            {
+                entity.getGameObject().getTransform().translate(new Vector3f(0, 0.1f, 0));
+                entity.getGameObject().setActive(false);
+
+                entityDataList.add(new EntitySaveData(
+                        entity.getId(),
+                        entity.getClass(),
+                        entity.getGameObject().getTransform().getWorldPosition()
+                ));
+
+                GameObjectManager.unregister(entity.getGameObject().getName(), true);
+
+                entities.remove(new Pair<Integer, Class<? extends Entity>>(entity.getId(), entity.getClass()));
+            }
+
+            chunkSaveMap.put(chunkPosition, new ChunkSaveData(blocks, entityDataList));
+
+            chunk.setModified(false);
+        }
+
+        String chunkName = "default.chunk_" + chunkPosition.x + "_" + chunkPosition.y + "_" + chunkPosition.z;
+        GameObjectManager.unregister(chunkName, true);
 
         loadedChunks.remove(chunkPosition);
     }
@@ -252,12 +354,23 @@ public class World extends Component
 
         entities.remove(new Pair<Integer, Class<? extends Entity>>(id, type));
 
-        GameObjectManager.unregister(entity.getGameObject().getName());
+        GameObjectManager.unregister(entity.getGameObject().getName(), true);
     }
 
-    public static @NotNull World getLocalWorld()
+
+    public <T extends Entity> void reregisterEntity(int id, @NotNull Class<? extends Entity> type, @NotNull T entity, @NotNull GameObject gameObject)
     {
-        return Objects.requireNonNull(Objects.requireNonNull(GameObjectManager.get("default.world")).getComponent(World.class));
+        entities.putIfAbsent(new Pair<>(id, type), entity);
+
+        entities.get(new Pair<Integer, Class<? extends Entity>>(id, type)).setGameObject(gameObject);
+    }
+
+    public static @Nullable World getLocalWorld()
+    {
+        if (!GameObjectManager.has("default.world"))
+            return null;
+
+        return Objects.requireNonNull(GameObjectManager.get("default.world")).getComponent(World.class);
     }
 
     public void addTerrainGenerator(@NotNull TerrainGenerator generator)
@@ -295,7 +408,7 @@ public class World extends Component
             {
                 try
                 {
-                    generateChunk(currentChunk);
+                    loadOrGenerateChunk(currentChunk);
 
                     synchronized (chunkLock)
                     {
@@ -430,4 +543,8 @@ public class World extends Component
 
         return result;
     }
+
+    public record ChunkSaveData(short[][][] blocks, List<EntitySaveData> entities) { }
+
+    public record EntitySaveData(int id, Class<? extends Entity> type, Vector3f position) { }
 }

@@ -13,6 +13,7 @@ import java.io.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Static
 @Manager(UIPanel.class)
@@ -137,6 +138,14 @@ public class UIManager
     public static @NotNull List<UIPanel> getAll()
     {
         return List.copyOf(uiPanelsMap.values());
+    }
+
+    public static void stop()
+    {
+        uiPanelsMap.values().forEach(UIPanel::uninitialize);
+        uiPanelsMap.clear();
+
+        GameObjectManager.unregister(canvas.getName(), true);
     }
 
     public static void uninitialize() { }

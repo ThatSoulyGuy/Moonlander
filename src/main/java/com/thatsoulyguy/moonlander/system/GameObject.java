@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -303,9 +304,17 @@ public class GameObject implements Serializable
         {
             File childrenDirectory = new File(file.getAbsolutePath().replace(".bin", "/"));
 
+            AtomicInteger transientChildren = new AtomicInteger();
+
+            children.values().forEach(child ->
+            {
+                if (child.isTransient)
+                    transientChildren.addAndGet(1);
+            });
+
             objectOutputStream.writeUTF(name);
             objectOutputStream.writeInt(componentMap.size());
-            objectOutputStream.writeInt(children.size());
+            objectOutputStream.writeInt(children.size() - transientChildren.get());
             objectOutputStream.writeObject(layer);
 
             ExecutorService componentExecutor = Executors.newVirtualThreadPerTaskExecutor();
@@ -360,7 +369,10 @@ public class GameObject implements Serializable
                     childrenDirectory.mkdirs();
 
                 for (GameObject child : children.values())
-                    objectOutputStream.writeUTF(child.name);
+                {
+                    if (!child.isTransient)
+                        objectOutputStream.writeUTF(child.name);
+                }
             }
 
             System.out.println("Saved game object '" + name + "' at position/rotation/scale: " + getTransform());

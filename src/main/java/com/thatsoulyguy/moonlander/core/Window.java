@@ -134,6 +134,11 @@ public class Window
         }
     }
 
+    public static void exit()
+    {
+        GLFW.glfwSetWindowShouldClose(handle, true);
+    }
+
     public static void uninitialize()
     {
         GLFW.glfwDestroyWindow(handle);
