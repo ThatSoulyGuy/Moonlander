@@ -1,8 +1,6 @@
 package com.thatsoulyguy.moonlander;
 
-import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
 import com.thatsoulyguy.moonlander.audio.AudioClip;
-import com.thatsoulyguy.moonlander.audio.AudioListener;
 import com.thatsoulyguy.moonlander.audio.AudioManager;
 import com.thatsoulyguy.moonlander.block.BlockRegistry;
 import com.thatsoulyguy.moonlander.collider.Collider;
@@ -14,14 +12,8 @@ import com.thatsoulyguy.moonlander.core.Settings;
 import com.thatsoulyguy.moonlander.core.Time;
 import com.thatsoulyguy.moonlander.core.Window;
 import com.thatsoulyguy.moonlander.crafting.CraftingRecipeRegistry;
-import com.thatsoulyguy.moonlander.entity.Entity;
-import com.thatsoulyguy.moonlander.entity.entities.EntityPlayer;
-import com.thatsoulyguy.moonlander.entity.entities.EntityRocket;
 import com.thatsoulyguy.moonlander.input.InputManager;
-import com.thatsoulyguy.moonlander.input.KeyCode;
-import com.thatsoulyguy.moonlander.input.KeyState;
 import com.thatsoulyguy.moonlander.item.ItemRegistry;
-import com.thatsoulyguy.moonlander.math.Rigidbody;
 import com.thatsoulyguy.moonlander.render.*;
 import com.thatsoulyguy.moonlander.render.advanced.RenderPassManager;
 import com.thatsoulyguy.moonlander.render.advanced.core.renderpasses.GeometryRenderPass;
@@ -38,19 +30,15 @@ import com.thatsoulyguy.moonlander.ui.menus.*;
 import com.thatsoulyguy.moonlander.util.AssetPath;
 import com.thatsoulyguy.moonlander.util.FileHelper;
 import com.thatsoulyguy.moonlander.util.AudioData;
-import com.thatsoulyguy.moonlander.world.TerrainGenerator;
 import com.thatsoulyguy.moonlander.world.TextureAtlas;
 import com.thatsoulyguy.moonlander.world.TextureAtlasManager;
 import com.thatsoulyguy.moonlander.world.World;
-import com.thatsoulyguy.moonlander.world.terraingenerators.CaveTerrainGenerator;
-import com.thatsoulyguy.moonlander.world.terraingenerators.GroundTerrainGenerator;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 
-import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -83,7 +71,7 @@ public class Moonlander
 
         MainThreadExecutor.initialize();
 
-        Window.initialize("Moonlander* 1.42.10", windowSize);
+        Window.initialize("Moonlander* 1.58.17", windowSize);
 
         DebugRenderer.initialize();
 
