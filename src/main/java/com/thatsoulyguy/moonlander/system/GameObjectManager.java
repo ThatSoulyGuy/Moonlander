@@ -197,8 +197,6 @@ public class GameObjectManager
 
             passList.forEach(pass -> pass.render(camera));
 
-            DebugRenderer.render(camera);
-
             int error = GL41.glGetError();
 
             if (error != GL41.GL_NO_ERROR)
