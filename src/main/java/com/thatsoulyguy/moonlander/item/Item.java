@@ -46,7 +46,7 @@ public abstract class Item
         return Tool.NONE;
     }
 
-    public float getBreakageSpeedModifier()
+    public float getAccossiatedModifier()
     {
         return 1.0f;
     }

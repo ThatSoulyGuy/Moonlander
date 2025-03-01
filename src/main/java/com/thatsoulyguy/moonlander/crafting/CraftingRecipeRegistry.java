@@ -219,6 +219,48 @@ public class CraftingRecipeRegistry
         }
     };
 
+    public static final @NotNull CraftingRecipe REFINED_ALUMINUM_INGOT_AND_STICK_TO_ALUMINUM_SWORD = new CraftingRecipe()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "recipe_iron_ingot_and_stick_to_aluminum_sword";
+        }
+
+        @Override
+        public @NotNull Map<Character, Item> getKeyDefinitions()
+        {
+            return Map.of
+            (
+                's', ItemRegistry.ITEM_STICK,
+                'a', ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT
+            );
+        }
+
+        @Override
+        public char[][] getRecipeGrid()
+        {
+            return new char[][]
+            {
+                new char[] { '#', 'a', '#' },
+                new char[] { '#', 'a', '#' },
+                new char[] { '#', 's', '#' }
+            };
+        }
+
+        @Override
+        public @NotNull Result getResult()
+        {
+            return new Result(ItemRegistry.ITEM_ALUMINIUM_SWORD, (byte) 1);
+        }
+
+        @Override
+        public boolean isCompositorRecipe()
+        {
+            return false;
+        }
+    };
+
     public static final @NotNull CraftingRecipe IRON_INGOT_TO_BUCKET = new CraftingRecipe()
     {
         @Override
@@ -695,6 +737,7 @@ public class CraftingRecipeRegistry
         register(REFINED_ALUMINUM_INGOT_AND_REDSTONE_DUST_AND_MOON_ROCK_TO_OXYGEN_GENERATOR);
         register(REFINED_ALUMINUM_INGOT_AND_STICK_TO_ALUMINUM_PICKAXE);
         register(IRON_INGOT_AND_STICK_TO_ALUMINUM_PICKAXE);
+        register(REFINED_ALUMINUM_INGOT_AND_STICK_TO_ALUMINUM_SWORD);
         register(IRON_INGOT_TO_BUCKET);
         register(STONE_AND_REDSTONE_TO_FURNACE);
         register(MOON_ROCK_AND_REDSTONE_TO_FURNACE);

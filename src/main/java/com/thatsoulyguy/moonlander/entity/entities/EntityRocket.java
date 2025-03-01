@@ -45,18 +45,12 @@ public class EntityRocket extends Entity
         if (launch)
         {
             if (countDown < 0)
-                EntityPlayer.getInstance().setWinConditionMenuActive(true);
+                EntityPlayer.getLocalPlayer().setWinConditionMenuActive(true);
 
             getGameObject().getComponentNotNull(Rigidbody.class).addForce(new Vector3f(0.0f, 10 * Time.getDeltaTime(), 0.0f));
 
             countDown -= 0.01f;
         }
-    }
-
-    @Override
-    public @NotNull String getDisplayName()
-    {
-        return "Rocket";
     }
 
     @Override
@@ -72,10 +66,9 @@ public class EntityRocket extends Entity
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T extends EntityModel> @Nullable T getModel()
+    public @Nullable Class<? extends EntityModel> getModelType()
     {
-        return (T) EntityModel.create(ModelRocket.class);
+        return ModelRocket.class;
     }
 
     @Override

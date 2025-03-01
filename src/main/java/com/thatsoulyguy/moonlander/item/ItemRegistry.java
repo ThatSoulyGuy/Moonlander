@@ -543,9 +543,60 @@ public class ItemRegistry
         }
 
         @Override
-        public float getBreakageSpeedModifier()
+        public float getAccossiatedModifier()
         {
             return 0.3f;
+        }
+    };
+
+    public static final Item ITEM_ALUMINIUM_SWORD = new Item()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_aluminum_sword";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Aluminum Sword";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "iron_sword";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+
+        @Override
+        public @NotNull Tool getToolType()
+        {
+            return Tool.SWORD;
+        }
+
+        @Override
+        public float getAccossiatedModifier()
+        {
+            return 5.0f;
         }
     };
 
@@ -594,7 +645,7 @@ public class ItemRegistry
         }
 
         @Override
-        public float getBreakageSpeedModifier()
+        public float getAccossiatedModifier()
         {
             return 0.4f;
         }
@@ -847,6 +898,11 @@ public class ItemRegistry
                 out of oxygen, you start to lose health. If you
                 lose enough health, you die.
                 \s
+                Mobs will spawn around. You need to kill them,
+                or they will kill you. To kill them, left-click
+                them. If you left-click them with a sword, you
+                can kill them faster.
+                \s
                 This guide only provides you with the bare
                 minimum to beat the game- not any of the fun
                 stuff you could do.
@@ -897,6 +953,19 @@ public class ItemRegistry
             """,
             """
             Step IV:
+                Now, your need to create a sword to defend yourself against
+                mobs. In order to do that, you are going to need 2 refined
+                aluminum ingots and 1 stick. You should arrange them as follows:
+                                       # A #
+                                       # A #
+                                       # S #
+                S = Stick
+                A = Refined Aluminum Ingot
+            
+            Move to the next page to continue...
+            """,
+            """
+            Step V:
                 Using your newly crafted aluminum pickaxe, mine 5 moon rock
                 (The darker version of what you mined previously). Once you
                 have done that, search around until you find a redstone ore
@@ -918,7 +987,7 @@ public class ItemRegistry
             Move to the next page to continue...
             """,
             """
-            Step V:
+            Step VI:
                 Place down the oxygen generator you just crafted. At this point,
                 your oxygen may be running low, so you will want to quickly find
                 and mine coal ore. Coal ore looks the same as redstone ore, except
@@ -932,7 +1001,7 @@ public class ItemRegistry
             Move to the next page to continue...
             """,
             """
-            Step VI:
+            Step VII:
                 You are going to need to craft a furnace to smelt iron and refine aluminum.
                 In order to craft this, you need 8 moon rock and 1 redstone. Moon rock is the
                 slightly darker variant of Soft Moon Rock that requires a pickaxe to mine. Place
@@ -946,7 +1015,7 @@ public class ItemRegistry
             Move to the next page to continue...
             """,
             """
-            Step VII:
+            Step VIII:
                 Now, you are going to need to craft a compositor. In order to craft
                 this, you need the following materials: 2 Iron Ingots, 2 Refined
                 Aluminum Ingots, 1 Redstone, and 4 Soft Moon Rock. In order to get the
@@ -961,7 +1030,7 @@ public class ItemRegistry
             Move to the next page to continue...
             """,
             """
-            Step VIII:
+            Step IX:
                 Once you have gotten your material, you will need put all of your
                 Aluminum Ingots in the top-right and top-left slots of the crafting grid,
                 and the 2 Iron ingots in the opposite slots. Then, place the redstone in
@@ -980,7 +1049,7 @@ public class ItemRegistry
             Move to the next page to continue...
             """,
             """
-            Step IX:
+            Step X:
                 Now, you are going to need to create a fuel refiner, in order to refine fuel
                 for the rocket you are going to make. For this, you will need 3 refined aluminum
                 ingots, 3 moon rock, and 3 iron ingots. They must be laid out as such:
@@ -997,7 +1066,7 @@ public class ItemRegistry
             Move to the next page to continue...
             """,
             """
-            Step X:
+            Step XI:
                 You now have all the machines you need to create a rocket ship to get the h-e-double-l
                 out of here! The materials you need to create the rocket are 4 iron blocks, 2 aluminum
                 blocks, 2 iron+coal composites, and 1 iron+aluminum composite. Crafting the iron and
@@ -1021,7 +1090,7 @@ public class ItemRegistry
             Move to the next page to continue...
             """,
             """
-            Step XI - FINAL:
+            Step XII - FINAL:
                 Congratulations for making it this far! Now, all you need to do is place the rocket by
                 right-clicking the ground whilst holding it, and you will have beaten the game. Thank you
                 so much for playing!
@@ -1540,6 +1609,7 @@ public class ItemRegistry
         register(ITEM_STICK);
         register(ITEM_REFINED_ALUMINUM_INGOT);
         register(ITEM_ALUMINUM_INGOT);
+        register(ITEM_ALUMINIUM_SWORD);
         register(ITEM_IRON_INGOT);
         register(ITEM_ALUMINIUM_PICKAXE);
         register(ITEM_IRON_PICKAXE);

@@ -95,7 +95,10 @@ public class TextUIElement extends UIElement
         Graphics2D graphics = textImage.createGraphics();
 
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+        graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        graphics.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
 
         graphics.setFont(customFont);
         FontMetrics fm = graphics.getFontMetrics();
@@ -112,9 +115,8 @@ public class TextUIElement extends UIElement
             String[] words = originalLine.split("\\s+");
             StringBuilder sb = new StringBuilder();
 
-            for (int i = 0; i < words.length; i++)
+            for (String word : words)
             {
-                String word = words[i];
                 String candidate = sb.isEmpty() ? word : sb + " " + word;
 
                 if (fm.stringWidth(candidate) > maxLineWidth && !sb.isEmpty())

@@ -159,7 +159,7 @@ public class ModelPart extends Component
 
     public @NotNull Vector3f getRotation()
     {
-        return getGameObject().getTransform().getLocalRotation();
+        return new Vector3f(getGameObject().getTransform().getLocalRotation());
     }
 
     public @NotNull ModelPart addCube(@NotNull Cube cube)

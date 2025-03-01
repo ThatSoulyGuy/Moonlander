@@ -19,6 +19,7 @@ import org.lwjgl.opengl.GL41;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -311,7 +312,20 @@ public class Mesh extends Component
 
     private void createOrUpdateBuffers()
     {
-        if (vertices.isEmpty() || indices.isEmpty())
+        List<Vertex> localVertices;
+        List<Integer> localIndices;
+
+        synchronized (vertices)
+        {
+            localVertices = new ArrayList<>(vertices);
+        }
+
+        synchronized (indices)
+        {
+            localIndices = new ArrayList<>(indices);
+        }
+
+        if (localVertices.isEmpty() || localIndices.isEmpty())
             return;
 
         vao = GL41.glGenVertexArrays();
@@ -319,31 +333,41 @@ public class Mesh extends Component
 
         vbo = GL41.glGenBuffers();
         GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, vbo);
-        GL41.glBufferData(GL41.GL_ARRAY_BUFFER, toBuffer(vertices, Vertex::getPosition), GL41.GL_DYNAMIC_DRAW);
+        GL41.glBufferData(GL41.GL_ARRAY_BUFFER,
+                toBuffer(localVertices, Vertex::getPosition),
+                GL41.GL_DYNAMIC_DRAW);
         GL41.glVertexAttribPointer(0, 3, GL41.GL_FLOAT, false, 0, 0);
         GL41.glEnableVertexAttribArray(0);
 
         cbo = GL41.glGenBuffers();
         GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, cbo);
-        GL41.glBufferData(GL41.GL_ARRAY_BUFFER, toBuffer(vertices, Vertex::getColor), GL41.GL_DYNAMIC_DRAW);
+        GL41.glBufferData(GL41.GL_ARRAY_BUFFER,
+                toBuffer(localVertices, Vertex::getColor),
+                GL41.GL_DYNAMIC_DRAW);
         GL41.glVertexAttribPointer(1, 3, GL41.GL_FLOAT, false, 0, 0);
         GL41.glEnableVertexAttribArray(1);
 
         nbo = GL41.glGenBuffers();
         GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, nbo);
-        GL41.glBufferData(GL41.GL_ARRAY_BUFFER, toBuffer(vertices, Vertex::getNormal), GL41.GL_DYNAMIC_DRAW);
+        GL41.glBufferData(GL41.GL_ARRAY_BUFFER,
+                toBuffer(localVertices, Vertex::getNormal),
+                GL41.GL_DYNAMIC_DRAW);
         GL41.glVertexAttribPointer(2, 3, GL41.GL_FLOAT, false, 0, 0);
         GL41.glEnableVertexAttribArray(2);
 
         uvbo = GL41.glGenBuffers();
         GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, uvbo);
-        GL41.glBufferData(GL41.GL_ARRAY_BUFFER, toBuffer(vertices, Vertex::getUVs), GL41.GL_DYNAMIC_DRAW);
+        GL41.glBufferData(GL41.GL_ARRAY_BUFFER,
+                toBuffer(localVertices, Vertex::getUVs),
+                GL41.GL_DYNAMIC_DRAW);
         GL41.glVertexAttribPointer(3, 2, GL41.GL_FLOAT, false, 0, 0);
         GL41.glEnableVertexAttribArray(3);
 
         ibo = GL41.glGenBuffers();
         GL41.glBindBuffer(GL41.GL_ELEMENT_ARRAY_BUFFER, ibo);
-        GL41.glBufferData(GL41.GL_ELEMENT_ARRAY_BUFFER, toBuffer(indices), GL41.GL_DYNAMIC_DRAW);
+        GL41.glBufferData(GL41.GL_ELEMENT_ARRAY_BUFFER,
+                toBuffer(localIndices),
+                GL41.GL_DYNAMIC_DRAW);
 
         GL41.glBindVertexArray(0);
 
@@ -355,30 +379,43 @@ public class Mesh extends Component
 
     private void updateBufferData()
     {
-        if (vertices.isEmpty() || indices.isEmpty())
+        List<Vertex> localVertices;
+        List<Integer> localIndices;
+
+        synchronized (vertices)
+        {
+            localVertices = new ArrayList<>(vertices);
+        }
+
+        synchronized (indices)
+        {
+            localIndices = new ArrayList<>(indices);
+        }
+
+        if (localVertices.isEmpty() || localIndices.isEmpty())
             return;
 
         GL41.glBindVertexArray(vao);
 
-        FloatBuffer positionBuffer = toBuffer(vertices, Vertex::getPosition);
+        FloatBuffer posBuffer = toBuffer(localVertices, Vertex::getPosition);
         GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, vbo);
-        resizeOrSubData(GL41.GL_ARRAY_BUFFER, positionBuffer);
+        resizeOrSubData(GL41.GL_ARRAY_BUFFER, posBuffer);
 
-        FloatBuffer colorBuffer = toBuffer(vertices, Vertex::getColor);
+        FloatBuffer colBuffer = toBuffer(localVertices, Vertex::getColor);
         GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, cbo);
-        resizeOrSubData(GL41.GL_ARRAY_BUFFER, colorBuffer);
+        resizeOrSubData(GL41.GL_ARRAY_BUFFER, colBuffer);
 
-        FloatBuffer normalBuffer = toBuffer(vertices, Vertex::getNormal);
+        FloatBuffer norBuffer = toBuffer(localVertices, Vertex::getNormal);
         GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, nbo);
-        resizeOrSubData(GL41.GL_ARRAY_BUFFER, normalBuffer);
+        resizeOrSubData(GL41.GL_ARRAY_BUFFER, norBuffer);
 
-        FloatBuffer uvBuffer = toBuffer(vertices, Vertex::getUVs);
+        FloatBuffer uvBuffer = toBuffer(localVertices, Vertex::getUVs);
         GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, uvbo);
         resizeOrSubData(GL41.GL_ARRAY_BUFFER, uvBuffer);
 
-        IntBuffer indexBuffer = toBuffer(indices);
+        IntBuffer idxBuffer = toBuffer(localIndices);
         GL41.glBindBuffer(GL41.GL_ELEMENT_ARRAY_BUFFER, ibo);
-        resizeOrSubData(GL41.GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+        resizeOrSubData(GL41.GL_ELEMENT_ARRAY_BUFFER, idxBuffer);
 
         GL41.glBindVertexArray(0);
 

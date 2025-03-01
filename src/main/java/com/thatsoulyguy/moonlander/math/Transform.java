@@ -140,6 +140,12 @@ public class Transform extends Component
     {
         return new Vector3f(localRotation);
     }
+
+    public @NotNull Vector3f getLocalRotationReference()
+    {
+        return localRotation;
+    }
+
     public void setLocalRotation(@NotNull Vector3f localRotation)
     {
         this.localRotation.set(localRotation);

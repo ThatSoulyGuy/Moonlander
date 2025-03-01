@@ -15,6 +15,7 @@ import java.util.List;
 public abstract class Entity extends Component
 {
     private int id;
+    private EntityModel model;
     private static final List<Class<? extends Entity>> ENTITY_CLASS_TYPES = new ArrayList<>();
 
     protected Entity() { }
@@ -24,7 +25,7 @@ public abstract class Entity extends Component
     {
         ENTITY_CLASS_TYPES.add(getClass());
 
-        if (getModel() != null)
+        if (getModelType() != null)
         {
             GameObject model = getGameObject().addChild(GameObject.create("default." + getClass().getName() + "_" + id + ".model", Layer.DEFAULT));
 
@@ -32,7 +33,7 @@ public abstract class Entity extends Component
 
             model.getTransform().setLocalScale(new Vector3f((float) 1 / 16));
 
-            model.addComponent(getModel());
+            this.model = model.addComponent(EntityModel.create(getModelType()));
         }
     }
 
@@ -52,13 +53,17 @@ public abstract class Entity extends Component
         return id;
     }
 
-    public abstract @NotNull String getDisplayName();
-
     public abstract @NotNull String getRegistryName();
 
     public abstract @NotNull Vector3f getBoundingBoxSize();
 
-    public abstract <T extends EntityModel> @Nullable T getModel();
+    public abstract @Nullable Class<? extends EntityModel> getModelType();
+
+    @SuppressWarnings("unchecked")
+    public final <T extends EntityModel> @Nullable T getModelReference()
+    {
+        return (T) model;
+    }
 
     public void onInteractedWith(@NotNull World world, @NotNull Entity interator) { }
 
@@ -68,7 +73,7 @@ public abstract class Entity extends Component
 
     public static @NotNull List<Class<? extends Entity>> getEntityClassTypes()
     {
-        return ENTITY_CLASS_TYPES;
+        return List.copyOf(ENTITY_CLASS_TYPES);
     }
 
     public static <T extends Entity> @NotNull T create(@NotNull Class<T> clazz)

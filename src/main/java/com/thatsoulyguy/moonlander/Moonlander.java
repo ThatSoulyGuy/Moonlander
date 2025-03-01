@@ -81,7 +81,7 @@ public class Moonlander
         ShaderManager.register(Shader.create("pass.geometry", AssetPath.create("moonlander", "shader/pass/geometry")));
         ShaderManager.register(Shader.create("ssao.default", AssetPath.create("moonlander", "shader/ssao/default")));
         ShaderManager.register(Shader.create("ssao.blur", AssetPath.create("moonlander", "shader/ssao/blur")));
-        ShaderManager.register(Shader.create("ssao.conclusion", AssetPath.create("moonlander", "shader/ssao/conclusion")));
+        ShaderManager.register(Shader.create("ssao.conclusion", AssetPath.create("moonlander", "shader/ssao/conclusion")));  
         ShaderManager.register(Shader.create("skybox", AssetPath.create("moonlander", "shader/skybox")));
         ShaderManager.register(Shader.create("selector_box", AssetPath.create("moonlander", "shader/selectorBox")));
         ShaderManager.register(Shader.create("oxygen_bubble", AssetPath.create("moonlander", "shader/oxygenBubble")));
@@ -89,6 +89,8 @@ public class Moonlander
         TextureManager.register(Texture.create("debug", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/debug.png")));
         TextureManager.register(Texture.create("error", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/error.png")));
         TextureManager.register(Texture.create("entity.rocket", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/entity/rocket.png")));
+        TextureManager.register(Texture.create("entity.damage", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/entity/damage.png")));
+        TextureManager.register(Texture.create("entity.alien", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/entity/alien.png")));
         TextureManager.register(Texture.create("ui.hotbar", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/hotbar.png")));
         TextureManager.register(Texture.create("ui.hotbar_selector", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/hotbar_selector.png")));
         TextureManager.register(Texture.create("ui.transparency", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/transparency.png")));
@@ -116,6 +118,9 @@ public class Moonlander
         TextureManager.register(Texture.create("ui.block_lookover", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/block_lookover.png")));
         TextureManager.register(Texture.create("ui.title", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/title.png")));
         TextureManager.register(Texture.create("ui.menu.main_menu_background", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/main_menu_background.png")));
+        TextureManager.register(Texture.create("ui.usage.fist", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/usage_fist.png")));
+        TextureManager.register(Texture.create("ui.usage.pickaxe", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/usage_pickaxe.png")));
+        TextureManager.register(Texture.create("ui.usage.sword", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/usage_sword.png")));
 
         TextureAtlasManager.register(TextureAtlas.create("blocks", AssetPath.create("moonlander", "texture/block/")));
         TextureAtlasManager.register(TextureAtlas.create("items", AssetPath.create("moonlander", "texture/item/")));

@@ -81,6 +81,11 @@ public class EntityPlayer extends LivingEntity
     private final float blockMiningAudioTimerStart = 0.25f;
     private float blockMiningAudioTimer;
 
+    private final float healTimerStart = 4.0f;
+    private float healTimer;
+
+    private long lastHitTime = 0;
+
     private int oxygen = 100;
 
     private float footstepTimer = 0f;
@@ -188,6 +193,7 @@ public class EntityPlayer extends LivingEntity
         suffocationCooldownTimer = suffocationCooldownTimerStart;
         oxygenRefillCooldownTimer = oxygenRefillCooldownTimerStart;
         blockMiningAudioTimer = blockMiningAudioTimerStart;
+        healTimer = healTimerStart;
 
         instance = this;
     }
@@ -214,6 +220,13 @@ public class EntityPlayer extends LivingEntity
         {
             damage(this, 3);
             suffocationCooldownTimer = suffocationCooldownTimerStart;
+        }
+
+        if (healTimer < 0 && getCurrentHealth() < getMaximumHealth())
+        {
+            setCurrentHealth(getCurrentHealth() + 1);
+
+            healTimer = healTimerStart;
         }
 
         if (getCurrentHealth() <= 0)
@@ -249,6 +262,7 @@ public class EntityPlayer extends LivingEntity
         oxygenDepletionCooldownTimer -= Time.getDeltaTime();
         suffocationCooldownTimer -= Time.getDeltaTime();
         oxygenRefillCooldownTimer -= Time.getDeltaTime();
+        healTimer -= Time.getDeltaTime();
     }
 
     @Override
@@ -351,6 +365,21 @@ public class EntityPlayer extends LivingEntity
         if (deathMenu.isActive() || winConditionMenu.isActive())
             return;
 
+        {
+            InventoryMenu.SlotData currentlySelectedSlot = inventoryMenu.getSlot(new Vector2i(0, inventoryMenu.currentSlotSelected));
+
+            assert currentlySelectedSlot != null;
+
+            Item item = ItemRegistry.get(currentlySelectedSlot.id());
+
+            switch (Objects.requireNonNull(item).getToolType())
+            {
+                case PICKAXE -> inventoryMenu.setUsageType(InventoryMenu.UsageType.PICKAXE);
+                case SWORD -> inventoryMenu.setUsageType(InventoryMenu.UsageType.SWORD);
+                default -> inventoryMenu.setUsageType(InventoryMenu.UsageType.FIST);
+            }
+        }
+
         if (InputManager.getKeyState(KeyCode.E, KeyState.PRESSED) && !pauseMenu.isActive() && !craftingTableMenu.isActive() && !deathMenu.isActive() && !bookMenu.isActive())
         {
             if (!inventoryMenu.isSurvivalMenuActive())
@@ -418,6 +447,56 @@ public class EntityPlayer extends LivingEntity
         if (InputManager.getKeyState(KeyCode.RIGHT, KeyState.PRESSED))
             inventoryMenu.currentSlotSelected++;
 
+        if (InputManager.getMouseState(MouseCode.MOUSE_LEFT, MouseState.PRESSED))
+        {
+            long now = System.currentTimeMillis();
+            long deltaMs = now - lastHitTime;
+
+            lastHitTime = now;
+
+            float scale = deltaMs / 1000f;
+
+            if (scale > 1.0f)
+                scale = 1.0f;
+
+            float baseDamage = 2.0f;
+            float damage = baseDamage * scale;
+
+            float minDamage = 1.0f;
+            if (damage < minDamage)
+                damage = minDamage;
+
+            Raycast.Hit boxHit = Raycast.cast(
+                    camera.getGameObject().getTransform().getWorldPosition(),
+                    camera.getGameObject().getTransform().getForward(),
+                    4,
+                    self
+            );
+
+            if (boxHit != null && boxHit.collider() instanceof BoxCollider collider)
+            {
+                for (Class<? extends LivingEntity> clazz : LivingEntity.getLivingEntityClassTypes())
+                {
+                    if (collider.getGameObject().hasComponent(clazz))
+                    {
+                        InventoryMenu.SlotData currentlySelectedSlot = inventoryMenu.getSlot(new Vector2i(0, inventoryMenu.currentSlotSelected));
+
+                        assert currentlySelectedSlot != null;
+
+                        Item item = ItemRegistry.get(currentlySelectedSlot.id());
+
+                        assert item != null;
+
+                        float extraDamage = item.getToolType() == Tool.SWORD ? item.getAccossiatedModifier() : 0;
+
+                        collider.getGameObject().getComponentNotNull(clazz).damage(this, (int) damage + (int) extraDamage);
+
+                        return;
+                    }
+                }
+            }
+        }
+
         if (InputManager.getMouseState(MouseCode.MOUSE_RIGHT, MouseState.PRESSED))
         {
             Raycast.Hit boxHit = Raycast.cast(camera.getGameObject().getTransform().getWorldPosition(), camera.getGameObject().getTransform().getForward(), 4, self);
@@ -472,7 +551,7 @@ public class EntityPlayer extends LivingEntity
                 
                 blockBreakageMesh.getGameObject().setActive(true);
 
-                if (blockId != BlockRegistry.BLOCK_AIR.getId() && blockId != -1 && block.isSolid())
+                if (blockId != BlockRegistry.BLOCK_AIR.getId() && blockId != -1 && Objects.requireNonNull(block).isSolid())
                 {
                     Vector3i blockCoordinates = CoordinateHelper.worldToBlockCoordinates(point);
 
@@ -487,7 +566,7 @@ public class EntityPlayer extends LivingEntity
                     float blockHardness;
 
                     if (currentlySelectedSlot != null)
-                        blockHardness = block.getHardness() * Objects.requireNonNull(ItemRegistry.get(currentlySelectedSlot.id())).getBreakageSpeedModifier();
+                        blockHardness = block.getHardness() * Objects.requireNonNull(ItemRegistry.get(currentlySelectedSlot.id())).getAccossiatedModifier();
                     else
                         blockHardness = block.getHardness();
 
@@ -870,12 +949,6 @@ public class EntityPlayer extends LivingEntity
     }
 
     @Override
-    public @NotNull String getDisplayName()
-    {
-        return "Player**";
-    }
-
-    @Override
     public @NotNull String getRegistryName()
     {
         return "entity_player";
@@ -906,7 +979,7 @@ public class EntityPlayer extends LivingEntity
     }
 
     @Override
-    public <T extends EntityModel> @Nullable T getModel()
+    public @Nullable Class<? extends EntityModel> getModelType()
     {
         return null;
     }
@@ -1017,7 +1090,7 @@ public class EntityPlayer extends LivingEntity
         selectorMesh.uninitialize();
     }
 
-    public static @NotNull EntityPlayer getInstance()
+    public static @NotNull EntityPlayer getLocalPlayer()
     {
         return instance;
     }

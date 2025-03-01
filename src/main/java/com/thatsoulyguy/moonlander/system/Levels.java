@@ -6,6 +6,7 @@ import com.thatsoulyguy.moonlander.audio.AudioListener;
 import com.thatsoulyguy.moonlander.audio.AudioManager;
 import com.thatsoulyguy.moonlander.core.Settings;
 import com.thatsoulyguy.moonlander.core.Window;
+import com.thatsoulyguy.moonlander.entity.entities.EntityAlien;
 import com.thatsoulyguy.moonlander.entity.entities.EntityPlayer;
 import com.thatsoulyguy.moonlander.entity.entities.EntityRocket;
 import com.thatsoulyguy.moonlander.render.TextureManager;
@@ -17,8 +18,10 @@ import com.thatsoulyguy.moonlander.ui.uielements.ImageUIElement;
 import com.thatsoulyguy.moonlander.ui.uielements.TextUIElement;
 import com.thatsoulyguy.moonlander.util.AssetPath;
 import com.thatsoulyguy.moonlander.util.FileHelper;
+import com.thatsoulyguy.moonlander.world.RegionalSpawner;
 import com.thatsoulyguy.moonlander.world.TerrainGenerator;
 import com.thatsoulyguy.moonlander.world.World;
+import com.thatsoulyguy.moonlander.world.regionalspawners.AlienRegionalSpawner;
 import com.thatsoulyguy.moonlander.world.terraingenerators.CaveTerrainGenerator;
 import com.thatsoulyguy.moonlander.world.terraingenerators.GroundTerrainGenerator;
 import org.joml.Random;
@@ -216,6 +219,8 @@ public class Levels
 
         world.addTerrainGenerator(TerrainGenerator.create(GroundTerrainGenerator.class));
         world.addTerrainGenerator(TerrainGenerator.create(CaveTerrainGenerator.class));
+
+        world.addRegionalSpawner(RegionalSpawner.create(AlienRegionalSpawner.class));
 
         world.spawnEntity(new Vector3f(0.0f, 180.0f, 0.0f), EntityPlayer.class);
     }

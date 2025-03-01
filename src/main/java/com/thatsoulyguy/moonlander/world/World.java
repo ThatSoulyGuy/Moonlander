@@ -6,6 +6,7 @@ import com.thatsoulyguy.moonlander.collider.Collider;
 import com.thatsoulyguy.moonlander.collider.colliders.BoxCollider;
 import com.thatsoulyguy.moonlander.collider.colliders.VoxelMeshCollider;
 import com.thatsoulyguy.moonlander.core.Settings;
+import com.thatsoulyguy.moonlander.core.Time;
 import com.thatsoulyguy.moonlander.entity.Entity;
 import com.thatsoulyguy.moonlander.math.Rigidbody;
 import com.thatsoulyguy.moonlander.math.Transform;
@@ -45,6 +46,7 @@ public class World extends Component
     private final @NotNull ConcurrentMap<Vector3i, Future<?>> ongoingChunkGenerations = new ConcurrentHashMap<>();
 
     private final @NotNull List<TerrainGenerator> terrainGenerators = new ArrayList<>();
+    private final @NotNull List<RegionalSpawner> regionalSpawners = new ArrayList<>();
 
     private final @NotNull Queue<Vector3i> pendingRegenerationQueue = new ConcurrentLinkedQueue<>();
 
@@ -58,6 +60,9 @@ public class World extends Component
 
     private final @NotNull Map<Pair<Integer, Class<? extends Entity>>, Entity> entities = new ConcurrentHashMap<>();
 
+    private final float spawnCycleTimerStart = 10.0f;
+    private float spawnCycleTimer;
+
     private World() { }
 
     @Override
@@ -68,6 +73,8 @@ public class World extends Component
 
         if (seed == -1)
             seed = new Random().nextLong(9999999);
+
+        spawnCycleTimer = spawnCycleTimerStart;
     }
 
     @Override
@@ -82,6 +89,28 @@ public class World extends Component
         loadCloseChunks();
         unloadFarChunks();
         processPendingRegeneration();
+
+        if (spawnCycleTimer < 0 && entities.size() < 20 && chunkLoader != null)
+        {
+            for (int r = 0; r < 20 - entities.size(); r++)
+            {
+                Random random = new Random();
+
+                Vector3f basePosition = new Vector3f(random.nextFloat() * 50, 0, random.nextFloat() * 50);
+
+                basePosition.add(chunkLoader.getWorldPosition());
+
+                Vector3f spawnPosition = findSpawnPosition(basePosition);
+
+                spawnPosition.y += 2;
+
+                regionalSpawners.forEach(spawner -> spawner.onSpawnCycle(this, spawnPosition));
+            }
+
+            spawnCycleTimer = spawnCycleTimerStart;
+        }
+
+        spawnCycleTimer -= Time.getDeltaTime();
     }
 
     public @NotNull Chunk loadOrGenerateChunk(@NotNull Vector3i chunkPosition)
@@ -378,6 +407,11 @@ public class World extends Component
         terrainGenerators.add(generator);
     }
 
+    public void addRegionalSpawner(@NotNull RegionalSpawner spawner)
+    {
+        regionalSpawners.add(spawner);
+    }
+
     public void loadCloseChunks()
     {
         if (chunkLoader == null)
@@ -516,6 +550,47 @@ public class World extends Component
                 });
             }
         }
+    }
+
+    private @NotNull Vector3f findSpawnPosition(@NotNull Vector3f basePosition)
+    {
+        float worldX = basePosition.x;
+        float worldZ = basePosition.z;
+
+        int chunkX = (int)Math.floor(worldX / Chunk.SIZE);
+        int chunkZ = (int)Math.floor(worldZ / Chunk.SIZE);
+
+        Vector3f spawnPos = null;
+
+        for (int cy = VERTICAL_CHUNKS - 1; cy >= 0 && spawnPos == null; cy--)
+        {
+            Vector3i candidateChunkPos = new Vector3i(chunkX, cy, chunkZ);
+            Chunk candidateChunk = getChunk(candidateChunkPos);
+
+            if (candidateChunk == null)
+                continue;
+
+            short[][][] blocks = candidateChunk.getBlocks();
+
+            int localX = (int)(worldX - chunkX * Chunk.SIZE);
+            int localZ = (int)(worldZ - chunkZ * Chunk.SIZE);
+
+            for (int ly = Chunk.SIZE - 1; ly >= 0; ly--)
+            {
+                if (blocks[localX][ly][localZ] != 0)
+                {
+                    float spawnY = cy * Chunk.SIZE + ly + 1;
+                    spawnPos = new Vector3f(worldX, spawnY, worldZ);
+
+                    break;
+                }
+            }
+        }
+
+        if (spawnPos == null)
+            spawnPos = new Vector3f(worldX, 100, worldZ);
+
+        return spawnPos;
     }
 
     @Override

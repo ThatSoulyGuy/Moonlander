@@ -53,6 +53,11 @@ public abstract class EntityModel extends Component
         partsList.remove(name);
     }
 
+    public void setTexture(@NotNull Texture texture)
+    {
+        partsList.values().forEach(modelPart -> modelPart.getGameObject().setComponent(texture));
+    }
+
     public static <T extends EntityModel> @NotNull T create(Class<T> clazz)
     {
         try

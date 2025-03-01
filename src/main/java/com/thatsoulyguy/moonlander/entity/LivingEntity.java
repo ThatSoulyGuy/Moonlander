@@ -9,15 +9,27 @@ import com.thatsoulyguy.moonlander.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Random;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public abstract class LivingEntity extends Entity
 {
+    private static final List<Class<? extends LivingEntity>> LIVING_ENTITY_CLASS_TYPES = new ArrayList<>();
+
     private int currentHealth;
 
     protected LivingEntity()
     {
         currentHealth = getMaximumHealth();
+    }
+
+    @Override
+    public void initialize()
+    {
+        super.initialize();
+
+        LIVING_ENTITY_CLASS_TYPES.add(getClass());
     }
 
     public abstract float getWalkingSpeed();
@@ -60,6 +72,11 @@ public abstract class LivingEntity extends Entity
         currentHealth += Math.abs(damage);
 
         onHealed(Objects.requireNonNull(World.getLocalWorld()), damager, Math.abs(damage));
+    }
+
+    public static @NotNull List<Class<? extends LivingEntity>> getLivingEntityClassTypes()
+    {
+        return List.copyOf(LIVING_ENTITY_CLASS_TYPES);
     }
 
     public void onDamaged(@NotNull World world, @NotNull Entity damager, int damageDealt) { }

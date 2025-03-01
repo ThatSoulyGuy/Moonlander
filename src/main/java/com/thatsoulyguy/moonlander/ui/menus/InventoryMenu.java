@@ -78,6 +78,8 @@ public class InventoryMenu extends Menu
 
     private @EffectivelyNotNull TextUIElement floatingTitleText;
 
+    private @EffectivelyNotNull UIElement usageElement;
+
     private final ReentrantLock menuLock = new ReentrantLock(true);
 
     @Override
@@ -104,6 +106,8 @@ public class InventoryMenu extends Menu
             ));
 
             floatingTitleText.setAlignment(TextUIElement.TextAlignment.VERTICAL_CENTER, TextUIElement.TextAlignment.HORIZONTAL_CENTER);
+
+            usageElement = hud.addElement(createImageElement("usage", new Vector2f(0.0f), scaleVector(32.0f, 32.0f), Objects.requireNonNull(TextureManager.get("ui.usage.fist")), true, UIElement.Alignment.TOP, new Vector2f(0.0f, 0.0f)));
 
             createHotbarUI();
             createOxygenAndHeartsUI();
@@ -195,6 +199,16 @@ public class InventoryMenu extends Menu
     public boolean isCreativeMenuActive()
     {
         return creativeMenu.isActive();
+    }
+
+    public void setUsageType(@NotNull UsageType type)
+    {
+        switch (type)
+        {
+            case FIST -> usageElement.setTexture(Objects.requireNonNull(TextureManager.get("ui.usage.fist")));
+            case PICKAXE -> usageElement.setTexture(Objects.requireNonNull(TextureManager.get("ui.usage.pickaxe")));
+            case SWORD -> usageElement.setTexture(Objects.requireNonNull(TextureManager.get("ui.usage.sword")));
+        }
     }
 
     public void addItem(short item, byte count)
@@ -1231,5 +1245,13 @@ public class InventoryMenu extends Menu
     {
         return baseSize * (Settings.UI_SCALE.getValue() - 0.5f);
     }
+
     public record SlotData(short id, byte count) implements Serializable { }
+
+    public enum UsageType implements Serializable
+    {
+        FIST,
+        PICKAXE,
+        SWORD
+    }
 }
