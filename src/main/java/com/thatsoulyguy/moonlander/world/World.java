@@ -146,6 +146,8 @@ public class World extends Component
                 entityObject.getTransform().setLocalPosition(eData.position());
                 entityObject.setActive(true);
 
+                entityObject.addComponent(Collider.create(BoxCollider.class).setSize(entity.getBoundingBoxSize()));
+                entityObject.addComponent(Rigidbody.create());
                 entityObject.addComponent(entity);
                 entity.onSpawned(this);
 
@@ -426,12 +428,26 @@ public class World extends Component
         {
             for (int cz = playerChunkPosition.z - Settings.RENDER_DISTANCE.getValue(); cz <= playerChunkPosition.z + Settings.RENDER_DISTANCE.getValue(); cz++)
             {
-                for (int cy = 0; cy < VERTICAL_CHUNKS; cy++)
+                for (int cy = VERTICAL_CHUNKS - 1; cy >= 0; cy--)
                     chunkPositions.add(new Vector3i(cx, cy, cz));
             }
         }
 
-        chunkPositions.sort(Comparator.comparingInt(pos -> Math.toIntExact(playerChunkPosition.distanceSquared(pos))));
+        chunkPositions.sort((a, b) ->
+        {
+            int dxA = a.x - playerChunkPosition.x;
+            int dzA = a.z - playerChunkPosition.z;
+            int dxB = b.x - playerChunkPosition.x;
+            int dzB = b.z - playerChunkPosition.z;
+
+            int horizontalDistanceA = dxA * dxA + dzA * dzA;
+            int horizontalDistanceB = dxB * dxB + dzB * dzB;
+
+            if (horizontalDistanceA == horizontalDistanceB)
+                return Integer.compare(b.y, a.y);
+
+            return Integer.compare(horizontalDistanceA, horizontalDistanceB);
+        });
 
         for (Vector3i currentChunk : chunkPositions)
         {
