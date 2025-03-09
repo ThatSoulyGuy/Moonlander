@@ -29,6 +29,7 @@ import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
 import com.thatsoulyguy.moonlander.ui.MenuManager;
 import com.thatsoulyguy.moonlander.ui.menus.*;
 import com.thatsoulyguy.moonlander.util.CoordinateHelper;
+import com.thatsoulyguy.moonlander.util.PlayerDisplay;
 import com.thatsoulyguy.moonlander.world.TextureAtlasManager;
 import com.thatsoulyguy.moonlander.world.World;
 import org.jetbrains.annotations.NotNull;
@@ -40,6 +41,7 @@ import org.lwjgl.opengl.GL41;
 import java.io.Serializable;
 import java.lang.Math;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -63,6 +65,8 @@ public class EntityPlayer extends LivingEntity
     private @EffectivelyNotNull WinConditionMenu winConditionMenu;
 
     private final @NotNull Inventory inventory = new Inventory();
+
+    private PlayerDisplay display;
 
     private float breakingProgress;
 
@@ -102,11 +106,21 @@ public class EntityPlayer extends LivingEntity
         initializeCamera();
         initializeUI();
 
+        GameObject displayObject = camera.getGameObject().addChild(GameObject.create("default.display", Layer.DEFAULT));
+
+        displayObject.setTransient(true);
+
+        displayObject.addComponent(Objects.requireNonNull(ShaderManager.get("legacy.default")));
+        displayObject.addComponent(Mesh.create(new ArrayList<>(), new ArrayList<>()));
+
+        display = displayObject.addComponent(PlayerDisplay.create());
+        display.inventoryMenu = inventoryMenu;
+
         MainThreadExecutor.submit(() ->
         {
             selectorMesh = SelectorMesh.create();
 
-            GameObject blockBreakageObject = GameObject.create("block_breakage", Layer.DEFAULT);
+            GameObject blockBreakageObject = GameObject.create("default.block_breakage", Layer.DEFAULT);
 
             blockBreakageObject.setTransient(true);
 
@@ -284,7 +298,7 @@ public class EntityPlayer extends LivingEntity
 
         cameraObject.addComponent(AudioListener.create());
 
-        cameraObject.addComponent(Camera.create(45.0f, 0.01f, 1000.0f));
+        cameraObject.addComponent(Camera.create(45.0f, 0.1f, 1000.0f));
         cameraObject.getTransform().setLocalPosition(new Vector3f(0.0f, 0.86f, 0.0f));
 
         camera = cameraObject.getComponent(Camera.class);
@@ -473,6 +487,8 @@ public class EntityPlayer extends LivingEntity
                     self
             );
 
+            display.swing();
+
             if (boxHit != null && boxHit.collider() instanceof BoxCollider collider)
             {
                 for (Class<? extends LivingEntity> clazz : LivingEntity.getLivingEntityClassTypes())
@@ -584,6 +600,8 @@ public class EntityPlayer extends LivingEntity
 
                         clip.setLooping(false);
                         clip.play(true);
+
+                        display.swing();
 
                         blockMiningAudioTimer = blockMiningAudioTimerStart;
                     }
@@ -792,6 +810,10 @@ public class EntityPlayer extends LivingEntity
         else if (rotation.x < -maxPitch)
             rotation.x = -maxPitch;
 
+        Vector3f difference = camera.getGameObject().getTransform().getLocalRotation().sub(rotation, new Vector3f());
+
+        display.cameraMovement = new Vector3f(-difference.y, -difference.x, difference.z).mul(0.1f, new Vector3f());
+
         camera.getGameObject().getTransform().setLocalRotation(rotation);
     }
 
@@ -843,6 +865,21 @@ public class EntityPlayer extends LivingEntity
         }
 
         rigidbody.addForce(movement);
+
+        if (rigidbody.isGrounded() && movement.lengthSquared() > 0.001f)
+        {
+            float speed = rigidbody.getActualMovement().length();
+
+            float frequency = 10.0f;
+            float amplitude = Math.min(speed * 0.05f, 0.2f);
+
+            float time = Time.getTime();
+
+            float bobOffsetY = (float) Math.sin(time * frequency) * amplitude;
+            float bobOffsetX = (float) Math.cos(time * frequency * 2.0f) * amplitude * 0.5f;
+
+            display.playerMovement = new Vector3f(bobOffsetX, bobOffsetY, 0).mul(60.0f);
+        }
 
         if (rigidbody.isGrounded() && movement.lengthSquared() > 0.001f)
         {

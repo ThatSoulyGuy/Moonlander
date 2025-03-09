@@ -9,7 +9,7 @@ in vec3 normal;
 in vec3 color;
 in vec2 uvs;
 
-uniform sampler2D diffuseTexture;
+uniform sampler2D diffuse;
 
 void main()
 {
@@ -17,5 +17,5 @@ void main()
 
     gNormal = vec4(normalize(normal), 1.0);
 
-    gAlbedo = texture(diffuseTexture, uvs) * vec4(color, 1.0f);
+    gAlbedo = texture(diffuse, uvs) * vec4(color, 1.0f);
 }

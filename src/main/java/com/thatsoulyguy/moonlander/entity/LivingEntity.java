@@ -38,12 +38,22 @@ public abstract class LivingEntity extends Entity
 
     public abstract int getMaximumHealth();
 
-    public void setCurrentHealth(int currentHealth)
+    public String[] getHurtAudioClips()
+    {
+        return new String[]
+        {
+            "entity.damage.0",
+            "entity.damage.1",
+            "entity.damage.2"
+        };
+    }
+
+    public final void setCurrentHealth(int currentHealth)
     {
         this.currentHealth = currentHealth;
     }
 
-    public int getCurrentHealth()
+    public final int getCurrentHealth()
     {
         return currentHealth;
     }
@@ -54,7 +64,7 @@ public abstract class LivingEntity extends Entity
 
         GameObject soundObject = GameObject.create("entity.damage" + new Random().nextInt(4096), Layer.DEFAULT);
 
-        soundObject.addComponent(Objects.requireNonNull(AudioManager.get("entity.damage." + new Random().nextInt(2))));
+        soundObject.addComponent(Objects.requireNonNull(AudioManager.get(getHurtAudioClips()[new Random().nextInt(getHurtAudioClips().length)])));
 
         soundObject.getTransform().setLocalPosition(getGameObject().getTransform().getLocalPosition());
 

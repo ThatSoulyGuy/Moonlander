@@ -4,10 +4,7 @@ import com.thatsoulyguy.moonlander.annotation.Manager;
 import com.thatsoulyguy.moonlander.annotation.Static;
 import com.thatsoulyguy.moonlander.core.Settings;
 import com.thatsoulyguy.moonlander.gameplay.OxygenBubble;
-import com.thatsoulyguy.moonlander.render.Camera;
-import com.thatsoulyguy.moonlander.render.DebugRenderer;
-import com.thatsoulyguy.moonlander.render.Mesh;
-import com.thatsoulyguy.moonlander.render.Skybox;
+import com.thatsoulyguy.moonlander.render.*;
 import com.thatsoulyguy.moonlander.render.advanced.RenderPassManager;
 import com.thatsoulyguy.moonlander.render.advanced.core.RenderPass;
 import com.thatsoulyguy.moonlander.render.advanced.core.renderpasses.GeometryRenderPass;
@@ -167,10 +164,20 @@ public class GameObjectManager
                 Skybox.CURRENT_SKYBOX.render(camera);
 
             List<GameObject> transparentGameObjects = new ArrayList<>();
+            List<GameObject> inFrontGameObjects = new ArrayList<>();
 
             for (GameObject gameObject : gameObjectMap.values())
             {
-                if ((gameObject.hasComponent(Mesh.class) && gameObject.getComponentNotNull(Mesh.class).isTransparent()) || gameObject.hasComponent(OxygenBubble.class))
+                Mesh mesh = gameObject.getComponentRecursive(Mesh.class);
+
+                boolean hasMesh = (mesh != null);
+                boolean isInFront = hasMesh && mesh.isInFront();
+                boolean isTransparent = hasMesh && mesh.isTransparent();
+                boolean hasOxygenBubble = gameObject.hasComponentRecursive(OxygenBubble.class);
+
+                if (isInFront)
+                    inFrontGameObjects.add(gameObject);
+                else if (isTransparent || hasOxygenBubble)
                     transparentGameObjects.add(gameObject);
                 else
                     gameObject.renderDefault(camera);
@@ -196,6 +203,9 @@ public class GameObjectManager
                     .toList();
 
             passList.forEach(pass -> pass.render(camera));
+
+            for (GameObject gameObject : inFrontGameObjects)
+                gameObject.renderDefault(camera);
 
             int error = GL41.glGetError();
 

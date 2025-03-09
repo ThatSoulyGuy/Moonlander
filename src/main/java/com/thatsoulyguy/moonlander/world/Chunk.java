@@ -399,36 +399,36 @@ public class Chunk extends Component
 
     private void addFace(@NotNull Vector3i position, @NotNull Vector3i normal, @NotNull Vector3f baseColor, @Nullable Vector2f[] uvs)
     {
-        if (uvs == null)
-            return;
-
-        Vector3i[] faceVertices = getFaceVerticesForNormal(position, normal);
-
-        for (int i = 0; i < 4; i++)
-            vertices.add(Vertex.create(new Vector3f(faceVertices[i]), baseColor, new Vector3f(normal.x, normal.y, normal.z), uvs[i]));
-
-        int startIndex = this.vertices.size() - 4;
-
-        boolean isTop = (normal.x == 0 && normal.y == 1 && normal.z == 0);
-        boolean isBottom = (normal.x == 0 && normal.y == -1 && normal.z == 0);
-
-        if (isTop || isBottom)
+        synchronized (this)
         {
-            indices.add(startIndex);
-            indices.add(startIndex + 1);
-            indices.add(startIndex + 2);
-            indices.add(startIndex + 2);
-            indices.add(startIndex + 3);
-            indices.add(startIndex);
-        }
-        else
-        {
-            indices.add(startIndex);
-            indices.add(startIndex + 2);
-            indices.add(startIndex + 1);
-            indices.add(startIndex + 2);
-            indices.add(startIndex);
-            indices.add(startIndex + 3);
+            if (uvs == null)
+                return;
+
+            Vector3i[] faceVertices = getFaceVerticesForNormal(position, normal);
+
+            for (int i = 0; i < 4; i++)
+                vertices.add(Vertex.create(new Vector3f(faceVertices[i]), baseColor, new Vector3f(normal.x, normal.y, normal.z), uvs[i]));
+
+            int startIndex = this.vertices.size() - 4;
+
+            boolean isTop = (normal.x == 0 && normal.y == 1 && normal.z == 0);
+            boolean isBottom = (normal.x == 0 && normal.y == -1 && normal.z == 0);
+
+            if (isTop || isBottom) {
+                indices.add(startIndex);
+                indices.add(startIndex + 1);
+                indices.add(startIndex + 2);
+                indices.add(startIndex + 2);
+                indices.add(startIndex + 3);
+                indices.add(startIndex);
+            } else {
+                indices.add(startIndex);
+                indices.add(startIndex + 2);
+                indices.add(startIndex + 1);
+                indices.add(startIndex + 2);
+                indices.add(startIndex);
+                indices.add(startIndex + 3);
+            }
         }
     }
 

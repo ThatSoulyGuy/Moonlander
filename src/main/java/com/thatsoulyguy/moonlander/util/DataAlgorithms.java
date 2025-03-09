@@ -2,6 +2,8 @@ package com.thatsoulyguy.moonlander.util;
 
 import com.thatsoulyguy.moonlander.annotation.Static;
 import com.thatsoulyguy.moonlander.block.BlockRegistry;
+import com.thatsoulyguy.moonlander.render.Texture;
+import com.thatsoulyguy.moonlander.render.Vertex;
 import com.thatsoulyguy.moonlander.world.Chunk;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
@@ -9,8 +11,9 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.*;
 import java.util.function.BiFunction;
 
 @Static
@@ -308,5 +311,306 @@ public class DataAlgorithms
             return false;
 
         return blocks[position.x][position.y][position.z] != BlockRegistry.BLOCK_AIR.getId();
+    }
+
+    /**
+     * Creates an extruded mesh from the non-transparent pixels of the given texture.
+     *
+     * @param texture the Texture to use (must allow access to its pixel data)
+     * @param extrusionDepth the distance to extrude (e.g. 0.1f)
+     * @return a new Mesh with front, back, and side faces
+     */
+    public static @NotNull Pair<@NotNull List<Vertex>, @NotNull List<Integer>> extrudeTextureIntoMeshData(@NotNull Texture texture, float extrusionDepth)
+    {
+        ByteBuffer pixelData = texture.getBuffer().duplicate().duplicate().order(ByteOrder.nativeOrder());
+
+        pixelData.rewind();
+
+        assert texture.getDimensions() != null;
+
+        int width = texture.getDimensions().x;
+        int height = texture.getDimensions().y;
+
+        boolean[][] mask = new boolean[height][width];
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                int index = (y * width + x) * 4;
+                int alpha = pixelData.get(index + 3) & 0xFF;
+
+                mask[y][x] = (alpha > 0);
+            }
+        }
+
+        List<Vector2f> contour = extractContour(mask, width, height);
+
+        if (contour.isEmpty())
+            throw new IllegalStateException("No non-transparent pixels found in texture.");
+
+        List<Integer> frontIndices = triangulatePolygon(contour);
+
+        List<Vertex> vertices = new ArrayList<>();
+
+        for (Vector2f point : contour)
+        {
+            Vector3f position = new Vector3f(point.x, point.y, 0.0f);
+
+            Vector2f uv = new Vector2f(point);
+
+            Vector3f normal = new Vector3f(0.0f, 0.0f, 0.0f);
+
+            vertices.add(Vertex.create(position, new Vector3f(1.0f), normal, uv));
+        }
+
+        int frontCount = vertices.size();
+
+        for (int i = 0; i < frontCount; i++)
+        {
+            Vertex frontVertex = vertices.get(i);
+            Vector3f pos = new Vector3f(frontVertex.getPosition());
+
+            pos.z += extrusionDepth;
+
+            Vector3f normal = new Vector3f(0.0f, 0.0f, 1.0f);
+            vertices.add(Vertex.create(pos, new Vector3f(1.0f), normal, frontVertex.getUVs()));
+        }
+
+        List<Integer> indices = getExtrudedIndices(frontIndices, frontCount, contour);
+
+        return new Pair<>(vertices, indices);
+    }
+
+    private static @NotNull List<Integer> getExtrudedIndices(List<Integer> frontIndices, int frontCount, List<Vector2f> contour)
+    {
+        List<Integer> indices = new ArrayList<>(frontIndices);
+
+        for (int i = 0; i < frontIndices.size(); i += 3)
+        {
+            int i0 = frontIndices.get(i) + frontCount;
+            int i1 = frontIndices.get(i + 1) + frontCount;
+            int i2 = frontIndices.get(i + 2) + frontCount;
+
+            indices.add(i0);
+            indices.add(i2);
+            indices.add(i1);
+        }
+
+        int contourSize = contour.size();
+
+        for (int i = 0; i < contourSize; i++)
+        {
+            int next = (i + 1) % contourSize;
+            int backCurrent = i + frontCount;
+            int backNext = next + frontCount;
+
+            indices.add(i);
+            indices.add(next);
+            indices.add(backCurrent);
+
+            indices.add(next);
+            indices.add(backNext);
+            indices.add(backCurrent);
+        }
+
+        return indices;
+    }
+
+    private static List<Vector2f> extractContour(boolean[][] mask, int width, int height)
+    {
+        int[] dx = {-1, -1,  0, 1, 1,  1,  0, -1};
+        int[] dy = { 0,  1,  1, 1, 0, -1, -1, -1};
+
+        int startX = -1, startY = -1;
+
+        outer:
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (mask[y][x])
+                {
+                    boolean isBoundary = false;
+
+                    for (int j = -1; j <= 1 && !isBoundary; j++)
+                    {
+                        for (int i = -1; i <= 1; i++)
+                        {
+                            int nx = x + i, ny = y + j;
+
+                            if (nx < 0 || ny < 0 || nx >= width || ny >= height || !mask[ny][nx])
+                            {
+                                isBoundary = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (isBoundary)
+                    {
+                        startX = x;
+                        startY = y;
+
+                        break outer;
+                    }
+                }
+            }
+        }
+        if (startX == -1)
+            return new ArrayList<>();
+
+        List<Vector2f> contour = new ArrayList<>();
+
+        int currentX = startX, currentY = startY;
+        int prevDirection = 7;
+
+        contour.add(new Vector2f((float) currentX / (width - 1), (float) currentY / (height - 1)));
+
+        while (true)
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                int dir = (prevDirection + 1 + i) % 8;
+                int nx = currentX + dx[dir];
+                int ny = currentY + dy[dir];
+
+                if (nx < 0 || ny < 0 || nx >= width || ny >= height)
+                    continue;
+
+                if (mask[ny][nx])
+                {
+                    currentX = nx;
+                    currentY = ny;
+
+                    prevDirection = (dir + 6) % 8;
+
+                    break;
+                }
+            }
+
+            if (currentX == startX && currentY == startY)
+                break;
+
+            contour.add(new Vector2f((float) currentX / (width - 1), (float) currentY / (height - 1)));
+        }
+
+        return contour;
+    }
+
+    private static @NotNull List<Integer> triangulatePolygon(@NotNull List<Vector2f> contour)
+    {
+        int n = contour.size();
+
+        if (n < 3)
+            return new ArrayList<>();
+
+        List<Integer> polygon = new ArrayList<>();
+
+        for (int i = 0; i < n; i++)
+            polygon.add(i);
+
+        List<Integer> triangles = new ArrayList<>();
+
+        if (computeArea(contour, polygon) < 0)
+            Collections.reverse(polygon);
+
+        int count = 0;
+
+        while (polygon.size() > 3 && count < 10000)
+        {
+            boolean earFound = false;
+            int m = polygon.size();
+
+            for (int i = 0; i < m; i++)
+            {
+                int prevIndex = polygon.get((i + m - 1) % m);
+                int currIndex = polygon.get(i);
+                int nextIndex = polygon.get((i + 1) % m);
+
+                Vector2f a = contour.get(prevIndex);
+                Vector2f b = contour.get(currIndex);
+                Vector2f c = contour.get(nextIndex);
+
+                if (isConvex(a, b, c))
+                {
+                    boolean hasPointInside = false;
+
+                    for (int j = 0; j < m; j++)
+                    {
+                        if (j == (i + m - 1) % m || j == i || j == (i + 1) % m)
+                            continue;
+
+                        Vector2f p = contour.get(polygon.get(j));
+
+                        if (pointInTriangle(p, a, b, c))
+                        {
+                            hasPointInside = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasPointInside)
+                    {
+                        triangles.add(prevIndex);
+                        triangles.add(currIndex);
+                        triangles.add(nextIndex);
+
+                        polygon.remove(i);
+
+                        earFound = true;
+
+                        break;
+                    }
+                }
+            }
+
+            if (!earFound)
+                break;
+
+            count++;
+        }
+        if (polygon.size() == 3)
+        {
+            triangles.add(polygon.get(0));
+            triangles.add(polygon.get(1));
+            triangles.add(polygon.get(2));
+        }
+
+        return triangles;
+    }
+
+    private static float computeArea(List<Vector2f> contour, List<Integer> polygon)
+    {
+        float area = 0;
+        int m = polygon.size();
+
+        for (int i = 0; i < m; i++)
+        {
+            Vector2f p = contour.get(polygon.get(i));
+            Vector2f q = contour.get(polygon.get((i + 1) % m));
+
+            area += p.x * q.y - q.x * p.y;
+        }
+
+        return area * 0.5f;
+    }
+
+    private static boolean isConvex(Vector2f a, Vector2f b, Vector2f c)
+    {
+        float cross = (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x);
+
+        return cross > 0;
+    }
+
+    private static boolean pointInTriangle(Vector2f p, Vector2f a, Vector2f b, Vector2f c)
+    {
+        float denom = (b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y);
+        float alpha = ((b.y - c.y) * (p.x - c.x) + (c.x - b.x) * (p.y - c.y)) / denom;
+        float beta  = ((c.y - a.y) * (p.x - c.x) + (a.x - c.x) * (p.y - c.y)) / denom;
+        float gamma = 1.0f - alpha - beta;
+
+        return (alpha > 0 && beta > 0 && gamma > 0);
     }
 }

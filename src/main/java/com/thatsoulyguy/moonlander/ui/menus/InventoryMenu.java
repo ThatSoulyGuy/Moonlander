@@ -92,6 +92,8 @@ public class InventoryMenu extends Menu
             initializeCraftingData();
             createHudPanel();
 
+            hud.addElement(createImageElement("crosshair", new Vector2f(0.0f), scaleVector(16.0f, 16.0f), Objects.requireNonNull(TextureManager.get("ui.crosshair")), true, UIElement.Alignment.CENTER, new Vector2f(0.0f, 0.0f)));
+
             floatingTitleText = (TextUIElement) hud.addElement(createTextElement(
                     "hovering_title_text",
                     new Vector2f(0.0f, 0.0f),
@@ -388,7 +390,7 @@ public class InventoryMenu extends Menu
                 createImageElement(
                         "oxygen_dial",
                         new Vector2f(0.0f, 0.0f),
-                        scaleVector(35.0f, 19.0f),
+                        scaleVector(35.0f, 19.0f).mul(1.5f),
                         Objects.requireNonNull(TextureManager.get("ui.menu.oxygen_dial")),
                         true,
                         UIElement.Alignment.BOTTOM,
@@ -415,11 +417,11 @@ public class InventoryMenu extends Menu
                 createImageElement(
                         "oxygen_pointer",
                         new Vector2f(0.0f, 0.0f),
-                        scaleVector(2.0f, 12.0f),
+                        scaleVector(2.0f, 12.0f).mul(1.5f),
                         Objects.requireNonNull(TextureManager.get("ui.menu.oxygen_pointer")),
                         true,
                         UIElement.Alignment.BOTTOM,
-                        new Vector2f(-262.0f + scale(20.0f), -scale(113.0f))
+                        new Vector2f(-262.0f + scale(20.0f), -scale(114.5f))
                 )
         );
         oxygenDialPointer.setPivot(new Vector2f(0.5f, 0.9f));
@@ -429,7 +431,7 @@ public class InventoryMenu extends Menu
                 createImageElement(
                         "oxygen_dial_ball",
                         new Vector2f(0.0f, 0.0f),
-                        scaleVector(35.0f, 19.0f),
+                        scaleVector(35.0f, 19.0f).mul(1.5f),
                         Objects.requireNonNull(TextureManager.get("ui.menu.oxygen_dial_ball")),
                         true,
                         UIElement.Alignment.BOTTOM,

@@ -31,6 +31,11 @@ public class EntityAlien extends LivingEntity
     private final Random random = new Random();
     private float targetHeadYaw = 0.0f;
 
+    private boolean isLegSwinging = false;
+    private float legSwingElapsed = 0.0f;
+    private final Vector3f legOriginalRotation = new Vector3f();
+    private final Vector3f legTargetRotation = new Vector3f();
+
     @Override
     public void initialize()
     {
@@ -140,6 +145,38 @@ public class EntityAlien extends LivingEntity
         {
             player.damage(this, 5);
             attackCooldownTimer = attackCooldownTimerStart;
+
+            triggerLegSwing();
+        }
+
+        if (isLegSwinging)
+        {
+            legSwingElapsed += Time.getDeltaTime();
+
+            float legSwingDuration = 0.2f;
+            float half = legSwingDuration / 2.0f;
+            ModelPart rightLeg = getModelReference().getPart("right_leg");
+
+            if (rightLeg != null)
+            {
+                Transform legTransform = rightLeg.getGameObject().getTransform();
+
+                if (legSwingElapsed < half)
+                {
+                    float factor = legSwingElapsed / half;
+                    legTransform.setLocalRotation(interpolate(legOriginalRotation, legTargetRotation, factor));
+                }
+                else if (legSwingElapsed < legSwingDuration)
+                {
+                    float factor = (legSwingElapsed - half) / half;
+                    legTransform.setLocalRotation(interpolate(legTargetRotation, legOriginalRotation, factor));
+                }
+                else
+                {
+                    legTransform.setLocalRotation(new Vector3f(legOriginalRotation));
+                    isLegSwinging = false;
+                }
+            }
         }
 
         if (getCurrentHealth() <= 0)
@@ -152,6 +189,33 @@ public class EntityAlien extends LivingEntity
 
         attackCooldownTimer -= Time.getDeltaTime();
         damageOverlayTimer -= Time.getDeltaTime();
+    }
+
+    private void triggerLegSwing()
+    {
+        assert getModelReference() != null;
+
+        ModelPart rightLeg = getModelReference().getPart("right_leg");
+
+        if (rightLeg != null)
+        {
+            Transform legTransform = rightLeg.getGameObject().getTransform();
+
+            legOriginalRotation.set(legTransform.getLocalRotation());
+
+            legTargetRotation.set(legOriginalRotation).add(90.0f, 0.0f, 0.0f);
+            legSwingElapsed = 0.0f;
+            isLegSwinging = true;
+        }
+    }
+
+    private @NotNull Vector3f interpolate(@NotNull Vector3f start, @NotNull Vector3f end, float factor)
+    {
+        return new Vector3f(
+                start.x + factor * (end.x - start.x),
+                start.y + factor * (end.y - start.y),
+                start.z + factor * (end.z - start.z)
+        );
     }
 
     @Override
@@ -175,7 +239,7 @@ public class EntityAlien extends LivingEntity
     @Override
     public int getMaximumHealth()
     {
-        return 30;
+        return 20;
     }
 
     @Override
@@ -198,6 +262,16 @@ public class EntityAlien extends LivingEntity
         getModelReference().setTexture(Objects.requireNonNull(TextureManager.get("entity.damage")));
 
         damageOverlayTimer = damageOverlayTimerStart;
+    }
+
+    @Override
+    public String[] getHurtAudioClips()
+    {
+        return new String[]
+        {
+            "entity.zombie.damage.0",
+            "entity.zombie.damage.1",
+        };
     }
 
     private static float computeYawFromDirection(@NotNull Vector3f direction)

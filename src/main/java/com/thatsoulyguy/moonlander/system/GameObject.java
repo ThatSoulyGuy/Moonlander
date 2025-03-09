@@ -55,15 +55,29 @@ public class GameObject implements Serializable
 
     public <T extends Component> void setComponent(@NotNull T component)
     {
-        component.setGameObject(this);
-        component.initialize();
-
-        componentMap.put(component.getClass(), component);
+        removeComponent(component.getClass());
+        addComponent(component);
     }
 
     public @Nullable <T extends Component> T getComponent(@NotNull Class<T> clazz)
     {
         return clazz.cast(componentMap.get(clazz));
+    }
+
+    public @Nullable <T extends Component> T getComponentRecursive(@NotNull Class<T> clazz)
+    {
+        if (componentMap.containsKey(clazz))
+            return clazz.cast(componentMap.get(clazz));
+
+        for (GameObject child : children.values())
+        {
+            T component = child.getComponentRecursive(clazz);
+
+            if (component != null)
+                return component;
+        }
+
+        return null;
     }
 
     public @NotNull List<Component> getComponents()
@@ -79,6 +93,20 @@ public class GameObject implements Serializable
     public <T extends Component> boolean hasComponent(@NotNull Class<T> clazz)
     {
         return componentMap.containsKey(clazz);
+    }
+
+    public <T extends Component> boolean hasComponentRecursive(@NotNull Class<T> clazz)
+    {
+        if (componentMap.containsKey(clazz))
+            return true;
+
+        for (GameObject child : children.values())
+        {
+            if (child.hasComponentRecursive(clazz))
+                return true;
+        }
+
+        return false;
     }
 
     public <T extends Component> void removeComponent(@NotNull Class<T> clazz)

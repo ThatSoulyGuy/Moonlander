@@ -338,9 +338,9 @@ public class World extends Component
             return null;
     }
 
-    public <T extends Entity> int spawnEntity(@NotNull Vector3f position, @NotNull Class<T> type)
+    public <T extends Entity> @NotNull T spawnEntity(@NotNull Vector3f position, @NotNull Class<T> type)
     {
-        Entity entity = Entity.create(type);
+        T entity = Entity.create(type);
 
         int randomNumber = new Random().nextInt(4096);
 
@@ -357,7 +357,7 @@ public class World extends Component
 
         entities.putIfAbsent(new Pair<>(randomNumber, type), entity);
 
-        return randomNumber;
+        return entity;
     }
 
     public <T extends Entity> @Nullable Entity getEntity(int id, @NotNull Class<T> type)
