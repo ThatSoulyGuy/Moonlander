@@ -5,6 +5,7 @@ import com.thatsoulyguy.moonlander.annotation.Static;
 @Static
 public class Time
 {
+    private static long startTime = System.nanoTime();
     private static long lastTime = System.nanoTime();
     private static float deltaTime = 0;
     private static int frames = 0;
@@ -25,10 +26,14 @@ public class Time
         return fps;
     }
 
+    public static float getTime()
+    {
+        return (System.nanoTime() - startTime) / 1_000_000_000.0f;
+    }
+
     public static void update()
     {
         long currentTime = System.nanoTime();
-
         deltaTime = (currentTime - lastTime) / 1_000_000_000.0f;
         lastTime = currentTime;
 
@@ -45,6 +50,7 @@ public class Time
 
     public static void reset()
     {
+        startTime = System.nanoTime();
         lastTime = System.nanoTime();
         deltaTime = 0;
         frames = 0;

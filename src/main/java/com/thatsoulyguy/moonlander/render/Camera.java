@@ -27,7 +27,7 @@ public class Camera extends Component
 
     public @NotNull Matrix4f getProjectionMatrix()
     {
-        return new Matrix4f().perspective((float) Math.toRadians(fieldOfView), Window.getDimensions().x / (float)Window.getDimensions().y, nearPlane, farPlane);
+        return new Matrix4f().perspective((float) Math.toRadians(fieldOfView), Window.getDimensions().x / (float) Window.getDimensions().y, nearPlane, farPlane);
     }
 
     public @NotNull Matrix4f getViewMatrix()

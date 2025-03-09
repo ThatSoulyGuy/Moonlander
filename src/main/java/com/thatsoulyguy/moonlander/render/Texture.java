@@ -28,6 +28,8 @@ public class Texture extends Component implements ManagerLinkedClass
     private @EffectivelyNotNull Filter filter;
     private @EffectivelyNotNull Wrapping wrapping;
 
+    private transient @EffectivelyNotNull ByteBuffer buffer;
+
     private transient int textureId;
     private @Nullable Vector2i dimensions = null;
 
@@ -84,12 +86,12 @@ public class Texture extends Component implements ManagerLinkedClass
 
             STBImage.stbi_set_flip_vertically_on_load(flip);
 
-            ByteBuffer rawImage = loadImageAsByteBuffer(fullPath);
+            buffer = loadImageAsByteBuffer(fullPath);
 
-            if (rawImage == null)
+            if (buffer == null)
                 throw new RuntimeException("Failed to load texture file: " + fullPath);
 
-            ByteBuffer image = STBImage.stbi_load_from_memory(rawImage, widthBuffer, heightBuffer, channelsBuffer, 4);
+            ByteBuffer image = STBImage.stbi_load_from_memory(buffer, widthBuffer, heightBuffer, channelsBuffer, 4);
 
             if (image == null)
                 throw new RuntimeException("Failed to decode texture file: " + fullPath + " " + STBImage.stbi_failure_reason());
@@ -169,9 +171,9 @@ public class Texture extends Component implements ManagerLinkedClass
         return dimensions;
     }
 
-    public void setDimensions(@NotNull Vector2i dimensions)
+    public @NotNull ByteBuffer getBuffer()
     {
-        this.dimensions = dimensions;
+        return buffer;
     }
 
     public boolean isFlipped()
@@ -210,6 +212,8 @@ public class Texture extends Component implements ManagerLinkedClass
         GL41.glTexParameterf(GL41.GL_TEXTURE_2D, GL41.GL_TEXTURE_LOD_BIAS, 0.0f);
 
         GL41.glBindTexture(GL41.GL_TEXTURE_2D, 0);
+
+        buffer = pixelData;
     }
 
     private @Nullable ByteBuffer loadImageAsByteBuffer(@NotNull String resourcePath)

@@ -18,6 +18,7 @@ public class ModelAlien extends EntityModel
         addPart(
                 ModelPart.create("right_leg")
                         .setPosition(new Vector3f(-3.0f, 16.0f, 0.0f))
+                        .setPivot(new Vector3f(-3.0f, 0.0f, 0.0f))
                         .addCube(
                                 ModelPart.Cube.create()
                                         .setUVs(new Vector2i(24, 22))

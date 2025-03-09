@@ -36,6 +36,7 @@ public class Mesh extends Component
     private transient int vao, vbo, cbo, nbo, uvbo, ibo;
 
     private boolean isTransparent = false;
+    private boolean inFront = false;
 
     private transient @EffectivelyNotNull CountDownLatch initializationLatch = new CountDownLatch(1);
 
@@ -98,6 +99,9 @@ public class Mesh extends Component
         if (!checkInitialization() || camera == null)
             return;
 
+        if (inFront)
+            GL41.glDepthFunc(GL41.GL_ALWAYS);
+
         if (isTransparent)
         {
             GL41.glEnable(GL41.GL_BLEND);
@@ -109,10 +113,9 @@ public class Mesh extends Component
         if (texture == null)
             texture = Objects.requireNonNull(getGameObject().getComponent(TextureAtlas.class)).getOutputTexture();
 
-        Shader shader = Settings.DEFAULT_RENDERING_SHADER.getValue();
+        Shader shader = getGameObject().getComponentNotNull(Shader.class);
 
         GL41.glBindVertexArray(vao);
-
         GL41.glEnableVertexAttribArray(0);
         GL41.glEnableVertexAttribArray(1);
         GL41.glEnableVertexAttribArray(2);
@@ -123,10 +126,9 @@ public class Mesh extends Component
         texture.bind(0);
         shader.bind();
 
-        shader.setUniform("diffuseTexture", 0);
+        shader.setUniform("diffuse", 0);
         shader.setUniform("projection", camera.getProjectionMatrix());
         shader.setUniform("view", camera.getViewMatrix());
-
         shader.setUniform("model", getGameObject().getTransform().getModelMatrix());
 
         GL41.glDrawElements(GL41.GL_TRIANGLES, indices.size(), GL41.GL_UNSIGNED_INT, 0);
@@ -140,14 +142,14 @@ public class Mesh extends Component
         GL41.glDisableVertexAttribArray(3);
         GL41.glBindVertexArray(0);
 
-        if (isTransparent)
-            GL41.glDisable(GL41.GL_BLEND);
+        GL41.glDisable(GL41.GL_BLEND);
+        GL41.glDepthFunc(GL41.GL_LESS);
 
         int error = GL41.glGetError();
-
         if (error != GL41.GL_NO_ERROR)
             System.err.println("OpenGL Error (renderDefault): " + error);
     }
+
 
     @Override
     public void renderUI()
@@ -266,6 +268,16 @@ public class Mesh extends Component
     public boolean isTransparent()
     {
         return isTransparent;
+    }
+
+    public boolean isInFront()
+    {
+        return inFront;
+    }
+
+    public void setInFront(boolean inFront)
+    {
+        this.inFront = inFront;
     }
 
     /**
@@ -438,7 +450,7 @@ public class Mesh extends Component
             GL41.glBufferSubData(target, 0, buffer);
     }
 
-    private static <T> FloatBuffer toBuffer(@NotNull List<Vertex> vertices, @NotNull Function<Vertex, T> extractor)
+    private static <T> @NotNull FloatBuffer toBuffer(@NotNull List<Vertex> vertices, @NotNull Function<Vertex, T> extractor)
     {
         if (vertices.isEmpty())
             throw new IllegalArgumentException("The list of vertices cannot be empty.");
@@ -470,7 +482,7 @@ public class Mesh extends Component
         return buffer;
     }
 
-    private static IntBuffer toBuffer(List<Integer> indices)
+    private static @NotNull IntBuffer toBuffer(@NotNull List<Integer> indices)
     {
         IntBuffer buffer = BufferUtils.createIntBuffer(indices.size());
 

@@ -30,12 +30,6 @@ public class ModelPart extends Component
     @Override
     public void initialize()
     {
-        if (pivotIn != null)
-        {
-            getGameObject().getTransform().setLocalPivot(pivotIn);
-            pivotIn = null;
-        }
-
         if (positionIn != null)
         {
             getGameObject().getTransform().setLocalPosition(positionIn);
@@ -44,6 +38,12 @@ public class ModelPart extends Component
                 getGameObject().getTransform().setLocalPivot(positionIn);
 
             positionIn = null;
+        }
+
+        if (pivotIn != null)
+        {
+            getGameObject().getTransform().setLocalPivot(pivotIn);
+            pivotIn = null;
         }
 
         if (rotationIn != null)

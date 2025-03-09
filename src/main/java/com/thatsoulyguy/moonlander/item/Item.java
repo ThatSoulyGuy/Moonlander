@@ -6,7 +6,9 @@ import com.thatsoulyguy.moonlander.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
-public abstract class Item
+import java.io.Serializable;
+
+public abstract class Item implements Serializable
 {
     private static short idCounter = 0;
 

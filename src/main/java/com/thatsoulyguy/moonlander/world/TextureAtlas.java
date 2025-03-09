@@ -34,6 +34,9 @@ public class TextureAtlas extends Component implements ManagerLinkedClass
 
     private static final int PADDING = 20;
 
+    private int atlasSize;
+    private transient ByteBuffer atlasBuffer;
+
     private final @NotNull transient ConcurrentMap<String, Vector2f[]> subTextureMap;
     private @Nullable transient Texture outputTexture = null;
 
@@ -97,6 +100,9 @@ public class TextureAtlas extends Component implements ManagerLinkedClass
             }
 
             this.outputTexture = Texture.create(name + "_atlas", Texture.Filter.NEAREST, Texture.Wrapping.CLAMP_TO_EDGE, atlasSize, atlasSize, atlasBuffer);
+
+            this.atlasSize = atlasSize;
+            this.atlasBuffer = atlasBuffer.duplicate();
         }
         catch (Exception e)
         {
@@ -210,6 +216,58 @@ public class TextureAtlas extends Component implements ManagerLinkedClass
         }
 
         return rotatedUVs;
+    }
+
+    public @NotNull Texture createSubTexture(@NotNull String subTextureName)
+    {
+        Vector2f[] uvs = subTextureMap.get(subTextureName);
+
+        if (uvs == null)
+            throw new IllegalArgumentException("Subtexture not found: " + subTextureName);
+
+        float minU = Float.MAX_VALUE, minV = Float.MAX_VALUE;
+        float maxU = Float.MIN_VALUE, maxV = Float.MIN_VALUE;
+
+        for (Vector2f uv : uvs)
+        {
+            if (uv.x < minU)
+                minU = uv.x;
+
+            if (uv.y < minV)
+                minV = uv.y;
+
+            if (uv.x > maxU)
+                maxU = uv.x;
+
+            if (uv.y > maxV)
+                maxV = uv.y;
+        }
+
+        int subX = (int) (minU * atlasSize);
+        int subY = (int) (minV * atlasSize);
+
+        int subWidth = (int) ((maxU - minU) * atlasSize);
+        int subHeight = (int) ((maxV - minV) * atlasSize);
+
+        if (atlasBuffer == null)
+            throw new IllegalStateException("Atlas buffer not available.");
+
+        ByteBuffer subTextureBuffer = ByteBuffer.allocateDirect(subWidth * subHeight * 4).order(ByteOrder.nativeOrder());
+
+        for (int row = 0; row < subHeight; row++)
+        {
+            int atlasRowStart = ((subY + (subHeight - 1 - row)) * atlasSize + subX) * 4;
+
+            byte[] rowData = new byte[subWidth * 4];
+            atlasBuffer.position(atlasRowStart);
+            atlasBuffer.get(rowData, 0, subWidth * 4);
+
+            subTextureBuffer.put(rowData);
+        }
+
+        subTextureBuffer.flip();
+
+        return Texture.create(subTextureName, Texture.Filter.NEAREST, Texture.Wrapping.CLAMP_TO_EDGE, subWidth, subHeight, subTextureBuffer);
     }
 
     public @NotNull AssetPath getLocalDirectory()
