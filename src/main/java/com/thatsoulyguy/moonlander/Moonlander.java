@@ -91,6 +91,7 @@ public class Moonlander
         TextureManager.register(Texture.create("entity.rocket", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/entity/rocket.png")));
         TextureManager.register(Texture.create("entity.damage", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/entity/damage.png")));
         TextureManager.register(Texture.create("entity.alien", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/entity/alien.png")));
+        TextureManager.register(Texture.create("entity.alien_damage", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/entity/alien_damage.png")));
         TextureManager.register(Texture.create("entity.player_arm", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/entity/player_arm.png")));
         TextureManager.register(Texture.create("ui.hotbar", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/hotbar.png")));
         TextureManager.register(Texture.create("ui.hotbar_selector", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, AssetPath.create("moonlander", "texture/ui/hotbar_selector.png")));
@@ -168,6 +169,7 @@ public class Moonlander
         AudioManager.register(AudioClip.create("entity.rocket_blowoff", AssetPath.create("moonlander", "audio/entity/rocket_blowoff.ogg")));
         AudioManager.register(AudioClip.create("entity.zombie.damage.0", AssetPath.create("moonlander", "audio/entity/zombie/damage1.ogg")));
         AudioManager.register(AudioClip.create("entity.zombie.damage.1", AssetPath.create("moonlander", "audio/entity/zombie/damage2.ogg")));
+        AudioManager.register(AudioClip.create("entity.zombie.death", AssetPath.create("moonlander", "audio/entity/zombie/death.ogg")));
         AudioManager.register(AudioClip.create("ui.click", AssetPath.create("moonlander", "audio/ui/click.ogg")));
 
         LevelRenderPass levelRenderPass = new LevelRenderPass();

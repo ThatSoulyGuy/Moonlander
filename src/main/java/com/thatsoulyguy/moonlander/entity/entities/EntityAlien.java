@@ -1,5 +1,7 @@
 package com.thatsoulyguy.moonlander.entity.entities;
 
+import com.thatsoulyguy.moonlander.audio.AudioClip;
+import com.thatsoulyguy.moonlander.audio.AudioManager;
 import com.thatsoulyguy.moonlander.core.Time;
 import com.thatsoulyguy.moonlander.entity.Entity;
 import com.thatsoulyguy.moonlander.entity.IntelligenceCommon;
@@ -11,6 +13,7 @@ import com.thatsoulyguy.moonlander.math.Rigidbody;
 import com.thatsoulyguy.moonlander.math.Transform;
 import com.thatsoulyguy.moonlander.render.TextureManager;
 import com.thatsoulyguy.moonlander.system.GameObject;
+import com.thatsoulyguy.moonlander.system.Layer;
 import com.thatsoulyguy.moonlander.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -141,7 +144,7 @@ public class EntityAlien extends LivingEntity
             bodyPart.getGameObject().getTransform().setLocalRotation(new Vector3f(0.0f, newBodyYaw, 0.0f));
         }
 
-        if (attackCooldownTimer < 0 && distanceFromPlayer < 3f)
+        if (attackCooldownTimer < 0 && distanceFromPlayer < 2f)
         {
             player.damage(this, 5);
             attackCooldownTimer = attackCooldownTimerStart;
@@ -259,9 +262,25 @@ public class EntityAlien extends LivingEntity
     {
         assert getModelReference() != null;
 
-        getModelReference().setTexture(Objects.requireNonNull(TextureManager.get("entity.damage")));
+        getModelReference().setTexture(Objects.requireNonNull(TextureManager.get("entity.alien_damage")));
 
         damageOverlayTimer = damageOverlayTimerStart;
+    }
+
+    @Override
+    public void onKilled(@NotNull World world, @NotNull Entity killer)
+    {
+        GameObject soundObject = GameObject.create("entity.zombie.death" + new org.joml.Random().nextInt(4096), Layer.DEFAULT);
+
+        soundObject.addComponent(Objects.requireNonNull(AudioManager.get("entity.zombie.death")));
+
+        soundObject.getTransform().setLocalPosition(getGameObject().getTransform().getLocalPosition());
+
+        AudioClip clip = soundObject.getComponentNotNull(AudioClip.class);
+
+        clip.setVolume(35.0f);
+        clip.setLooping(false);
+        clip.play(true);
     }
 
     @Override

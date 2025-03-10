@@ -1026,6 +1026,12 @@ public class EntityPlayer extends LivingEntity
         return camera;
     }
 
+    @Override
+    public void onDamaged(@NotNull World world, @NotNull Entity damager, int damageDealt)
+    {
+        camera.getGameObject().getTransform().rotate(new Vector3f(8.0f, 0.0f, 0.0f));
+    }
+
     public void setOxygen(int oxygen)
     {
         this.oxygen = oxygen;
