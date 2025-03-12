@@ -143,11 +143,19 @@ public abstract class Collider extends Component
      */
     public static @Nullable Vector3f resolveGeneric(@NotNull Vector3f aMin, @NotNull Vector3f aMax, @NotNull Vector3f bMin, @NotNull Vector3f bMax)
     {
-        float overlapX = Math.min(aMax.x - bMin.x, bMax.x - aMin.x);
-        float overlapY = Math.min(aMax.y - bMin.y, bMax.y - aMin.y);
-        float overlapZ = Math.min(aMax.z - bMin.z, bMax.z - aMin.z);
-
         final float EPSILON = 1e-5f;
+
+        float dx1 = aMax.x - bMin.x;
+        float dx2 = bMax.x - aMin.x;
+        float overlapX = Math.min(dx1, dx2);
+
+        float dy1 = aMax.y - bMin.y;
+        float dy2 = bMax.y - aMin.y;
+        float overlapY = Math.min(dy1, dy2);
+
+        float dz1 = aMax.z - bMin.z;
+        float dz2 = bMax.z - aMin.z;
+        float overlapZ = Math.min(dz1, dz2);
 
         if (overlapX < EPSILON || overlapY < EPSILON || overlapZ < EPSILON)
             return null;
@@ -156,49 +164,51 @@ public abstract class Collider extends Component
 
         if (overlapY <= overlapX && overlapY <= overlapZ)
         {
-            float centerA = (aMin.y + aMax.y) / 2.0f;
-            float centerB = (bMin.y + bMax.y) / 2.0f;
-
+            float centerA = (aMin.y + aMax.y) * 0.5f;
+            float centerB = (bMin.y + bMax.y) * 0.5f;
             mtv.y = centerA < centerB ? -overlapY : overlapY;
         }
         else if (overlapX <= overlapY && overlapX <= overlapZ)
         {
-            float centerA = (aMin.x + aMax.x) / 2.0f;
-            float centerB = (bMin.x + bMax.x) / 2.0f;
-
+            float centerA = (aMin.x + aMax.x) * 0.5f;
+            float centerB = (bMin.x + bMax.x) * 0.5f;
             mtv.x = centerA < centerB ? -overlapX : overlapX;
         }
         else
         {
-            float centerA = (aMin.z + aMax.z) / 2.0f;
-            float centerB = (bMin.z + bMax.z) / 2.0f;
-
+            float centerA = (aMin.z + aMax.z) * 0.5f;
+            float centerB = (bMin.z + bMax.z) * 0.5f;
             mtv.z = centerA < centerB ? -overlapZ : overlapZ;
         }
 
         return mtv;
     }
 
-    public static Vector3f resolveAllCollisions(BoxCollider box, VoxelMeshCollider voxelMesh)
+    public static @NotNull Vector3f resolveAllCollisions(@NotNull BoxCollider box, @NotNull VoxelMeshCollider voxelMesh)
     {
         Vector3f boxPos = box.getPosition();
         Vector3f boxSize = box.getSize();
 
-        Vector3f boxMin = new Vector3f(boxPos).sub(new Vector3f(boxSize).mul(0.5f));
-        Vector3f boxMax = new Vector3f(boxPos).add(new Vector3f(boxSize).mul(0.5f));
+        float halfX = boxSize.x * 0.5f;
+        float halfY = boxSize.y * 0.5f;
+        float halfZ = boxSize.z * 0.5f;
 
-        //DebugRenderer.addBox(boxMin, boxMax, new Vector3f(1.0f, 0.0f, 0.0f));
+        Vector3f boxMin = new Vector3f(boxPos.x - halfX, boxPos.y - halfY, boxPos.z - halfZ);
+        Vector3f boxMax = new Vector3f(boxPos.x + halfX, boxPos.y + halfY, boxPos.z + halfZ);
 
         Vector3f cumulativeResolution = new Vector3f();
+        Vector3f voxelWorldPos = new Vector3f();
+        Vector3f voxelMin = new Vector3f();
+        Vector3f voxelMax = new Vector3f();
+
+        Vector3f meshPosition = voxelMesh.getPosition();
 
         for (Vector3f voxel : voxelMesh.getVoxels())
         {
-            Vector3f voxelWorldPos = new Vector3f(voxelMesh.getPosition()).add(voxel);
+            voxelWorldPos.set(meshPosition).add(voxel);
 
-            Vector3f voxelMin = new Vector3f(voxelWorldPos).sub(0.5f, 0.5f, 0.5f);
-            Vector3f voxelMax = new Vector3f(voxelWorldPos).add(0.5f, 0.5f, 0.5f);
-
-            //DebugRenderer.addBox(voxelMin, voxelMax, new Vector3f(1.0f, 0.0f, 0.0f));
+            voxelMin.set(voxelWorldPos.x - 0.5f, voxelWorldPos.y - 0.5f, voxelWorldPos.z - 0.5f);
+            voxelMax.set(voxelWorldPos.x + 0.5f, voxelWorldPos.y + 0.5f, voxelWorldPos.z + 0.5f);
 
             if (Collider.intersectsGeneric(boxMin, boxMax, voxelMin, voxelMax))
             {
@@ -210,6 +220,7 @@ public abstract class Collider extends Component
         }
 
         box.getGameObject().getTransform().translate(cumulativeResolution);
+
         return cumulativeResolution;
     }
 

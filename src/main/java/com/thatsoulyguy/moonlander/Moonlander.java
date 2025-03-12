@@ -71,7 +71,7 @@ public class Moonlander
 
         MainThreadExecutor.initialize();
 
-        Window.initialize("Moonlander* 1.58.17", windowSize);
+        Window.initialize("Moonlander* 1.62.18", windowSize);
 
         DebugRenderer.initialize();
 
@@ -231,6 +231,7 @@ public class Moonlander
 
         GameObjectManager.updateMainThread();
         GameObjectManager.update();
+
         UIManager.update();
 
         MainThreadExecutor.execute();

@@ -197,6 +197,7 @@ public class EntityPlayer extends LivingEntity
         {
             inventoryMenu.addItem(ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT.getId(), (byte) 10);
             inventoryMenu.addItem(ItemRegistry.ITEM_KNOWLEDGE_BOOK.getId(), (byte) 1);
+            inventoryMenu.addItem(ItemRegistry.ITEM_SOFT_MOON_ROCK_BLOCK.getId(), (byte) 1);
 
             starterItemsGiven = true;
         }

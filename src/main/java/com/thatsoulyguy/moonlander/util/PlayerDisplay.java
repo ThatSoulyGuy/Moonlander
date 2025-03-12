@@ -159,8 +159,8 @@ public class PlayerDisplay extends Component
             }
             else if (currentItem.isBlockItem())
             {
-                originalPosition = new Vector3f(1.0f, -0.4f, -3.2f);
-                originalRotation = new Vector3f(90.0f, 25.0f, 25.0f);
+                originalPosition = new Vector3f(1.0f, -1.4f, -3.5f);
+                originalRotation = new Vector3f(15.0f, 45.0f, 15.0f);
 
                 getGameObject().getTransform().setLocalPosition(originalPosition);
                 getGameObject().getTransform().setLocalRotation(originalRotation);
