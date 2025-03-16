@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class GameObjectManager
 {
     private static final @NotNull ConcurrentMap<String, GameObject> gameObjectMap = new ConcurrentHashMap<>();
-    private static final @NotNull ExecutorService executor = Executors.newFixedThreadPool(4);
     private static final @NotNull BlockingQueue<GameObject> uninitializeQueue = new LinkedBlockingQueue<>();
     private static final @NotNull AtomicBoolean isUpdating = new AtomicBoolean(false);
 
@@ -108,36 +107,8 @@ public class GameObjectManager
 
         for (GameObject gameObject : gameObjectMap.values())
         {
-            executor.submit(() ->
-            {
-                try
-                {
-                    if (gameObject.isActive())
-                        gameObject.update();
-                }
-                catch (Exception e)
-                {
-                    System.err.println("Error in GameObject update task: " + e.getMessage());
-                }
-                finally
-                {
-                    latch.countDown();
-                }
-            });
-        }
-
-        try
-        {
-            boolean completed = latch.await(1, TimeUnit.SECONDS);
-
-            if (!completed)
-                System.err.println("Some update tasks timed out.");
-
-        }
-        catch (InterruptedException e)
-        {
-            Thread.currentThread().interrupt();
-            System.err.println("Update tasks interrupted: " + e.getMessage());
+            if (gameObject.isActive())
+                gameObject.update();
         }
 
         isUpdating.set(false);
@@ -256,26 +227,6 @@ public class GameObjectManager
 
     public static void uninitialize()
     {
-        executor.shutdown();
-
-        try
-        {
-            if (!executor.awaitTermination(1, TimeUnit.MINUTES))
-            {
-                executor.shutdownNow();
-
-                if (!executor.awaitTermination(1, TimeUnit.MINUTES))
-                    System.err.println("Executor did not terminate.");
-            }
-        }
-        catch (InterruptedException e)
-        {
-            executor.shutdownNow();
-
-            Thread.currentThread().interrupt();
-            System.err.println("GameObject update tasks were interrupted.");
-        }
-
         for (GameObject gameObject : gameObjectMap.values())
             gameObject.uninitialize();
 
