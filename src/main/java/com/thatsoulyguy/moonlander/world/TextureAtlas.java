@@ -218,7 +218,7 @@ public class TextureAtlas extends Component implements ManagerLinkedClass
         return rotatedUVs;
     }
 
-    public @NotNull Texture createSubTexture(@NotNull String subTextureName)
+    public @NotNull Texture createSubTexture(@NotNull String subTextureName, boolean flip)
     {
         Vector2f[] uvs = subTextureMap.get(subTextureName);
 
@@ -226,7 +226,7 @@ public class TextureAtlas extends Component implements ManagerLinkedClass
             throw new IllegalArgumentException("Subtexture not found: " + subTextureName);
 
         float minU = Float.MAX_VALUE, minV = Float.MAX_VALUE;
-        float maxU = Float.MIN_VALUE, maxV = Float.MIN_VALUE;
+        float maxU = -Float.MAX_VALUE, maxV = -Float.MAX_VALUE;
 
         for (Vector2f uv : uvs)
         {
@@ -252,13 +252,16 @@ public class TextureAtlas extends Component implements ManagerLinkedClass
         if (atlasBuffer == null)
             throw new IllegalStateException("Atlas buffer not available.");
 
-        ByteBuffer subTextureBuffer = ByteBuffer.allocateDirect(subWidth * subHeight * 4).order(ByteOrder.nativeOrder());
+        ByteBuffer subTextureBuffer = ByteBuffer.allocateDirect(subWidth * subHeight * 4)
+                .order(ByteOrder.nativeOrder());
 
         for (int row = 0; row < subHeight; row++)
         {
-            int atlasRowStart = ((subY + (subHeight - 1 - row)) * atlasSize + subX) * 4;
+            int effectiveRow = flip ? (subHeight - 1 - row) : row;
+            int atlasRowStart = ((subY + effectiveRow) * atlasSize + subX) * 4;
 
             byte[] rowData = new byte[subWidth * 4];
+
             atlasBuffer.position(atlasRowStart);
             atlasBuffer.get(rowData, 0, subWidth * 4);
 
@@ -267,7 +270,30 @@ public class TextureAtlas extends Component implements ManagerLinkedClass
 
         subTextureBuffer.flip();
 
-        return Texture.create(subTextureName, Texture.Filter.NEAREST, Texture.Wrapping.CLAMP_TO_EDGE, subWidth, subHeight, subTextureBuffer);
+        return Texture.create(subTextureName, Texture.Filter.NEAREST, Texture.Wrapping.CLAMP_TO_EDGE,
+                subWidth, subHeight, subTextureBuffer);
+    }
+
+    private ByteBuffer flipVertical(ByteBuffer original, int width, int height)
+    {
+        int rowSize = width * 4;
+
+        ByteBuffer flipped = ByteBuffer.allocateDirect(original.capacity())
+                .order(ByteOrder.nativeOrder());
+
+        byte[] rowData = new byte[rowSize];
+
+        for (int row = 0; row < height; row++)
+        {
+            original.position(row * rowSize);
+            original.get(rowData, 0, rowSize);
+
+            flipped.position((height - row - 1) * rowSize);
+            flipped.put(rowData);
+        }
+
+        flipped.flip();
+        return flipped;
     }
 
     public @NotNull AssetPath getLocalDirectory()

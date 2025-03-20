@@ -1104,12 +1104,6 @@ public class ItemRegistry
         {
             if (interactor instanceof EntityPlayer player)
             {
-                player.getBookMenu().setPages(pages);
-                player.setPaused(true);
-                player.setBookMenuActive(true);
-
-                if (player.getBookMenu().getText().isEmpty())
-                    player.getBookMenu().rebuildPages();
             }
         }
 
@@ -1473,7 +1467,6 @@ public class ItemRegistry
             if (interactor instanceof EntityPlayer player)
             {
                 World.getLocalWorld().spawnEntity(player.getGameObject().getTransform().getWorldPosition().add(new Vector3f(0.0f, 0.0f, 10.0f)), EntityRocket.class);
-                player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), ItemRegistry.ITEM_AIR.getId(), (byte) 1);
             }
         }
 

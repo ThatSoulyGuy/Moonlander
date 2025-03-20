@@ -12,7 +12,6 @@ import com.thatsoulyguy.moonlander.render.TextureManager;
 import com.thatsoulyguy.moonlander.render.Vertex;
 import com.thatsoulyguy.moonlander.system.Component;
 import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
-import com.thatsoulyguy.moonlander.ui.menus.InventoryMenu;
 import com.thatsoulyguy.moonlander.world.TextureAtlasManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +24,7 @@ import java.util.*;
 @CustomConstructor("create")
 public class PlayerDisplay extends Component
 {
-    public InventoryMenu inventoryMenu;
+    public @Nullable Item currentItem;
 
     private @Nullable Item lastItem = null;
 
@@ -93,8 +92,6 @@ public class PlayerDisplay extends Component
 
             transform.setLocalPosition(newPos);
         }
-
-        Item currentItem = ItemRegistry.get(Objects.requireNonNull(inventoryMenu.getSlot(new Vector2i(0, inventoryMenu.currentSlotSelected))).id());
 
         if (currentItem == null || (lastItem != null && lastItem == currentItem))
             return;
@@ -223,7 +220,7 @@ public class PlayerDisplay extends Component
                 getGameObject().getTransform().setLocalPosition(originalPosition);
                 getGameObject().getTransform().setLocalRotation(originalRotation);
 
-                Texture texture = Objects.requireNonNull(TextureAtlasManager.get("items")).createSubTexture(currentItem.getTexture());
+                Texture texture = Objects.requireNonNull(TextureAtlasManager.get("items")).createSubTexture(currentItem.getTexture(), true);
 
                 Pair<List<Vertex>, List<Integer>> data = DataAlgorithms.extrudeTextureIntoMeshData(texture, 0.1f);
 

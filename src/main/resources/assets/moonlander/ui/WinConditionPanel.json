@@ -1,0 +1,177 @@
+[
+  {
+    "Name": "quit",
+    "Property": {
+      "Key": "default.name",
+      "Value": "quit"
+    }
+  },
+  {
+    "Name": "quit",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[0, -45]"
+    }
+  },
+  {
+    "Name": "quit",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[400, 40]"
+    }
+  },
+  {
+    "Name": "quit",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "quit",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.button_default"
+    }
+  },
+  {
+    "Name": "quit",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.WinConditionSystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "quit",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "quit",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.WinConditionSystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "quit",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.WinConditionSystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "quit",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "quit",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "quit_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "quit_text"
+    }
+  },
+  {
+    "Name": "quit_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[0, -45]"
+    }
+  },
+  {
+    "Name": "quit_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[400, 40]"
+    }
+  },
+  {
+    "Name": "quit_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "quit_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "20"
+    }
+  },
+  {
+    "Name": "quit_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_center"
+    }
+  },
+  {
+    "Name": "quit_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "Quit to title"
+    }
+  },
+  {
+    "Name": "title",
+    "Property": {
+      "Key": "default.name",
+      "Value": "title"
+    }
+  },
+  {
+    "Name": "title",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[0, 100]"
+    }
+  },
+  {
+    "Name": "title",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[400, 60]"
+    }
+  },
+  {
+    "Name": "title",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "title",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "40"
+    }
+  },
+  {
+    "Name": "title",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_center"
+    }
+  },
+  {
+    "Name": "title",
+    "Property": {
+      "Key": "text.value",
+      "Value": "You Win!"
+    }
+  }
+]

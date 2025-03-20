@@ -11,7 +11,7 @@ import com.thatsoulyguy.moonlander.item.ItemRegistry;
 import com.thatsoulyguy.moonlander.math.Rigidbody;
 import com.thatsoulyguy.moonlander.system.GameObject;
 import com.thatsoulyguy.moonlander.system.Layer;
-import com.thatsoulyguy.moonlander.ui.menus.InventoryMenu;
+import com.thatsoulyguy.moonlander.ui.systems.WinConditionSystem;
 import com.thatsoulyguy.moonlander.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -45,7 +45,11 @@ public class EntityRocket extends Entity
         if (launch)
         {
             if (countDown < 0)
-                EntityPlayer.getLocalPlayer().setWinConditionMenuActive(true);
+            {
+                EntityPlayer.getLocalPlayer().pause(true);
+                EntityPlayer.getLocalPlayer().setBackgroundShadingActive(true);
+                WinConditionSystem.getInstance().getGameObject().setActive(true);
+            }
 
             getGameObject().getComponentNotNull(Rigidbody.class).addForce(new Vector3f(0.0f, 10 * Time.getDeltaTime(), 0.0f));
 
@@ -86,8 +90,6 @@ public class EntityRocket extends Entity
                 camera.getTransform().setLocalRotation(new Vector3f(0.0f, 0.0f, 0.0f));
                 camera.getTransform().setLocalPosition(new Vector3f(0.0f, 0.125f, 0.0f));
 
-                player.getInventoryMenu().setFloatingTitleText("Rocket Launching...");
-
                 launch = true;
 
                 GameObject soundObject = camera.addChild(GameObject.create("entity.rocket_blowoff" + new Random().nextInt(4096), Layer.DEFAULT));
@@ -100,18 +102,6 @@ public class EntityRocket extends Entity
 
                 clip.setLooping(false);
                 clip.play(true);
-            }
-
-            InventoryMenu.SlotData slot = player.getInventoryMenu().getSlot(new Vector2i(new Vector2i(0, player.getInventoryMenu().currentSlotSelected)));
-
-            assert slot != null;
-
-            if (slot.id() == ItemRegistry.ITEM_FUEL_BUCKET.getId())
-            {
-                fuelBucketCount += slot.count();
-
-                player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), ItemRegistry.ITEM_EMPTY_BUCKET.getId(), (byte) 1);
-                player.getInventoryMenu().setFloatingTitleText("Rocket Fuel: " + fuelBucketCount + "/20");
             }
         }
     }

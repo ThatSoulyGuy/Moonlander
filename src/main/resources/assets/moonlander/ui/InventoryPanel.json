@@ -1,0 +1,4643 @@
+[
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "default.name",
+      "Value": "menu"
+    }
+  },
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[0, 0]"
+    }
+  },
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[334, 162]"
+    }
+  },
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.survival_inventory"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_0"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-144, -58]"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_1"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-108, -58]"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_0_2",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_2"
+    }
+  },
+  {
+    "Name": "slot_0_2",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-72, -58]"
+    }
+  },
+  {
+    "Name": "slot_0_2",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_2",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_0_2",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_0_2",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_2",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_2",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_0_2",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_0_2",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_0_2",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_0_3",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_3"
+    }
+  },
+  {
+    "Name": "slot_0_3",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-36, -58]"
+    }
+  },
+  {
+    "Name": "slot_0_3",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_3",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_0_3",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_0_3",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_3",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_3",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_0_3",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_0_3",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_0_3",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_0_4",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_4"
+    }
+  },
+  {
+    "Name": "slot_0_4",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[0, -58]"
+    }
+  },
+  {
+    "Name": "slot_0_4",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_4",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_0_4",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_0_4",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_4",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_4",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_0_4",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_0_4",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_0_4",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_0_5",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_5"
+    }
+  },
+  {
+    "Name": "slot_0_5",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[36, -58]"
+    }
+  },
+  {
+    "Name": "slot_0_5",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_5",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_0_5",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_0_5",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_5",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_5",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_0_5",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_0_5",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_0_5",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_0_6",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_6"
+    }
+  },
+  {
+    "Name": "slot_0_6",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[72, -58]"
+    }
+  },
+  {
+    "Name": "slot_0_6",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_6",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_0_6",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_0_6",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_6",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_6",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_0_6",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_0_6",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_0_6",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_0_7",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_7"
+    }
+  },
+  {
+    "Name": "slot_0_7",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[108, -58]"
+    }
+  },
+  {
+    "Name": "slot_0_7",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_7",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_0_7",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_0_7",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_7",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_7",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_0_7",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_0_7",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_0_7",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_0_8",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_8"
+    }
+  },
+  {
+    "Name": "slot_0_8",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[144, -58]"
+    }
+  },
+  {
+    "Name": "slot_0_8",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_8",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_0_8",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_0_8",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_8",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_8",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_0_8",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_0_8",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_0_8",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_0"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-144, -14]"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_1"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-108, -14]"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_1_2",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_2"
+    }
+  },
+  {
+    "Name": "slot_1_2",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-72, -14]"
+    }
+  },
+  {
+    "Name": "slot_1_2",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_2",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_1_2",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_1_2",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_2",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_2",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_1_2",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_1_2",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_1_2",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_1_3",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_3"
+    }
+  },
+  {
+    "Name": "slot_1_3",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-36, -14]"
+    }
+  },
+  {
+    "Name": "slot_1_3",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_3",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_1_3",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_1_3",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_3",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_3",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_1_3",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_1_3",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_1_3",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_1_4",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_4"
+    }
+  },
+  {
+    "Name": "slot_1_4",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[0, -14]"
+    }
+  },
+  {
+    "Name": "slot_1_4",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_4",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_1_4",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_1_4",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_4",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_4",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_1_4",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_1_4",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_1_4",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_1_5",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_5"
+    }
+  },
+  {
+    "Name": "slot_1_5",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[36, -14]"
+    }
+  },
+  {
+    "Name": "slot_1_5",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_5",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_1_5",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_1_5",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_5",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_5",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_1_5",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_1_5",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_1_5",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_1_6",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_6"
+    }
+  },
+  {
+    "Name": "slot_1_6",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[72, -14]"
+    }
+  },
+  {
+    "Name": "slot_1_6",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_6",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_1_6",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_1_6",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_6",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_6",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_1_6",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_1_6",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_1_6",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_1_7",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_7"
+    }
+  },
+  {
+    "Name": "slot_1_7",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[108, -14]"
+    }
+  },
+  {
+    "Name": "slot_1_7",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_7",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_1_7",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_1_7",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_7",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_7",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_1_7",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_1_7",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_1_7",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_1_8",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_8"
+    }
+  },
+  {
+    "Name": "slot_1_8",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[144, -14]"
+    }
+  },
+  {
+    "Name": "slot_1_8",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_8",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_1_8",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_1_8",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_8",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_8",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_1_8",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_1_8",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_1_8",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_2_0",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_0"
+    }
+  },
+  {
+    "Name": "slot_2_0",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-144, 22]"
+    }
+  },
+  {
+    "Name": "slot_2_0",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_0",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_2_0",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_2_0",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_0",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_0",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_2_0",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_2_0",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_2_0",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_2_1",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_1"
+    }
+  },
+  {
+    "Name": "slot_2_1",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-108, 22]"
+    }
+  },
+  {
+    "Name": "slot_2_1",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_1",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_2_1",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_2_1",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_1",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_1",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_2_1",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_2_1",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_2_1",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_2_2",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_2"
+    }
+  },
+  {
+    "Name": "slot_2_2",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-72, 22]"
+    }
+  },
+  {
+    "Name": "slot_2_2",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_2",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_2_2",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_2_2",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_2",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_2",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_2_2",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_2_2",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_2_2",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_2_3",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_3"
+    }
+  },
+  {
+    "Name": "slot_2_3",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-36, 22]"
+    }
+  },
+  {
+    "Name": "slot_2_3",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_3",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_2_3",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_2_3",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_3",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_3",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_2_3",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_2_3",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_2_3",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_2_4",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_4"
+    }
+  },
+  {
+    "Name": "slot_2_4",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[0, 22]"
+    }
+  },
+  {
+    "Name": "slot_2_4",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_4",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_2_4",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_2_4",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_4",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_4",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_2_4",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_2_4",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_2_4",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_2_5",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_5"
+    }
+  },
+  {
+    "Name": "slot_2_5",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[36, 22]"
+    }
+  },
+  {
+    "Name": "slot_2_5",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_5",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_2_5",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_2_5",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_5",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_5",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_2_5",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_2_5",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_2_5",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_2_6",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_6"
+    }
+  },
+  {
+    "Name": "slot_2_6",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[72, 22]"
+    }
+  },
+  {
+    "Name": "slot_2_6",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_6",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_2_6",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_2_6",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_6",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_6",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_2_6",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_2_6",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_2_6",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_2_7",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_7"
+    }
+  },
+  {
+    "Name": "slot_2_7",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[108, 22]"
+    }
+  },
+  {
+    "Name": "slot_2_7",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_7",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_2_7",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_2_7",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_7",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_7",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_2_7",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_2_7",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_2_7",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_2_8",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_8"
+    }
+  },
+  {
+    "Name": "slot_2_8",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[144, 22]"
+    }
+  },
+  {
+    "Name": "slot_2_8",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_8",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_2_8",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_2_8",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_8",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_2_8",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_2_8",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_2_8",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_2_8",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_3_0",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_0"
+    }
+  },
+  {
+    "Name": "slot_3_0",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-144, 58]"
+    }
+  },
+  {
+    "Name": "slot_3_0",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_0",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_3_0",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_3_0",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_0",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_0",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_3_0",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_3_0",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_3_0",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_3_1",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_1"
+    }
+  },
+  {
+    "Name": "slot_3_1",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-108, 58]"
+    }
+  },
+  {
+    "Name": "slot_3_1",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_1",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_3_1",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_3_1",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_1",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_1",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_3_1",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_3_1",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_3_1",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_3_2",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_2"
+    }
+  },
+  {
+    "Name": "slot_3_2",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-72, 58]"
+    }
+  },
+  {
+    "Name": "slot_3_2",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_2",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_3_2",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_3_2",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_2",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_2",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_3_2",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_3_2",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_3_2",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_3_3",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_3"
+    }
+  },
+  {
+    "Name": "slot_3_3",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-36, 58]"
+    }
+  },
+  {
+    "Name": "slot_3_3",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_3",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_3_3",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_3_3",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_3",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_3",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_3_3",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_3_3",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_3_3",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_3_4",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_4"
+    }
+  },
+  {
+    "Name": "slot_3_4",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[0, 58]"
+    }
+  },
+  {
+    "Name": "slot_3_4",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_4",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_3_4",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_3_4",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_4",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_4",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_3_4",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_3_4",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_3_4",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_3_5",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_5"
+    }
+  },
+  {
+    "Name": "slot_3_5",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[36, 58]"
+    }
+  },
+  {
+    "Name": "slot_3_5",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_5",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_3_5",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_3_5",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_5",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_5",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_3_5",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_3_5",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_3_5",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_3_6",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_6"
+    }
+  },
+  {
+    "Name": "slot_3_6",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[72, 58]"
+    }
+  },
+  {
+    "Name": "slot_3_6",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_6",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_3_6",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_3_6",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_6",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_6",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_3_6",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_3_6",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_3_6",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_3_7",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_7"
+    }
+  },
+  {
+    "Name": "slot_3_7",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[108, 58]"
+    }
+  },
+  {
+    "Name": "slot_3_7",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_7",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_3_7",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_3_7",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_7",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_7",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_3_7",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_3_7",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_3_7",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+
+  {
+    "Name": "slot_3_8",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_8"
+    }
+  },
+  {
+    "Name": "slot_3_8",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[144, 58]"
+    }
+  },
+  {
+    "Name": "slot_3_8",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_8",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_3_8",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_3_8",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_8",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_3_8",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_3_8",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.InventorySystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_3_8",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_3_8",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_0_0_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_0_text"
+    }
+  },
+  {
+    "Name": "slot_0_0_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-141, -69]"
+    }
+  },
+  {
+    "Name": "slot_0_0_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_0_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_0_0_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_0_0_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_0_0_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_0_1_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_1_text"
+    }
+  },
+  {
+    "Name": "slot_0_1_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-105, -69]"
+    }
+  },
+  {
+    "Name": "slot_0_1_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_1_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_0_1_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_0_1_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_0_1_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_0_2_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_2_text"
+    }
+  },
+  {
+    "Name": "slot_0_2_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-69, -69]"
+    }
+  },
+  {
+    "Name": "slot_0_2_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_2_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_0_2_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_0_2_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_0_2_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_0_3_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_3_text"
+    }
+  },
+  {
+    "Name": "slot_0_3_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-33, -69]"
+    }
+  },
+  {
+    "Name": "slot_0_3_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_3_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_0_3_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_0_3_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_0_3_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_0_4_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_4_text"
+    }
+  },
+  {
+    "Name": "slot_0_4_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[3, -69]"
+    }
+  },
+  {
+    "Name": "slot_0_4_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_4_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_0_4_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_0_4_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_0_4_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_0_5_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_5_text"
+    }
+  },
+  {
+    "Name": "slot_0_5_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[39, -69]"
+    }
+  },
+  {
+    "Name": "slot_0_5_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_5_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_0_5_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_0_5_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_0_5_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_0_6_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_6_text"
+    }
+  },
+  {
+    "Name": "slot_0_6_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[75, -69]"
+    }
+  },
+  {
+    "Name": "slot_0_6_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_6_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_0_6_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_0_6_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_0_6_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_0_7_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_7_text"
+    }
+  },
+  {
+    "Name": "slot_0_7_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[111, -69]"
+    }
+  },
+  {
+    "Name": "slot_0_7_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_7_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_0_7_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_0_7_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_0_7_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_0_8_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_8_text"
+    }
+  },
+  {
+    "Name": "slot_0_8_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[147, -69]"
+    }
+  },
+  {
+    "Name": "slot_0_8_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_8_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_0_8_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_0_8_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_0_8_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_1_0_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_0_text"
+    }
+  },
+  {
+    "Name": "slot_1_0_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-141, -25]"
+    }
+  },
+  {
+    "Name": "slot_1_0_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_0_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_1_0_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_1_0_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_1_0_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_1_1_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_1_text"
+    }
+  },
+  {
+    "Name": "slot_1_1_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-105, -25]"
+    }
+  },
+  {
+    "Name": "slot_1_1_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_1_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_1_1_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_1_1_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_1_1_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_1_2_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_2_text"
+    }
+  },
+  {
+    "Name": "slot_1_2_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-69, -25]"
+    }
+  },
+  {
+    "Name": "slot_1_2_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_2_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_1_2_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_1_2_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_1_2_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_1_3_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_3_text"
+    }
+  },
+  {
+    "Name": "slot_1_3_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-33, -25]"
+    }
+  },
+  {
+    "Name": "slot_1_3_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_3_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_1_3_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_1_3_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_1_3_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_1_4_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_4_text"
+    }
+  },
+  {
+    "Name": "slot_1_4_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[3, -25]"
+    }
+  },
+  {
+    "Name": "slot_1_4_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_4_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_1_4_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_1_4_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_1_4_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_1_5_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_5_text"
+    }
+  },
+  {
+    "Name": "slot_1_5_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[39, -25]"
+    }
+  },
+  {
+    "Name": "slot_1_5_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_5_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_1_5_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_1_5_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_1_5_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_1_6_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_6_text"
+    }
+  },
+  {
+    "Name": "slot_1_6_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[75, -25]"
+    }
+  },
+  {
+    "Name": "slot_1_6_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_6_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_1_6_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_1_6_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_1_6_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_1_7_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_7_text"
+    }
+  },
+  {
+    "Name": "slot_1_7_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[111, -25]"
+    }
+  },
+  {
+    "Name": "slot_1_7_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_7_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_1_7_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_1_7_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_1_7_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_1_8_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_8_text"
+    }
+  },
+  {
+    "Name": "slot_1_8_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[147, -25]"
+    }
+  },
+  {
+    "Name": "slot_1_8_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_8_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_1_8_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_1_8_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_1_8_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_2_0_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_0_text"
+    }
+  },
+  {
+    "Name": "slot_2_0_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-141, 11]"
+    }
+  },
+  {
+    "Name": "slot_2_0_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_0_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_2_0_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_2_0_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_2_0_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_2_1_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_1_text"
+    }
+  },
+  {
+    "Name": "slot_2_1_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-105, 11]"
+    }
+  },
+  {
+    "Name": "slot_2_1_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_1_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_2_1_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_2_1_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_2_1_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_2_2_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_2_text"
+    }
+  },
+  {
+    "Name": "slot_2_2_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-69, 11]"
+    }
+  },
+  {
+    "Name": "slot_2_2_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_2_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_2_2_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_2_2_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_2_2_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_2_3_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_3_text"
+    }
+  },
+  {
+    "Name": "slot_2_3_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-33, 11]"
+    }
+  },
+  {
+    "Name": "slot_2_3_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_3_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_2_3_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_2_3_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_2_3_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_2_4_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_4_text"
+    }
+  },
+  {
+    "Name": "slot_2_4_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[3, 11]"
+    }
+  },
+  {
+    "Name": "slot_2_4_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_4_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_2_4_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_2_4_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_2_4_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_2_5_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_5_text"
+    }
+  },
+  {
+    "Name": "slot_2_5_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[39, 11]"
+    }
+  },
+  {
+    "Name": "slot_2_5_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_5_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_2_5_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_2_5_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_2_5_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_2_6_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_6_text"
+    }
+  },
+  {
+    "Name": "slot_2_6_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[75, 11]"
+    }
+  },
+  {
+    "Name": "slot_2_6_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_6_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_2_6_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_2_6_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_2_6_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_2_7_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_7_text"
+    }
+  },
+  {
+    "Name": "slot_2_7_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[111, 11]"
+    }
+  },
+  {
+    "Name": "slot_2_7_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_7_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_2_7_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_2_7_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_2_7_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_2_8_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_2_8_text"
+    }
+  },
+  {
+    "Name": "slot_2_8_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[147, 11]"
+    }
+  },
+  {
+    "Name": "slot_2_8_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_2_8_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_2_8_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_2_8_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_2_8_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_3_0_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_0_text"
+    }
+  },
+  {
+    "Name": "slot_3_0_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-141, 47]"
+    }
+  },
+  {
+    "Name": "slot_3_0_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_0_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_3_0_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_3_0_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_3_0_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_3_1_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_1_text"
+    }
+  },
+  {
+    "Name": "slot_3_1_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-105, 47]"
+    }
+  },
+  {
+    "Name": "slot_3_1_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_1_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_3_1_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_3_1_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_3_1_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_3_2_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_2_text"
+    }
+  },
+  {
+    "Name": "slot_3_2_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-69, 47]"
+    }
+  },
+  {
+    "Name": "slot_3_2_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_2_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_3_2_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_3_2_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_3_2_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_3_3_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_3_text"
+    }
+  },
+  {
+    "Name": "slot_3_3_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-33, 47]"
+    }
+  },
+  {
+    "Name": "slot_3_3_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_3_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_3_3_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_3_3_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_3_3_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_3_4_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_4_text"
+    }
+  },
+  {
+    "Name": "slot_3_4_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[3, 47]"
+    }
+  },
+  {
+    "Name": "slot_3_4_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_4_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_3_4_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_3_4_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_3_4_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_3_5_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_5_text"
+    }
+  },
+  {
+    "Name": "slot_3_5_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[39, 47]"
+    }
+  },
+  {
+    "Name": "slot_3_5_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_5_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_3_5_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_3_5_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_3_5_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_3_6_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_6_text"
+    }
+  },
+  {
+    "Name": "slot_3_6_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[75, 47]"
+    }
+  },
+  {
+    "Name": "slot_3_6_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_6_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_3_6_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_3_6_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_3_6_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_3_7_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_7_text"
+    }
+  },
+  {
+    "Name": "slot_3_7_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[111, 47]"
+    }
+  },
+  {
+    "Name": "slot_3_7_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_7_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_3_7_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_3_7_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_3_7_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+
+  {
+    "Name": "slot_3_8_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_3_8_text"
+    }
+  },
+  {
+    "Name": "slot_3_8_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[147, 47]"
+    }
+  },
+  {
+    "Name": "slot_3_8_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_3_8_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_3_8_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_3_8_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_3_8_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  }
+]

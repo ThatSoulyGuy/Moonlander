@@ -2,7 +2,6 @@ package com.thatsoulyguy.moonlander.system;
 
 import com.thatsoulyguy.moonlander.annotation.Static;
 import com.thatsoulyguy.moonlander.core.Time;
-import com.thatsoulyguy.moonlander.ui.UIManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -184,8 +183,6 @@ public class LevelManager
         }
 
         levels.get(name).setGameObjectNames(new ArrayList<>());
-
-        UIManager.stop();
 
         GameObjectManager.stop();
 

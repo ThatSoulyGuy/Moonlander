@@ -15,7 +15,7 @@ uniform mat4 projection;
 uniform float windowWidth;
 uniform float windowHeight;
 
-const int kernelSize = 12;
+const int kernelSize = 14;
 const float radius = 0.65;
 const float bias = 0.025;
 

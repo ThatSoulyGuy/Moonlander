@@ -13,7 +13,6 @@ import com.thatsoulyguy.moonlander.item.ItemRegistry;
 import com.thatsoulyguy.moonlander.item.Tool;
 import com.thatsoulyguy.moonlander.system.GameObject;
 import com.thatsoulyguy.moonlander.system.GameObjectManager;
-import com.thatsoulyguy.moonlander.ui.menus.InventoryMenu;
 import com.thatsoulyguy.moonlander.world.Chunk;
 import com.thatsoulyguy.moonlander.world.World;
 import org.jetbrains.annotations.NotNull;
@@ -788,8 +787,6 @@ public class BlockRegistry
         @Override
         public void onInteractedWith(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
         {
-            if (interactor instanceof EntityPlayer player)
-                player.setCraftingTableMenuActive(!player.isCraftingTableMenuActive());
         }
 
         @Override
@@ -895,48 +892,6 @@ public class BlockRegistry
         @Override
         public void onInteractedWith(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
         {
-            if (interactor instanceof EntityPlayer player)
-            {
-                short currentlySelectedSlotId = Objects.requireNonNull(player.getInventoryMenu().getSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected))).id();
-
-                if (currentlySelectedSlotId != ItemRegistry.ITEM_AIR.getId())
-                {
-                    lastInteractor = player;
-
-                    if (currentlySelectedSlotId == ItemRegistry.ITEM_COAL.getId())
-                    {
-                        if (coalConsumptionMap.containsKey(globalBlockPosition))
-                        {
-                            Integer coalCount = coalConsumptionMap.get(globalBlockPosition);
-
-                            coalCount += 1;
-
-                            coalConsumptionMap.put(globalBlockPosition, coalCount);
-                        }
-                        else
-                            coalConsumptionMap.put(globalBlockPosition, 1);
-
-                        player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), currentlySelectedSlotId, (byte) (Objects.requireNonNull(player.getInventoryMenu().getSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected))).count() - 1));
-
-                        return;
-                    }
-
-                    if (!Objects.requireNonNull(ItemRegistry.get(currentlySelectedSlotId)).isSmeltable())
-                        return;
-
-                    if (furnaceCookingItemsMap.containsKey(globalBlockPosition))
-                        furnaceCookingItemsMap.get(globalBlockPosition).add(currentlySelectedSlotId);
-                    else
-                        furnaceCookingItemsMap.put(globalBlockPosition, new LinkedList<>(List.of(currentlySelectedSlotId)));
-
-                    if (furnaceCookingTimesMap.containsKey(globalBlockPosition))
-                        furnaceCookingTimesMap.get(globalBlockPosition).add(8.0f);
-                    else
-                        furnaceCookingTimesMap.put(globalBlockPosition, new LinkedList<>(List.of(7.0f)));
-
-                    player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), currentlySelectedSlotId, (byte) (Objects.requireNonNull(player.getInventoryMenu().getSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected))).count() - 1));
-                }
-            }
         }
 
         @Override
@@ -973,8 +928,6 @@ public class BlockRegistry
                 {
                     if (time <= 0)
                     {
-                        lastInteractor.getInventoryMenu().addItem(Objects.requireNonNull(ItemRegistry.get(furnaceCookingItemsMap.get(position).get(list.indexOf(time)))).getSmeltingResult().getId(), (byte) 1);
-
                         furnaceCookingItemsMap.get(position).remove(list.indexOf(time));
 
                         cookTimesToBeRemoved.add(list.indexOf(time));
@@ -1115,19 +1068,6 @@ public class BlockRegistry
         @Override
         public void onInteractedWith(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
         {
-            if (interactor instanceof EntityPlayer player)
-            {
-                InventoryMenu.SlotData currentSlot = player.getInventoryMenu().getSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected));
-
-                assert currentSlot != null;
-
-                if (currentSlot.id() == ItemRegistry.ITEM_COAL.getId() && currentSlot.count() > 0)
-                {
-                    coalConsumptionMap.put(globalBlockPosition, coalConsumptionMap.get(globalBlockPosition) + 1);
-
-                    player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), currentSlot.id(), (byte) (currentSlot.count() - 1));
-                }
-            }
         }
 
         @Override
@@ -1232,8 +1172,6 @@ public class BlockRegistry
         @Override
         public void onInteractedWith(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
         {
-            if (interactor instanceof EntityPlayer player)
-                player.setCompositorMenuActive(!player.isCompositorMenuActive());
         }
 
         @Override
@@ -1332,12 +1270,6 @@ public class BlockRegistry
         {
             if (interactor instanceof EntityPlayer player)
             {
-                if (Objects.requireNonNull(player.getInventoryMenu().getSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected))).id() == ItemRegistry.ITEM_EMPTY_BUCKET.getId())
-                {
-                    player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), ItemRegistry.ITEM_OIL_BUCKET.getId(), (byte) 1);
-
-                    World.getLocalWorld().setBlock(interactor, new Vector3f(globalBlockPosition), BlockRegistry.BLOCK_AIR.getId());
-                }
             }
         }
 
@@ -1429,15 +1361,6 @@ public class BlockRegistry
         @Override
         public void onInteractedWith(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
         {
-            if (interactor instanceof EntityPlayer player)
-            {
-                if (Objects.requireNonNull(player.getInventoryMenu().getSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected))).id() == ItemRegistry.ITEM_EMPTY_BUCKET.getId())
-                {
-                    player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), ItemRegistry.ITEM_FUEL_BUCKET.getId(), (byte) 1);
-
-                    World.getLocalWorld().setBlock(interactor, new Vector3f(globalBlockPosition), BlockRegistry.BLOCK_AIR.getId());
-                }
-            }
         }
 
         @Override
@@ -1535,30 +1458,6 @@ public class BlockRegistry
         {
             if (interactor instanceof EntityPlayer player)
             {
-                InventoryMenu.SlotData slot = player.getInventoryMenu().getSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected));
-
-                assert slot != null;
-
-                if (slot.id() == ItemRegistry.ITEM_MOON_ROCK_BLOCK.getId() && !moonRockHasBeenSupplied.containsKey(globalBlockPosition))
-                {
-                    moonRockHasBeenSupplied.put(globalBlockPosition, true);
-
-                    if (slot.count() > 1)
-                        player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), slot.id(), (byte) (slot.count() - 1));
-                    else
-                        player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), ItemRegistry.ITEM_AIR.getId(), (byte) 1);
-                }
-                else if (slot.id() == ItemRegistry.ITEM_OIL_BUCKET.getId() && !oilHasBeenSupplied.containsKey(globalBlockPosition))
-                {
-                    oilHasBeenSupplied.put(globalBlockPosition, true);
-
-                    if (slot.count() > 1)
-                        player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), slot.id(), (byte) (slot.count() - 1));
-                    else
-                        player.getInventoryMenu().setSlot(new Vector2i(0, player.getInventoryMenu().currentSlotSelected), ItemRegistry.ITEM_EMPTY_BUCKET.getId(), (byte) 1);
-                }
-
-                lastInteractor = player;
             }
         }
 
@@ -1622,8 +1521,6 @@ public class BlockRegistry
 
             if (moonRockHasBeenSupplied.get(globalBlockPosition) && oilHasBeenSupplied.get(globalBlockPosition))
             {
-                lastInteractor.getInventoryMenu().addItem(ItemRegistry.ITEM_FUEL_BUCKET.getId(), (byte) 1);
-
                 moonRockHasBeenSupplied.remove(globalBlockPosition);
                 oilHasBeenSupplied.remove(globalBlockPosition);
             }

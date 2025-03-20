@@ -1,171 +1,51 @@
 package com.thatsoulyguy.moonlander.ui;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.thatsoulyguy.moonlander.annotation.CustomConstructor;
-import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
+import com.thatsoulyguy.moonlander.annotation.Static;
+import com.thatsoulyguy.moonlander.core.Settings;
+import com.thatsoulyguy.moonlander.core.Window;
+import com.thatsoulyguy.moonlander.render.TextureManager;
+import com.thatsoulyguy.moonlander.system.Component;
 import com.thatsoulyguy.moonlander.system.GameObject;
-import com.thatsoulyguy.moonlander.system.GameObjectManager;
 import com.thatsoulyguy.moonlander.system.Layer;
+import com.thatsoulyguy.moonlander.ui.elements.ButtonUIElement;
+import com.thatsoulyguy.moonlander.ui.elements.ImageUIElement;
+import com.thatsoulyguy.moonlander.ui.elements.TextUIElement;
+import com.thatsoulyguy.moonlander.util.AssetPath;
+import com.thatsoulyguy.moonlander.util.FileHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
+import org.joml.Vector3f;
 
-import javax.swing.*;
-import java.io.*;
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.lang.reflect.Type;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @CustomConstructor("create")
-public class UIPanel implements Serializable
+public class UIPanel extends Component
 {
-    private @EffectivelyNotNull String name;
+    private String name;
 
-    @EffectivelyNotNull GameObject object;
+    private Vector2i offset = new Vector2i(0, 0);
 
-    private final @NotNull Map<String, UIElement> uiElementsMap = new LinkedHashMap<>();
-
-    private boolean isActive = true;
+    private PanelAlignment panelAlignment = PanelAlignment.MIDDLE_CENTER;
 
     private UIPanel() { }
 
-    public UIElement addElement(@NotNull UIElement element)
+    @Override
+    public void initialize()
     {
-        object.addChild(element.object);
-        element.parent = this;
-
-        uiElementsMap.putIfAbsent(element.getName(), element);
-
-        return element;
+        getGameObject().getTransform().setLocalScale(new Vector3f(Settings.UI_SCALE.getValue()));
     }
 
-    public boolean hasElement(@NotNull String name)
-    {
-        return uiElementsMap.containsKey(name);
-    }
-
-    public @Nullable UIElement getElement(@NotNull String name)
-    {
-        return uiElementsMap.getOrDefault(name, null);
-    }
-
-    public void removeElement(@NotNull String name)
-    {
-        if (!uiElementsMap.containsKey(name))
-        {
-            System.err.println("UI element '" + name + "' not found!");
-            return;
-        }
-
-        object.removeChild(object.getChild("ui." + name));
-        GameObjectManager.unregister("ui." + name);
-
-        uiElementsMap.remove(name);
-    }
-
+    @Override
     public void update()
     {
-        if (!isActive)
-            return;
-
-        uiElementsMap.values().parallelStream().forEach(UIElement::update);
-    }
-
-    public void save(@NotNull String directory)
-    {
-        File saveFile = new File(directory, "ui." + name + ".bin");
-
-        File uiElementsDirectory = new File(directory, "ui." + name);
-
-        if (!uiElementsDirectory.exists())
-            uiElementsDirectory.mkdirs();
-
-        try (FileOutputStream fileOutputStream = new FileOutputStream(saveFile))
-        {
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-
-            objectOutputStream.writeInt(uiElementsMap.size());
-
-            uiElementsMap.values().forEach((object ->
-            {
-                try
-                {
-                    objectOutputStream.writeObject(object);
-
-                    object.object.save(new File(uiElementsDirectory, "ui." + object.getName() + ".bin"), true);
-                }
-                catch (Exception e)
-                {
-                    throw new RuntimeException(e);
-                }
-            }));
-
-            System.out.println("Saved ui elements");
-
-            objectOutputStream.close();
-        }
-        catch (Exception exception)
-        {
-            System.err.println("Failed to serialize ui! " + exception.getMessage());
-        }
-    }
-
-    public static UIPanel load(@NotNull File file)
-    {
-        UIPanel result = new UIPanel();
-
-        String name = file.getName().replace("ui.", "").replace(".bin", "");
-
-        result.name = name;
-
-        result.object = GameObject.create("ui." + name, Layer.UI);
-
-        File uiElementsDirectory = new File(file.getAbsolutePath().replace(".bin", ""));
-
-        try (FileInputStream fileInputStream = new FileInputStream(file))
-        {
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-
-            int uiElementsMapSize = objectInputStream.readInt();
-
-            for (int e = 0; e < uiElementsMapSize; e++)
-            {
-                UIElement element = (UIElement) objectInputStream.readObject();
-
-                GameObject gameObject = GameObject.load(new File(uiElementsDirectory, "ui." + element.getName() + ".bin"));
-
-                Field field = element.getClass().getSuperclass().getDeclaredField("object");
-
-                field.setAccessible(true);
-
-                field.set(element, gameObject);
-
-                result.object.addChild((GameObject) field.get(element));
-
-                result.uiElementsMap.putIfAbsent(element.getName(), element);
-            }
-
-            System.out.println("Loaded ui elements");
-
-            objectInputStream.close();
-        }
-        catch (Exception exception)
-        {
-            System.err.println("Failed to deserialize ui! " + exception.getMessage());
-
-            String stackTrace = Arrays.stream(exception.getStackTrace())
-                    .map(StackTraceElement::toString)
-                    .collect(Collectors.joining("\n"));
-
-            JOptionPane.showMessageDialog(
-                    null,
-                    exception.getMessage() + "\n\n" + stackTrace,
-                    "Exception!",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        }
-
-        return result;
+        align();
     }
 
     public @NotNull String getName()
@@ -173,26 +53,264 @@ public class UIPanel implements Serializable
         return name;
     }
 
-    public boolean isActive()
+    public @NotNull PanelAlignment getPanelAlignment()
     {
-        return isActive;
+        return panelAlignment;
     }
 
-    public void setActive(boolean active)
+    public void setPanelAlignment(@NotNull PanelAlignment panelAlignment)
     {
-        uiElementsMap.values().forEach(element -> element.setActive(active));
-
-        isActive = active;
+        this.panelAlignment = panelAlignment;
     }
 
+    public @NotNull Vector2i getOffset()
+    {
+        return offset;
+    }
+
+    public void setOffset(@NotNull Vector2i offset)
+    {
+        this.offset = offset;
+    }
+
+    public <T extends UIElement> @Nullable T get(@NotNull String name, @NotNull Class<T> clazz)
+    {
+        if (!getGameObject().hasChild(name))
+            return null;
+
+        return getGameObject().getChild(name).getComponentNotNull(clazz);
+    }
+
+    public <T extends UIElement> @NotNull T getNotNull(@NotNull String name, @NotNull Class<T> clazz)
+    {
+        return getGameObject().getChild(name).getComponentNotNull(clazz);
+    }
+
+    private void align()
+    {
+        Vector2i windowDimensions = Window.getDimensions();
+
+        float windowWidth = windowDimensions.x;
+        float windowHeight = windowDimensions.y;
+
+        Collection<GameObject> children = getGameObject().getChildren();
+
+        float minX = Float.MAX_VALUE, maxX = -Float.MAX_VALUE;
+        float minY = Float.MAX_VALUE, maxY = -Float.MAX_VALUE;
+
+        for (GameObject child : children)
+        {
+            Vector3f pos = child.getTransform().getLocalPosition();
+            Vector3f scale = child.getTransform().getLocalScale();
+
+            float halfWidth = scale.x / 2f;
+            float halfHeight = scale.y / 2f;
+
+            minX = Math.min(minX, pos.x - halfWidth);
+            maxX = Math.max(maxX, pos.x + halfWidth);
+            minY = Math.min(minY, pos.y - halfHeight);
+            maxY = Math.max(maxY, pos.y + halfHeight);
+        }
+
+        float panelWidth = maxX - minX;
+        float panelHeight = maxY - minY;
+
+        final float centerOffsetX = windowWidth / 2f - (minX + panelWidth / 2f);
+        final float centerOffsetY = windowHeight / 2f - (minY + panelHeight / 2f);
+
+        float offsetX, offsetY;
+
+        switch (panelAlignment)
+        {
+            case UPPER_LEFT ->
+            {
+                offsetX = 0 - minX;
+                offsetY = 0 - minY;
+            }
+
+            case UPPER_CENTER ->
+            {
+                offsetX = centerOffsetX;
+                offsetY = 0 - minY;
+            }
+
+            case UPPER_RIGHT ->
+            {
+                offsetX = windowWidth - maxX;
+                offsetY = 0 - minY;
+            }
+
+            case MIDDLE_LEFT ->
+            {
+                offsetX = 0 - minX;
+                offsetY = centerOffsetY;
+            }
+
+            case MIDDLE_CENTER ->
+            {
+                offsetX = centerOffsetX;
+                offsetY = centerOffsetY;
+            }
+
+            case MIDDLE_RIGHT ->
+            {
+                offsetX = windowWidth - maxX;
+                offsetY = centerOffsetY;
+            }
+
+            case LOWER_LEFT ->
+            {
+                offsetX = 0 - minX;
+                offsetY = windowHeight - maxY;
+            }
+
+            case LOWER_CENTER ->
+            {
+                offsetX = centerOffsetX;
+                offsetY = windowHeight - maxY;
+            }
+
+            case LOWER_RIGHT ->
+            {
+                offsetX = windowWidth - maxX;
+                offsetY = windowHeight - maxY;
+            }
+
+            default ->
+            {
+                offsetX = centerOffsetX;
+                offsetY = centerOffsetY;
+            }
+        }
+
+        getGameObject().getTransform().setLocalPosition(new Vector3f(offsetX + offset.x, offsetY - offset.y, 0));
+    }
+
+    private static @NotNull Vector2f parseVector2f(@NotNull String input)
+    {
+        String trimmed = input.trim();
+
+        if (trimmed.startsWith("[") && trimmed.endsWith("]"))
+            trimmed = trimmed.substring(1, trimmed.length() - 1);
+        else
+            throw new IllegalArgumentException("Input must be enclosed in square brackets: " + input);
+
+        String[] parts = trimmed.split(",");
+
+        if (parts.length != 2)
+            throw new IllegalArgumentException("Input must have exactly two numbers: " + input);
+
+        try
+        {
+            float x = Float.parseFloat(parts[0].trim());
+            float y = Float.parseFloat(parts[1].trim());
+
+            return new Vector2f(x, y);
+        }
+        catch (NumberFormatException e)
+        {
+            throw new IllegalArgumentException("Invalid number format in input: " + input, e);
+        }
+    }
+
+    private static @NotNull Class<? extends UIElement> parseType(@NotNull String input)
+    {
+        return switch (input)
+        {
+            case "image" -> ImageUIElement.class;
+            case "text" -> TextUIElement.class;
+            case "button" -> ButtonUIElement.class;
+            default -> throw new IllegalStateException("Unexpected value: " + input);
+        };
+    }
+
+    public static @NotNull TextUIElement.TextAlignment parseTextAlignment(@NotNull String input)
+    {
+        return switch (input.toLowerCase())
+        {
+            case "upper_left" -> TextUIElement.TextAlignment.UPPER_LEFT;
+            case "upper_center" -> TextUIElement.TextAlignment.UPPER_CENTER;
+            case "upper_right" -> TextUIElement.TextAlignment.UPPER_RIGHT;
+            case "middle_left" -> TextUIElement.TextAlignment.MIDDLE_LEFT;
+            case "middle_center" -> TextUIElement.TextAlignment.MIDDLE_CENTER;
+            case "middle_right" -> TextUIElement.TextAlignment.MIDDLE_RIGHT;
+            case "lower_left" -> TextUIElement.TextAlignment.LOWER_LEFT;
+            case "lower_center" -> TextUIElement.TextAlignment.LOWER_CENTER;
+            case "lower_right" -> TextUIElement.TextAlignment.LOWER_RIGHT;
+
+            default -> throw new IllegalArgumentException("Unknown alignment: " + input);
+        };
+    }
+
+    @Override
     public void uninitialize()
     {
-        GameObjectManager.unregister(object.getName(), true);
+        UIManager.unregister(getName());
+    }
 
-        uiElementsMap.values().forEach(UIElement::uninitialize);
-        uiElementsMap.clear();
+    public static @NotNull GameObject fromJson(@NotNull String name, @NotNull AssetPath path)
+    {
+        GameObject result = createGameObject(name);
 
-        object = null;
+        Gson gson = new Gson();
+
+        Type listType = new TypeToken<List<JsonEntry>>() {}.getType();
+        List<JsonEntry> entries = gson.fromJson(FileHelper.readFile(path.getFullPath()), listType);
+
+        Map<String, List<com.thatsoulyguy.moonlander.util.Pair<String, String>>> rawElements = entries.stream()
+            .collect(Collectors.groupingBy(
+                    JsonEntry::getName,
+                    LinkedHashMap::new,
+                    Collectors.mapping(
+                            entry -> new com.thatsoulyguy.moonlander.util.Pair<>(entry.getProperty().getKey(), entry.getProperty().getValue()),
+                            Collectors.toList()
+                    )
+            ));
+
+        for (List<com.thatsoulyguy.moonlander.util.Pair<String, String>> entry : rawElements.values())
+        {
+            String elementName = entry.get(0).a();
+            Vector2f position = parseVector2f(entry.get(1).a());
+
+            position.y = -position.y;
+
+            Vector2f dimensions = parseVector2f(entry.get(2).a());
+            Class<? extends UIElement> type = parseType(entry.get(3).a());
+
+            if (type == ImageUIElement.class)
+            {
+                GameObject element = UIElement.createGameObject("ui." + elementName, type, position, dimensions, result);
+                element.getComponentNotNull(ImageUIElement.class).setTexture(Objects.requireNonNull(TextureManager.get(entry.get(4).a())));
+            }
+            else if (type == TextUIElement.class)
+            {
+                GameObject element = UIElement.createGameObject("ui." + elementName, type, position, dimensions, result);
+
+                TextUIElement text = element.getComponentNotNull(TextUIElement.class);
+
+                text.setFontSize(Integer.parseInt(entry.get(4).a()));
+                text.setAlignment(parseTextAlignment(entry.get(5).a()));
+                text.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
+                text.setText(entry.get(6).a());
+
+                text.build();
+            }
+            else if (type == ButtonUIElement.class)
+            {
+                GameObject element = UIElement.createGameObject("ui." + elementName, type, position, dimensions, result);
+                ButtonUIElement button = element.getComponentNotNull(ButtonUIElement.class);
+
+                button.setTexture(Objects.requireNonNull(TextureManager.get(entry.get(4).a())));
+                button.setOnLeftPressedCallback(entry.get(5).a());
+                button.setOnRightPressedCallback(entry.get(6).a());
+                button.setOnHoverBeginCallback(entry.get(7).a());
+                button.setOnHoverEndCallback(entry.get(8).a());
+                button.setOnLeftReleasedCallback(entry.get(9).a());
+                button.setOnRightReleasedCallback(entry.get(10).a());
+            }
+        }
+
+        return result;
     }
 
     public static @NotNull UIPanel create(@NotNull String name)
@@ -201,10 +319,32 @@ public class UIPanel implements Serializable
 
         result.name = name;
 
-        result.object = GameObject.create("ui." + name, Layer.UI);
-
         UIManager.register(result);
 
         return result;
+    }
+
+    public static @NotNull GameObject createGameObject(@NotNull String name)
+    {
+        GameObject result = UIManager.getCanvas().addChild(GameObject.create(name, Layer.UI));
+
+        result.addComponent(create(name));
+
+        result.setTransient(true);
+
+        return result;
+    }
+
+    public enum PanelAlignment
+    {
+        UPPER_LEFT,
+        UPPER_CENTER,
+        UPPER_RIGHT,
+        MIDDLE_LEFT,
+        MIDDLE_CENTER,
+        MIDDLE_RIGHT,
+        LOWER_LEFT,
+        LOWER_CENTER,
+        LOWER_RIGHT
     }
 }

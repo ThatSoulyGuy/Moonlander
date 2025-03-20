@@ -177,6 +177,11 @@ public class GameObject implements Serializable
         GameObjectManager.register(child);
     }
 
+    public boolean hasChild(@NotNull String name)
+    {
+        return children.containsKey(name);
+    }
+
     public @NotNull GameObject getChild(@NotNull String name)
     {
         return children.get(name);

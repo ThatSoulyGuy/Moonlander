@@ -616,7 +616,7 @@ public class World extends Component
 
         try
         {
-            if (!chunkGenerationExecutor.awaitTermination(20, TimeUnit.SECONDS))
+            if (!chunkGenerationExecutor.awaitTermination(1, TimeUnit.SECONDS))
                 chunkGenerationExecutor.shutdownNow();
         }
         catch (InterruptedException e)

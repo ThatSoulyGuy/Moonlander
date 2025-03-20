@@ -1,0 +1,14 @@
+[
+  {
+    "Key": "ui.hotbar",
+    "Value": "D:\\IntelliJ\\Projects\\Moonlander\\src\\main\\resources\\assets\\moonlander\\texture\\ui\\hotbar.png"
+  },
+  {
+    "Key": "ui.hotbar_selector",
+    "Value": "D:\\IntelliJ\\Projects\\Moonlander\\src\\main\\resources\\assets\\moonlander\\texture\\ui\\hotbar_selector.png"
+  },
+  {
+    "Key": "ui.transparency",
+    "Value": "D:\\IntelliJ\\Projects\\Moonlander\\src\\main\\resources\\assets\\moonlander\\texture\\ui\\transparency.png"
+  }
+]

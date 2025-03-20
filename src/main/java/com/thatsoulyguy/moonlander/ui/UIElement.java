@@ -1,410 +1,138 @@
 package com.thatsoulyguy.moonlander.ui;
 
-import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
-import com.thatsoulyguy.moonlander.core.Window;
 import com.thatsoulyguy.moonlander.render.Mesh;
-import com.thatsoulyguy.moonlander.render.Texture;
+import com.thatsoulyguy.moonlander.render.ShaderManager;
+import com.thatsoulyguy.moonlander.render.TextureManager;
 import com.thatsoulyguy.moonlander.render.Vertex;
 import com.thatsoulyguy.moonlander.system.Component;
 import com.thatsoulyguy.moonlander.system.GameObject;
-import com.thatsoulyguy.moonlander.system.GameObjectManager;
 import com.thatsoulyguy.moonlander.system.Layer;
-import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
-import com.thatsoulyguy.moonlander.world.TextureAtlas;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
-import org.joml.Vector2i;
 import org.joml.Vector3f;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
-public abstract class UIElement implements Serializable
+public abstract class UIElement extends Component
 {
-    public static final @NotNull List<Vertex> DEFAULT_VERTICES = List.of(new Vertex[]
+    private static final List<Vertex> DEFAULT_VERTICES = List.of(
+            Vertex.create(
+                    new Vector3f(-0.5f, -0.5f, 0.0f),
+                    new Vector3f(1.0f, 1.0f, 1.0f),
+                    new Vector3f(0.0f, 0.0f, -1.0f),
+                    new Vector2f(0.0f, 0.0f)
+            ),
+            Vertex.create(
+                    new Vector3f(0.5f, -0.5f, 0.0f),
+                    new Vector3f(1.0f, 1.0f, 1.0f),
+                    new Vector3f(0.0f, 0.0f, -1.0f),
+                    new Vector2f(1.0f, 0.0f)
+            ),
+            Vertex.create(
+                    new Vector3f(0.5f, 0.5f, 0.0f),
+                    new Vector3f(1.0f, 1.0f, 1.0f),
+                    new Vector3f(0.0f, 0.0f, -1.0f),
+                    new Vector2f(1.0f, 1.0f)
+            ),
+            Vertex.create(
+                    new Vector3f(-0.5f, 0.5f, 0.0f),
+                    new Vector3f(1.0f, 1.0f, 1.0f),
+                    new Vector3f(0.0f, 0.0f, -1.0f),
+                    new Vector2f(0.0f, 1.0f)
+            )
+    );
+
+    private static final List<Integer> DEFAULT_INDICES = List.of(
+            0, 1, 2,
+            0, 2, 3
+    );
+
+    public void generate()
     {
-        Vertex.create(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(1.0f), new Vector3f(0.0f), new Vector2f(0.0f, 0.0f)),
-        Vertex.create(new Vector3f(1.0f, 0.0f, 0.0f), new Vector3f(1.0f), new Vector3f(0.0f), new Vector2f(1.0f, 0.0f)),
-        Vertex.create(new Vector3f(1.0f, 1.0f, 0.0f), new Vector3f(1.0f), new Vector3f(0.0f), new Vector2f(1.0f, 1.0f)),
-        Vertex.create(new Vector3f(0.0f, 1.0f, 0.0f), new Vector3f(1.0f), new Vector3f(0.0f), new Vector2f(0.0f, 1.0f)),
-    });
+        Mesh mesh = getGameObject().getComponentNotNull(Mesh.class);
 
-    public static final @NotNull List<Integer> DEFAULT_INDICES = List.of(new Integer[]
+        List<Vertex> centeredVertices = centerPolygon(DEFAULT_VERTICES);
+        mesh.setVertices(centeredVertices);
+        mesh.setIndices(DEFAULT_INDICES);
+
+        onGenerate(mesh);
+        mesh.generate();
+    }
+
+    public abstract void onGenerate(@NotNull Mesh mesh);
+
+    public static List<Vertex> centerPolygon(List<Vertex> vertices)
     {
-        0, 1, 2,
-        2, 3, 0
-    });
+        if (vertices.isEmpty())
+            return vertices;
 
-    @EffectivelyNotNull String name;
+        float minX = Float.MAX_VALUE, maxX = -Float.MAX_VALUE;
+        float minY = Float.MAX_VALUE, maxY = -Float.MAX_VALUE;
 
-    protected transient @EffectivelyNotNull GameObject object;
-
-    private @NotNull Alignment alignment = Alignment.CENTER;
-
-    private @NotNull Vector2f offset = new Vector2f();
-
-    private @NotNull List<Stretch> stretch = new ArrayList<>();
-
-    @Nullable UIPanel parent;
-
-    private @NotNull Vector2f pivot = new Vector2f(0.5f, 0.5f);
-
-    private boolean isActive = true;
-
-    private boolean alignAndStretch = true;
-
-    protected UIElement() { }
-
-    public abstract void generate(@NotNull GameObject object);
-
-    public void update()
-    {
-        if (!isActive || !alignAndStretch)
-            return;
-
-        applyStretch();
-
-        Vector2i windowDimensions = Window.getDimensions();
-        Vector2f elementDimensions = getDimensions();
-        Vector2f newPosition = new Vector2f();
-
-        switch (alignment)
+        for (Vertex vertex : vertices)
         {
-            case TOP:
-                newPosition.x = (windowDimensions.x - elementDimensions.x) / 2.0f;
-                newPosition.y = 0;
-                break;
-            case BOTTOM:
-                newPosition.x = (windowDimensions.x - elementDimensions.x) / 2.0f;
-                newPosition.y = windowDimensions.y - elementDimensions.y;
-                break;
-            case CENTER:
-                newPosition.x = (windowDimensions.x - elementDimensions.x) / 2.0f;
-                newPosition.y = (windowDimensions.y - elementDimensions.y) / 2.0f;
-                break;
-            case RIGHT:
-                newPosition.x = windowDimensions.x - elementDimensions.x;
-                newPosition.y = (windowDimensions.y - elementDimensions.y) / 2.0f;
-                break;
-            case LEFT:
-                newPosition.x = 0;
-                newPosition.y = (windowDimensions.y - elementDimensions.y) / 2.0f;
-                break;
+            Vector3f pos = vertex.getPosition();
+
+            if (pos.x < minX)
+                minX = pos.x;
+
+            if (pos.x > maxX)
+                maxX = pos.x;
+
+            if (pos.y < minY)
+                minY = pos.y;
+
+            if (pos.y > maxY)
+                maxY = pos.y;
         }
 
-        newPosition.add(offset);
+        float centerX = (minX + maxX) / 2.0f;
+        float centerY = (minY + maxY) / 2.0f;
 
-        float angleRadians = (float) Math.toRadians(getRotation());
+        List<Vertex> centered = new ArrayList<>();
 
-        Vector2f pivotWorld = new Vector2f(newPosition.x + elementDimensions.x * pivot.x, newPosition.y + elementDimensions.y * pivot.y);
-
-        Vector2f offset = new Vector2f(newPosition.x - pivotWorld.x, newPosition.y - pivotWorld.y);
-
-        float cos = (float) Math.cos(angleRadians);
-        float sin = (float) Math.sin(angleRadians);
-
-        Vector2f rotatedOffset = new Vector2f(offset.x * cos - offset.y * sin, offset.x * sin + offset.y * cos);
-
-        newPosition = new Vector2f(pivotWorld.x + rotatedOffset.x, pivotWorld.y + rotatedOffset.y);
-
-        setPosition(newPosition);
-    }
-
-    private void applyStretch()
-    {
-        Vector2i windowDimensions = Window.getDimensions();
-        Vector2f newDimensions = getDimensions();
-        Vector2f newPosition = getPosition();
-
-        if (stretch.contains(Stretch.LEFT) && stretch.contains(Stretch.RIGHT))
+        for (Vertex vertex : vertices)
         {
-            newDimensions.x = windowDimensions.x - offset.x * 2;
-            newPosition.x = offset.x;
-        }
-        else if (stretch.contains(Stretch.LEFT))
-        {
-            float rightBoundary = newPosition.x + newDimensions.x;
+            Vector3f pos = vertex.getPosition();
+            Vector3f centeredPos = new Vector3f(pos.x - centerX, pos.y - centerY, pos.z);
 
-            newDimensions.x = rightBoundary - offset.x;
-            newPosition.x = offset.x;
-        }
-        else if (stretch.contains(Stretch.RIGHT))
-            newDimensions.x = windowDimensions.x - newPosition.x - offset.x;
-
-        if (stretch.contains(Stretch.TOP) && stretch.contains(Stretch.BOTTOM))
-        {
-            newDimensions.y = windowDimensions.y - offset.y * 2;
-            newPosition.y = offset.y;
-        }
-        else if (stretch.contains(Stretch.TOP))
-        {
-            float bottomBoundary = newPosition.y + newDimensions.y;
-
-            newDimensions.y = bottomBoundary - offset.y;
-            newPosition.y = offset.y;
-        }
-        else if (stretch.contains(Stretch.BOTTOM))
-            newDimensions.y = windowDimensions.y - newPosition.y - offset.y;
-
-        setDimensions(newDimensions);
-
-        if (!stretch.contains(Stretch.LEFT) && !stretch.contains(Stretch.RIGHT))
-        {
-            switch (alignment)
-            {
-                case LEFT:
-                    newPosition.x = offset.x;
-                    break;
-                case RIGHT:
-                    newPosition.x = windowDimensions.x - newDimensions.x - offset.x;
-                    break;
-                case CENTER:
-                    newPosition.x = (windowDimensions.x - newDimensions.x) / 2.0f;
-                    break;
-                default:
-                    break;
-            }
+            centered.add(Vertex.create(centeredPos, vertex.getColor(), vertex.getNormal(), vertex.getUVs()));
         }
 
-        if (!stretch.contains(Stretch.TOP) && !stretch.contains(Stretch.BOTTOM))
-        {
-            switch (alignment)
-            {
-                case TOP:
-                    newPosition.y = offset.y;
-                    break;
-                case BOTTOM:
-                    newPosition.y = windowDimensions.y - newDimensions.y - offset.y;
-                    break;
-                case CENTER:
-                    newPosition.y = (windowDimensions.y - newDimensions.y) / 2.0f;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        setPosition(newPosition);
+        return centered;
     }
 
-    public @NotNull Alignment getAlignment()
+    public static <T extends UIElement> @NotNull T create(@NotNull Class<T> clazz)
     {
-        return alignment;
-    }
-
-    public void setAlignment(@NotNull Alignment alignment)
-    {
-        this.alignment = alignment;
-    }
-
-    public @NotNull List<Stretch> getStretch()
-    {
-        return stretch;
-    }
-
-    public void setStretch(@NotNull List<Stretch> stretch)
-    {
-        this.stretch = stretch;
-    }
-
-    public @NotNull Vector2f getOffset()
-    {
-        return offset;
-    }
-
-    public void setOffset(@NotNull Vector2f offset)
-    {
-        this.offset = offset;
-    }
-
-    public @NotNull String getName()
-    {
-        return name;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends Component> @NotNull T getTexture()
-    {
-        if (object.hasComponent(Texture.class))
-            return (T) object.getComponentNotNull(Texture.class);
-        else if (object.hasComponent(TextureAtlas.class))
-            return (T) object.getComponentNotNull(TextureAtlas.class);
-        else
-            throw new IllegalStateException("UIElement does not have Texture or TextureAtlas component!");
-    }
-
-    public void setTexture(@NotNull Texture texture)
-    {
-        object.removeComponent(TextureAtlas.class);
-
-        if (!object.hasComponent(texture.getClass()))
-            object.addComponent(texture);
-        else
-            object.setComponent(texture);
-    }
-
-    public void setTexture(@NotNull TextureAtlas texture)
-    {
-        object.removeComponent(Texture.class);
-        object.addComponent(texture);
-    }
-
-    public boolean doesAlignAndStretch()
-    {
-        return alignAndStretch;
-    }
-
-    public void setAlignAndStretch(boolean alignAndStretch)
-    {
-        this.alignAndStretch = alignAndStretch;
-    }
-
-    public @NotNull Vector2f getPivot()
-    {
-        return pivot;
-    }
-
-    public void setPivot(@NotNull Vector2f pivot)
-    {
-        this.pivot = pivot;
-    }
-
-    public void setColor(@NotNull Vector3f color)
-    {
-        object.getComponentNotNull(Mesh.class).setVertices(object.getComponentNotNull(Mesh.class).getVertices().stream().map(vertex -> Vertex.create(vertex.getPosition(), color, vertex.getNormal(), vertex.getUVs())).collect(Collectors.toList()));
-        object.getComponentNotNull(Mesh.class).generate();
-    }
-
-    public boolean getTransparent()
-    {
-        return object.getComponentNotNull(Mesh.class).isTransparent();
-    }
-
-    public void setTransparent(boolean transparent)
-    {
-        object.getComponentNotNull(Mesh.class).setTransparent(transparent);
-    }
-
-    public boolean isActive()
-    {
-        return isActive;
-    }
-
-    public void setActive(boolean active)
-    {
-        object.setActive(active);
-        isActive = active;
-    }
-
-    public @NotNull Vector2f getPosition()
-    {
-        Vector3f position = object.getTransform().getLocalPosition();
-
-        return new Vector2f(position.x, position.y);
-    }
-
-    public void translate(@NotNull Vector2f translation)
-    {
-        object.getTransform().translate(new Vector3f(translation.x, translation.y, 0.0f));
-    }
-
-    public void setPosition(@NotNull Vector2f position)
-    {
-        object.getTransform().setLocalPosition(new Vector3f(position.x, position.y, 0.0f));
-    }
-
-    public void rotate(@NotNull Vector2f rotation)
-    {
-        object.getTransform().rotate(new Vector3f(rotation.x, rotation.y, 0.0f));
-    }
-
-    public float getRotation()
-    {
-        return object.getTransform().getLocalRotation().z;
-    }
-
-    public void setRotation(float rotation)
-    {
-        object.getTransform().setLocalRotation(new Vector3f(0.0f, 0.0f, rotation));
-    }
-
-    public @NotNull Vector2f getDimensions()
-    {
-        Vector3f dimensions = object.getTransform().getLocalScale();
-
-        return new Vector2f(dimensions.x, dimensions.y);
-    }
-
-    public void setDimensions(@NotNull Vector2f dimensions)
-    {
-        object.getTransform().setLocalScale(new Vector3f(dimensions.x, dimensions.y, 0.0f));
-    }
-
-    public void setUVs(@NotNull Vector2f[] uvs)
-    {
-        List<Vertex> vertices = List.of(new Vertex[]
-        {
-            Vertex.create(new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(1.0f), new Vector3f(0.0f), uvs[0]),
-            Vertex.create(new Vector3f(1.0f, 0.0f, 0.0f), new Vector3f(1.0f), new Vector3f(0.0f), uvs[1]),
-            Vertex.create(new Vector3f(1.0f, 1.0f, 0.0f), new Vector3f(1.0f), new Vector3f(0.0f), uvs[2]),
-            Vertex.create(new Vector3f(0.0f, 1.0f, 0.0f), new Vector3f(1.0f), new Vector3f(0.0f), uvs[3]),
-        });
-
-        object.getComponentNotNull(Mesh.class).setVertices(vertices);
-        MainThreadExecutor.submit(() -> object.getComponentNotNull(Mesh.class).generate());
-    }
-
-    public void uninitialize()
-    {
-        GameObjectManager.unregister(object.getName(), true);
-
-        object = null;
-    }
-
-    public static <T extends UIElement> @NotNull T create(@NotNull Class<T> clazz, @NotNull String name, @NotNull Vector2f position, @NotNull Vector2f dimensions)
-    {
-        T result;
-
         try
         {
-            result = clazz.getDeclaredConstructor().newInstance();
+            return clazz.getDeclaredConstructor().newInstance();
         }
         catch (Exception e)
         {
             System.err.println("Missing constructor from UIElement! This shouldn't happen!");
             return clazz.cast(new Object());
         }
+    }
 
-        result.name = name;
+    public static <T extends UIElement> @NotNull GameObject createGameObject(@NotNull String name, @NotNull Class<T> clazz, @NotNull Vector2f position, @NotNull Vector2f dimensions, @NotNull GameObject parent)
+    {
+        GameObject result = parent.addChild(GameObject.create(name, Layer.UI));
 
-        result.object = GameObject.create("ui." + name, Layer.UI);
-        result.object.getTransform().setLocalPosition(new Vector3f(position.x, position.y, 0.0f));
-        result.object.getTransform().setLocalScale(new Vector3f(dimensions.x, dimensions.y, 1.0f));
+        result.getTransform().setLocalPosition(new Vector3f(position.x, position.y, 0.0f));
+        result.getTransform().setLocalScale(new Vector3f(dimensions.x, dimensions.y, 0.0f));
 
-        result.generate(result.object);
+        result.addComponent(Objects.requireNonNull(TextureManager.get("error")));
+        result.addComponent(Objects.requireNonNull(ShaderManager.get("ui")));
+        result.addComponent(Mesh.create(new ArrayList<>(), new ArrayList<>()));
+        result.addComponent(create(clazz));
+
+        result.getComponentNotNull(clazz).generate();
+
+        result.setTransient(true);
 
         return result;
-    }
-
-    public enum Alignment
-    {
-        TOP,
-        BOTTOM,
-        CENTER,
-        RIGHT,
-        LEFT
-    }
-
-    public enum Stretch
-    {
-        MIDDLE,
-        CENTER,
-        TOP,
-        BOTTOM,
-        RIGHT,
-        LEFT
     }
 }

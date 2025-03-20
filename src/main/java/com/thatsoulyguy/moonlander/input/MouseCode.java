@@ -5,9 +5,9 @@ import org.lwjgl.glfw.GLFW;
 
 public enum MouseCode
 {
-    MOUSE_LEFT(GLFW.GLFW_MOUSE_BUTTON_1),
-    MOUSE_RIGHT(GLFW.GLFW_MOUSE_BUTTON_2),
-    MOUSE_MIDDLE(GLFW.GLFW_MOUSE_BUTTON_3),
+    LEFT(GLFW.GLFW_MOUSE_BUTTON_1),
+    RIGHT(GLFW.GLFW_MOUSE_BUTTON_2),
+    MIDDLE(GLFW.GLFW_MOUSE_BUTTON_3),
     UNKNOWN(-1);
 
     private final int value;

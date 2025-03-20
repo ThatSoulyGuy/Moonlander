@@ -23,10 +23,6 @@ import com.thatsoulyguy.moonlander.render.advanced.ssao.renderpasses.SSAOConclud
 import com.thatsoulyguy.moonlander.render.advanced.ssao.renderpasses.SSAORenderPass;
 import com.thatsoulyguy.moonlander.system.*;
 import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
-import com.thatsoulyguy.moonlander.ui.Menu;
-import com.thatsoulyguy.moonlander.ui.MenuManager;
-import com.thatsoulyguy.moonlander.ui.UIManager;
-import com.thatsoulyguy.moonlander.ui.menus.*;
 import com.thatsoulyguy.moonlander.util.AssetPath;
 import com.thatsoulyguy.moonlander.util.FileHelper;
 import com.thatsoulyguy.moonlander.util.AudioData;
@@ -128,14 +124,6 @@ public class Moonlander
         TextureAtlasManager.register(TextureAtlas.create("blocks", AssetPath.create("moonlander", "texture/block/")));
         TextureAtlasManager.register(TextureAtlas.create("items", AssetPath.create("moonlander", "texture/item/")));
 
-        MenuManager.register(Menu.create(BookMenu.class));
-        MenuManager.register(Menu.create(CompositorMenu.class));
-        MenuManager.register(Menu.create(CraftingTableMenu.class));
-        MenuManager.register(Menu.create(InventoryMenu.class));
-        MenuManager.register(Menu.create(PauseMenu.class));
-        MenuManager.register(Menu.create(DeathMenu.class));
-        MenuManager.register(Menu.create(WinConditionMenu.class));
-
         Skybox.CURRENT_SKYBOX = Skybox.create(Texture.createCubeMap("skybox", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, List.of
         (
             AssetPath.create("moonlander", "texture/skybox/stars-panel.png"),
@@ -229,10 +217,10 @@ public class Moonlander
         if (World.getLocalWorld() != null && Camera.getLocalCamera() != null)
             World.getLocalWorld().chunkLoader = Camera.getLocalCamera().getGameObject().getTransform();
 
+        Levels.update();
+
         GameObjectManager.updateMainThread();
         GameObjectManager.update();
-
-        UIManager.update();
 
         MainThreadExecutor.execute();
 

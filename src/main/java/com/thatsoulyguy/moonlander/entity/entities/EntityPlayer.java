@@ -10,6 +10,7 @@ import com.thatsoulyguy.moonlander.block.BlockRegistry;
 import com.thatsoulyguy.moonlander.collider.Collider;
 import com.thatsoulyguy.moonlander.collider.colliders.BoxCollider;
 import com.thatsoulyguy.moonlander.core.Time;
+import com.thatsoulyguy.moonlander.core.Window;
 import com.thatsoulyguy.moonlander.entity.Entity;
 import com.thatsoulyguy.moonlander.entity.LivingEntity;
 import com.thatsoulyguy.moonlander.entity.model.EntityModel;
@@ -26,8 +27,15 @@ import com.thatsoulyguy.moonlander.render.*;
 import com.thatsoulyguy.moonlander.system.GameObject;
 import com.thatsoulyguy.moonlander.system.Layer;
 import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
-import com.thatsoulyguy.moonlander.ui.MenuManager;
-import com.thatsoulyguy.moonlander.ui.menus.*;
+import com.thatsoulyguy.moonlander.ui.UIElement;
+import com.thatsoulyguy.moonlander.ui.UIManager;
+import com.thatsoulyguy.moonlander.ui.UIPanel;
+import com.thatsoulyguy.moonlander.ui.elements.ImageUIElement;
+import com.thatsoulyguy.moonlander.ui.systems.HotbarSystem;
+import com.thatsoulyguy.moonlander.ui.systems.InventorySystem;
+import com.thatsoulyguy.moonlander.ui.systems.PauseSystem;
+import com.thatsoulyguy.moonlander.ui.systems.WinConditionSystem;
+import com.thatsoulyguy.moonlander.util.AssetPath;
 import com.thatsoulyguy.moonlander.util.CoordinateHelper;
 import com.thatsoulyguy.moonlander.util.PlayerDisplay;
 import com.thatsoulyguy.moonlander.world.TextureAtlasManager;
@@ -56,17 +64,11 @@ public class EntityPlayer extends LivingEntity
 
     private @EffectivelyNotNull Vector3i breakingBlockCoordinates;
 
-    private @EffectivelyNotNull PauseMenu pauseMenu;
-    private @EffectivelyNotNull CompositorMenu compositorMenu;
-    private @EffectivelyNotNull InventoryMenu inventoryMenu;
-    private @EffectivelyNotNull CraftingTableMenu craftingTableMenu;
-    private @EffectivelyNotNull DeathMenu deathMenu;
-    private @EffectivelyNotNull BookMenu bookMenu;
-    private @EffectivelyNotNull WinConditionMenu winConditionMenu;
-
-    private final @NotNull Inventory inventory = new Inventory();
+    private final Inventory inventory = new Inventory();
 
     private PlayerDisplay display;
+
+    private transient ImageUIElement backgroundShading;
 
     private float breakingProgress;
 
@@ -114,7 +116,6 @@ public class EntityPlayer extends LivingEntity
         displayObject.addComponent(Mesh.create(new ArrayList<>(), new ArrayList<>()));
 
         display = displayObject.addComponent(PlayerDisplay.create());
-        display.inventoryMenu = inventoryMenu;
 
         MainThreadExecutor.submit(() ->
         {
@@ -195,14 +196,12 @@ public class EntityPlayer extends LivingEntity
 
         if (!starterItemsGiven)
         {
-            inventoryMenu.addItem(ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT.getId(), (byte) 10);
-            inventoryMenu.addItem(ItemRegistry.ITEM_KNOWLEDGE_BOOK.getId(), (byte) 1);
-            inventoryMenu.addItem(ItemRegistry.ITEM_SOFT_MOON_ROCK_BLOCK.getId(), (byte) 1);
+            inventory.addItem(ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT.getId(), (byte) 10);
+            inventory.addItem(ItemRegistry.ITEM_KNOWLEDGE_BOOK.getId(), (byte) 1);
+            inventory.addItem(ItemRegistry.ITEM_SOFT_MOON_ROCK_BLOCK.getId(), (byte) 1);
 
             starterItemsGiven = true;
         }
-
-        inventoryMenu.build();
 
         oxygenDepletionCooldownTimer = oxygenDepletionCooldownTimerStart;
         suffocationCooldownTimer = suffocationCooldownTimerStart;
@@ -218,12 +217,17 @@ public class EntityPlayer extends LivingEntity
     {
         super.updateMainThread();
 
+        backgroundShading.getGameObject().getTransform().setLocalPosition(new Vector3f((float) Window.getDimensions().x / 2, (float) Window.getDimensions().y / 2, 0.0f));
+        backgroundShading.getGameObject().getTransform().setLocalScale(new Vector3f(Window.getDimensions().x, Window.getDimensions().y, 0.0f));
+
+        if (blockBreakageMesh == null)
+            return;
+
+        display.currentItem = ItemRegistry.get(inventory.getCurrentlySelectedSlot().id());
+
         updateControls();
         updateMouselook();
         updateMovement();
-
-        inventoryMenu.health = getCurrentHealth();
-        inventoryMenu.oxygen = oxygen;
 
         if (oxygenDepletionCooldownTimer < 0 && oxygen > 0)
         {
@@ -245,15 +249,7 @@ public class EntityPlayer extends LivingEntity
         }
 
         if (getCurrentHealth() <= 0)
-        {
-            deathMenu.setActive(true);
-            inventoryMenu.setSurvivalMenuActive(false);
-            craftingTableMenu.setActive(false);
-            pauseMenu.setActive(false);
-            bookMenu.setActive(false);
-            compositorMenu.setActive(false);
             InputManager.setMouseMode(MouseMode.FREE);
-        }
 
         BoxCollider self = getGameObject().getComponentNotNull(BoxCollider.class);
 
@@ -268,11 +264,6 @@ public class EntityPlayer extends LivingEntity
             }
         }
 
-        inventoryMenu.update();
-        craftingTableMenu.update();
-        bookMenu.update();
-        compositorMenu.update();
-
         jumpCooldownTimer -= Time.getDeltaTime();
         oxygenDepletionCooldownTimer -= Time.getDeltaTime();
         suffocationCooldownTimer -= Time.getDeltaTime();
@@ -285,6 +276,19 @@ public class EntityPlayer extends LivingEntity
     {
         if (camera != null)
             selectorMesh.render(camera);
+    }
+
+    public void pause(boolean pause)
+    {
+        if (pause)
+            InputManager.setMouseMode(MouseMode.FREE);
+        else
+            InputManager.setMouseMode(MouseMode.LOCKED);
+    }
+
+    public void setBackgroundShadingActive(boolean active)
+    {
+        backgroundShading.getGameObject().setActive(active);
     }
 
     private void initializeCamera()
@@ -309,62 +313,64 @@ public class EntityPlayer extends LivingEntity
 
     private void initializeUI()
     {
-        inventoryMenu = (InventoryMenu) MenuManager.get("menu_inventory");
+        inventory.initialize();
 
-        assert inventoryMenu != null;
+        GameObject hotbarPanelObject = UIPanel.fromJson("ui.hotbar", AssetPath.create("moonlander", "ui/HotbarPanel.json"));
 
-        inventoryMenu.setInventory(inventory);
+        UIPanel hotbarPanel = hotbarPanelObject.getComponentNotNull(UIPanel.class);
 
+        hotbarPanel.setPanelAlignment(UIPanel.PanelAlignment.LOWER_CENTER);
+        hotbarPanel.setOffset(new Vector2i(0, 10));
 
-        compositorMenu = (CompositorMenu) MenuManager.get("menu_compositor");
+        HotbarSystem hotbarSystem = hotbarPanelObject.addComponent(HotbarSystem.create());
 
-        assert compositorMenu != null;
-
-        compositorMenu.setInventory(inventory);
-        compositorMenu.setInventoryMenu(inventoryMenu);
-
-        compositorMenu.setActive(false);
+        hotbarSystem.setInventory(inventory);
+        hotbarSystem.generate();
 
 
-        pauseMenu = (PauseMenu) MenuManager.get("menu_pause");
+        backgroundShading = UIElement.createGameObject("ui.background_shading", ImageUIElement.class, new Vector2f(0, 0), new Vector2f(0, 0), UIManager.getCanvas()).getComponentNotNull(ImageUIElement.class);
 
-        assert pauseMenu != null;
+        backgroundShading.setTexture(Objects.requireNonNull(TextureManager.get("ui.background")));
 
-        pauseMenu.setHost(this);
-
-        pauseMenu.setActive(false);
+        backgroundShading.getGameObject().setActive(false);
 
 
-        craftingTableMenu = (CraftingTableMenu) MenuManager.get("menu_crafting_table");
+        GameObject inventoryPanelObject = UIPanel.fromJson("ui.inventory", AssetPath.create("moonlander", "ui/InventoryPanel.json"));
 
-        assert craftingTableMenu != null;
+        UIPanel inventoryPanel = inventoryPanelObject.getComponentNotNull(UIPanel.class);
 
-        craftingTableMenu.setInventory(inventory);
-        craftingTableMenu.setInventoryMenu(inventoryMenu);
+        inventoryPanel.setPanelAlignment(UIPanel.PanelAlignment.MIDDLE_CENTER);
 
-        craftingTableMenu.setActive(false);
+        InventorySystem inventorySystem = inventoryPanelObject.addComponent(InventorySystem.create());
 
+        inventorySystem.setInventory(inventory);
+        inventorySystem.generate();
 
-        deathMenu = (DeathMenu) MenuManager.get("menu_death");
-
-        assert deathMenu != null;
-
-        deathMenu.setHost(this);
-        deathMenu.setActive(false);
+        inventoryPanelObject.setActive(false);
 
 
-        bookMenu = (BookMenu) MenuManager.get("menu_book");
+        GameObject pausePanelObject = UIPanel.fromJson("ui.pause", AssetPath.create("moonlander", "ui/PausePanel.json"));
 
-        assert bookMenu != null;
+        UIPanel pausePanel = pausePanelObject.getComponentNotNull(UIPanel.class);
 
-        bookMenu.setActive(false);
+        pausePanel.setPanelAlignment(UIPanel.PanelAlignment.MIDDLE_CENTER);
+
+        pausePanelObject.addComponent(PauseSystem.create());
+
+        pausePanelObject.setActive(false);
 
 
-        winConditionMenu = (WinConditionMenu) MenuManager.get("menu_win_condition");
+        GameObject winConditionPanelObject = UIPanel.fromJson("ui.win_condition", AssetPath.create("moonlander", "ui/WinConditionPanel.json"));
 
-        assert winConditionMenu != null;
+        UIPanel winConditionPanel = winConditionPanelObject.getComponentNotNull(UIPanel.class);
 
-        winConditionMenu.setActive(false);
+        winConditionPanel.setPanelAlignment(UIPanel.PanelAlignment.MIDDLE_CENTER);
+
+        winConditionPanelObject.addComponent(WinConditionSystem.create());
+
+        winConditionPanelObject.setActive(false);
+
+        inventory.refreshAll();
     }
 
     private void updateControls()
@@ -377,92 +383,44 @@ public class EntityPlayer extends LivingEntity
             return;
         }
 
-        if (deathMenu.isActive() || winConditionMenu.isActive())
-            return;
-
+        if (!InventorySystem.getInstance().getGameObject().isActive() && InputManager.getKeyState(KeyCode.E, KeyState.PRESSED))
         {
-            InventoryMenu.SlotData currentlySelectedSlot = inventoryMenu.getSlot(new Vector2i(0, inventoryMenu.currentSlotSelected));
-
-            assert currentlySelectedSlot != null;
-
-            Item item = ItemRegistry.get(currentlySelectedSlot.id());
-
-            switch (Objects.requireNonNull(item).getToolType())
-            {
-                case PICKAXE -> inventoryMenu.setUsageType(InventoryMenu.UsageType.PICKAXE);
-                case SWORD -> inventoryMenu.setUsageType(InventoryMenu.UsageType.SWORD);
-                default -> inventoryMenu.setUsageType(InventoryMenu.UsageType.FIST);
-            }
+            pause(true);
+            setBackgroundShadingActive(true);
+            InventorySystem.getInstance().getGameObject().setActive(true);
         }
 
-        if (InputManager.getKeyState(KeyCode.E, KeyState.PRESSED) && !pauseMenu.isActive() && !craftingTableMenu.isActive() && !deathMenu.isActive() && !bookMenu.isActive())
+        if ((InputManager.getKeyState(KeyCode.ESCAPE, KeyState.PRESSED) || InputManager.getKeyState(KeyCode.E, KeyState.PRESSED)) && InventorySystem.getInstance().getGameObject().isActive())
         {
-            if (!inventoryMenu.isSurvivalMenuActive())
-                InputManager.setMouseMode(MouseMode.FREE);
-            else
-                InputManager.setMouseMode(MouseMode.LOCKED);
-
-            inventoryMenu.setSurvivalMenuActive(!inventoryMenu.isSurvivalMenuActive());
+            pause(false);
+            setBackgroundShadingActive(false);
+            InventorySystem.getInstance().getGameObject().setActive(false);
         }
 
-        if (InputManager.getKeyState(KeyCode.ESCAPE, KeyState.PRESSED))
+        if (InputManager.getKeyState(KeyCode.ESCAPE, KeyState.PRESSED) && !isMenuActive())
         {
-            if (compositorMenu.isActive())
-            {
-                compositorMenu.setActive(false);
-                InputManager.setMouseMode(MouseMode.LOCKED);
+            pause(true);
+            setBackgroundShadingActive(true);
+            PauseSystem.getInstance().getGameObject().setActive(true);
+        }
 
-                return;
-            }
-
-            if (craftingTableMenu.isActive())
-            {
-                craftingTableMenu.setActive(false);
-                InputManager.setMouseMode(MouseMode.LOCKED);
-
-                return;
-            }
-
-            if (inventoryMenu.isSurvivalMenuActive())
-            {
-                inventoryMenu.setSurvivalMenuActive(false);
-                InputManager.setMouseMode(MouseMode.LOCKED);
-
-                return;
-            }
-
-            if (bookMenu.isActive())
-            {
-                bookMenu.setActive(false);
-                InputManager.setMouseMode(MouseMode.LOCKED);
-
-                return;
-            }
-
-            if (pauseMenu.isActive())
-            {
-                pauseMenu.setActive(false);
-                InputManager.setMouseMode(MouseMode.LOCKED);
-            }
-            else
-            {
-                pauseMenu.setActive(true);
-                InputManager.setMouseMode(MouseMode.FREE);
-            }
+        if (InputManager.getKeyState(KeyCode.ESCAPE, KeyState.PRESSED) && PauseSystem.getInstance().getGameObject().isActive())
+        {
+            pause(false);
+            setBackgroundShadingActive(false);
+            PauseSystem.getInstance().getGameObject().setActive(false);
         }
 
         if (isMenuActive())
             return;
 
-        int oldSlotSelected = inventoryMenu.currentSlotSelected;
+        if (InputManager.getScrollDelta() > 0)
+            inventory.currentlySelectedSlotIndex--;
 
-        if (InputManager.getKeyState(KeyCode.LEFT, KeyState.PRESSED))
-            inventoryMenu.currentSlotSelected--;
+        if (InputManager.getScrollDelta() < 0)
+            inventory.currentlySelectedSlotIndex++;
 
-        if (InputManager.getKeyState(KeyCode.RIGHT, KeyState.PRESSED))
-            inventoryMenu.currentSlotSelected++;
-
-        if (InputManager.getMouseState(MouseCode.MOUSE_LEFT, MouseState.PRESSED))
+        if (InputManager.getMouseState(MouseCode.LEFT, MouseState.PRESSED))
         {
             long now = System.currentTimeMillis();
             long deltaMs = now - lastHitTime;
@@ -496,9 +454,7 @@ public class EntityPlayer extends LivingEntity
                 {
                     if (collider.getGameObject().hasComponent(clazz))
                     {
-                        InventoryMenu.SlotData currentlySelectedSlot = inventoryMenu.getSlot(new Vector2i(0, inventoryMenu.currentSlotSelected));
-
-                        assert currentlySelectedSlot != null;
+                        Inventory.SlotData currentlySelectedSlot = inventory.getCurrentlySelectedSlot();
 
                         Item item = ItemRegistry.get(currentlySelectedSlot.id());
 
@@ -514,7 +470,7 @@ public class EntityPlayer extends LivingEntity
             }
         }
 
-        if (InputManager.getMouseState(MouseCode.MOUSE_RIGHT, MouseState.PRESSED))
+        if (InputManager.getMouseState(MouseCode.RIGHT, MouseState.PRESSED))
         {
             Raycast.Hit boxHit = Raycast.cast(camera.getGameObject().getTransform().getWorldPosition(), camera.getGameObject().getTransform().getForward(), 4, self);
 
@@ -560,12 +516,12 @@ public class EntityPlayer extends LivingEntity
                 }
             }
 
-            if (InputManager.getMouseState(MouseCode.MOUSE_LEFT, MouseState.HELD))
+            if (InputManager.getMouseState(MouseCode.LEFT, MouseState.HELD))
             {
                 Vector3f point = hit.center();
                 short blockId = World.getLocalWorld().getBlock(point);
                 Block block = BlockRegistry.get(blockId);
-                
+
                 blockBreakageMesh.getGameObject().setActive(true);
 
                 if (blockId != BlockRegistry.BLOCK_AIR.getId() && blockId != -1 && Objects.requireNonNull(block).isSolid())
@@ -578,14 +534,11 @@ public class EntityPlayer extends LivingEntity
                         breakingProgress = 0;
                     }
 
-                    InventoryMenu.SlotData currentlySelectedSlot = inventoryMenu.getSlot(new Vector2i(0, inventoryMenu.currentSlotSelected));
+                    Inventory.SlotData currentlySelectedSlot = inventory.getCurrentlySelectedSlot();
 
                     float blockHardness;
 
-                    if (currentlySelectedSlot != null)
-                        blockHardness = block.getHardness() * Objects.requireNonNull(ItemRegistry.get(currentlySelectedSlot.id())).getAccossiatedModifier();
-                    else
-                        blockHardness = block.getHardness();
+                    blockHardness = block.getHardness() * Objects.requireNonNull(ItemRegistry.get(currentlySelectedSlot.id())).getAccossiatedModifier();
 
                     breakingProgress += Time.getDeltaTime();
 
@@ -615,16 +568,13 @@ public class EntityPlayer extends LivingEntity
                     {
                         Tool toolPossessed;
 
-                        currentlySelectedSlot = inventoryMenu.getSlot(new Vector2i(0, inventoryMenu.currentSlotSelected));
+                        currentlySelectedSlot = inventory.getCurrentlySelectedSlot();
 
-                        if (currentlySelectedSlot != null)
-                            toolPossessed = Objects.requireNonNull(ItemRegistry.get(currentlySelectedSlot.id())).getToolType();
-                        else
-                            toolPossessed = Tool.NONE;
+                        toolPossessed = Objects.requireNonNull(ItemRegistry.get(currentlySelectedSlot.id())).getToolType();
 
                         if (block.toolRequired() == Tool.NONE || block.toolRequired() == toolPossessed)
                         {
-                            inventoryMenu.addItem(Objects.requireNonNull(
+                            inventory.addItem(Objects.requireNonNull(
                                     BlockRegistry.get(World.getLocalWorld().getBlock(point))
                             ).getAssociatedItem().getId(), (byte) 1);
                         }
@@ -663,7 +613,7 @@ public class EntityPlayer extends LivingEntity
                 blockBreakageMesh.getGameObject().setActive(false);
             }
 
-            if (InputManager.getMouseState(MouseCode.MOUSE_RIGHT, MouseState.PRESSED))
+            if (InputManager.getMouseState(MouseCode.RIGHT, MouseState.PRESSED))
             {
                 Raycast.Hit boxHit = Raycast.cast(camera.getGameObject().getTransform().getWorldPosition(), camera.getGameObject().getTransform().getForward(), 4, self);
 
@@ -680,10 +630,7 @@ public class EntityPlayer extends LivingEntity
                     }
                 }
 
-                InventoryMenu.SlotData slot = inventoryMenu.getSlot(new Vector2i(0, inventoryMenu.currentSlotSelected));
-
-                if (slot == null)
-                    return;
+                Inventory.SlotData slot = inventory.getCurrentlySelectedSlot();
 
                 Item item = ItemRegistry.get(slot.id());
 
@@ -714,7 +661,7 @@ public class EntityPlayer extends LivingEntity
                         );
                     }
                     else
-                        Objects.requireNonNull(ItemRegistry.get(Objects.requireNonNull(inventoryMenu.getSlot(new Vector2i(0, inventoryMenu.currentSlotSelected))).id())).onInteractedWith(this);
+                        Objects.requireNonNull(ItemRegistry.get(inventory.getCurrentlySelectedSlot().id())).onInteractedWith(this);
                 }
 
                 point.add(normal.mul(1f, new Vector3f()));
@@ -743,20 +690,22 @@ public class EntityPlayer extends LivingEntity
                     clip.play(true);
 
                     if (Objects.requireNonNull(ItemRegistry.get(slot.id())).getToolType() == Tool.BUCKET)
-                        inventoryMenu.setSlot(new Vector2i(new Vector2i(0, inventoryMenu.currentSlotSelected)),
-                            ItemRegistry.ITEM_EMPTY_BUCKET.getId(),
-                            (byte) 1);
+                        inventory.setSlot(new Vector2i(new Vector2i(0, inventory.currentlySelectedSlotIndex)),
+                                new Inventory.SlotData(
+                                    ItemRegistry.ITEM_EMPTY_BUCKET.getId(),
+                                    (byte) 1));
                     else
-                        inventoryMenu.setSlot(new Vector2i(new Vector2i(0, inventoryMenu.currentSlotSelected)),
-                            item.getId(),
-                            (byte) (slot.count() - 1));
+                        inventory.setSlot(new Vector2i(new Vector2i(0, inventory.currentlySelectedSlotIndex)),
+                            new Inventory.SlotData(
+                                item.getId(),
+                                (byte) (slot.count() - 1)));
                 }
             }
         }
         else
         {
-            if (InputManager.getMouseState(MouseCode.MOUSE_RIGHT, MouseState.PRESSED))
-                Objects.requireNonNull(ItemRegistry.get(Objects.requireNonNull(inventoryMenu.getSlot(new Vector2i(0, inventoryMenu.currentSlotSelected))).id())).onInteractedWith(this);
+            if (InputManager.getMouseState(MouseCode.RIGHT, MouseState.PRESSED))
+                Objects.requireNonNull(ItemRegistry.get(inventory.getCurrentlySelectedSlot().id())).onInteractedWith(this);
 
             breakingBlockCoordinates = null;
             breakingProgress = 0;
@@ -766,15 +715,6 @@ public class EntityPlayer extends LivingEntity
             blockBreakageMesh.getGameObject().setActive(false);
             selectorMesh.active = false;
         }
-
-        if (InputManager.getScrollDelta() > 0)
-            inventoryMenu.currentSlotSelected--;
-
-        if (InputManager.getScrollDelta() < 0)
-            inventoryMenu.currentSlotSelected++;
-
-        if (inventoryMenu.currentSlotSelected != oldSlotSelected)
-            resetBlockBreaking();
 
         blockMiningAudioTimer -= Time.getDeltaTime();
     }
@@ -923,6 +863,9 @@ public class EntityPlayer extends LivingEntity
 
     public void updateDestroyStages(int index)
     {
+        if (blockBreakageMesh == null)
+            return;
+
         Vector2f[] uvs = Objects.requireNonNull(TextureAtlasManager.get("blocks")).getSubTextureCoordinates("destroy_stage_" + index);
 
         blockBreakageMesh.setVertices(
@@ -1043,16 +986,6 @@ public class EntityPlayer extends LivingEntity
         return oxygen;
     }
 
-    public @NotNull BookMenu getBookMenu()
-    {
-        return bookMenu;
-    }
-
-    public @NotNull InventoryMenu getInventoryMenu()
-    {
-        return inventoryMenu;
-    }
-
     public void setPaused(boolean paused)
     {
         if (paused)
@@ -1061,71 +994,9 @@ public class EntityPlayer extends LivingEntity
             InputManager.setMouseMode(MouseMode.LOCKED);
     }
 
-    public void setCompositorMenuActive(boolean active)
+    private boolean isMenuActive()
     {
-        if (active)
-        {
-            compositorMenu.build();
-            InputManager.setMouseMode(MouseMode.FREE);
-        }
-        else
-            InputManager.setMouseMode(MouseMode.LOCKED);
-
-        compositorMenu.setActive(active);
-    }
-
-    public boolean isCompositorMenuActive()
-    {
-        return compositorMenu.isActive();
-    }
-
-    public void setBookMenuActive(boolean active)
-    {
-        bookMenu.setActive(active);
-    }
-
-    public void setPauseMenuActive(boolean active)
-    {
-        pauseMenu.setActive(active);
-    }
-
-    public void setCraftingTableMenuActive(boolean active)
-    {
-        if (active)
-        {
-            craftingTableMenu.build();
-            InputManager.setMouseMode(MouseMode.FREE);
-        }
-        else
-            InputManager.setMouseMode(MouseMode.LOCKED);
-
-        craftingTableMenu.setActive(active);
-    }
-
-    public void setWinConditionMenuActive(boolean active)
-    {
-        if (active)
-        {
-            InputManager.setMouseMode(MouseMode.FREE);
-            winConditionMenu.setActive(active);
-        }
-        else
-            InputManager.setMouseMode(MouseMode.LOCKED);
-    }
-
-    public boolean isWinConditionMenuActive()
-    {
-        return winConditionMenu.isActive();
-    }
-
-    public boolean isMenuActive()
-    {
-        return inventoryMenu.isSurvivalMenuActive() || inventoryMenu.isCreativeMenuActive() || pauseMenu.isActive() || craftingTableMenu.isActive() || bookMenu.isActive() || compositorMenu.isActive() || deathMenu.isActive() || winConditionMenu.isActive();
-    }
-
-    public boolean isCraftingTableMenuActive()
-    {
-        return craftingTableMenu.isActive();
+        return InventorySystem.getInstance().getGameObject().isActive() || PauseSystem.getInstance().getGameObject().isActive();
     }
 
     @Override

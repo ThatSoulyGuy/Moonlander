@@ -1,0 +1,254 @@
+[
+  {
+    "Name": "back_to_game",
+    "Property": {
+      "Key": "default.name",
+      "Value": "back_to_game"
+    }
+  },
+  {
+    "Name": "back_to_game",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[0, 0]"
+    }
+  },
+  {
+    "Name": "back_to_game",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[400, 40]"
+    }
+  },
+  {
+    "Name": "back_to_game",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "back_to_game",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.button_default"
+    }
+  },
+  {
+    "Name": "back_to_game",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.PauseSystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "back_to_game",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "back_to_game",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.PauseSystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "back_to_game",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.PauseSystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "back_to_game",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "back_to_game",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "save_and_quit",
+    "Property": {
+      "Key": "default.name",
+      "Value": "save_and_quit"
+    }
+  },
+  {
+    "Name": "save_and_quit",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[0, -45]"
+    }
+  },
+  {
+    "Name": "save_and_quit",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[400, 40]"
+    }
+  },
+  {
+    "Name": "save_and_quit",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "save_and_quit",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.button_default"
+    }
+  },
+  {
+    "Name": "save_and_quit",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.PauseSystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "save_and_quit",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "save_and_quit",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.PauseSystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "save_and_quit",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.PauseSystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "save_and_quit",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "save_and_quit",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "back_to_game_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "back_to_game_text"
+    }
+  },
+  {
+    "Name": "back_to_game_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[0, 0]"
+    }
+  },
+  {
+    "Name": "back_to_game_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[400, 40]"
+    }
+  },
+  {
+    "Name": "back_to_game_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "back_to_game_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "20"
+    }
+  },
+  {
+    "Name": "back_to_game_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_center"
+    }
+  },
+  {
+    "Name": "back_to_game_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "Back to game"
+    }
+  },
+  {
+    "Name": "save_and_quit_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "save_and_quit_text"
+    }
+  },
+  {
+    "Name": "save_and_quit_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[0, -45]"
+    }
+  },
+  {
+    "Name": "save_and_quit_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[400, 40]"
+    }
+  },
+  {
+    "Name": "save_and_quit_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "save_and_quit_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "20"
+    }
+  },
+  {
+    "Name": "save_and_quit_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_center"
+    }
+  },
+  {
+    "Name": "save_and_quit_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "Save and quit to title"
+    }
+  }
+]
