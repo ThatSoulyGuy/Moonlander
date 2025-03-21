@@ -21,7 +21,7 @@ public class Rigidbody extends Component
     public static final float GRAVITY = -6.8f;
     public static final float DRAG = 0.01f;
 
-    private final @NotNull Vector3f desiredVelocity = new Vector3f(0,0,0);
+    private final @NotNull Vector3f desiredVelocity = new Vector3f(0, 0, 0);
 
     private boolean isGrounded = false;
     private @EffectivelyNotNull BoxCollider groundedCheck;
@@ -46,7 +46,10 @@ public class Rigidbody extends Component
 
         GameObject groundedCheckObject = getGameObject().addChild(GameObject.create("default.grounded_check", Layer.DEFAULT));
 
-        groundedCheck = groundedCheckObject.addComponent(Collider.create(BoxCollider.class).setSize(new Vector3f(self.getSize().x - 0.001f, self.getSize().y, self.getSize().z - 0.001f)));
+        groundedCheck = groundedCheckObject.addComponent(
+                Collider.create(BoxCollider.class)
+                        .setSize(new Vector3f(self.getSize().x - 0.001f, self.getSize().y, self.getSize().z - 0.001f))
+        );
 
         groundedCheckObject.getTransform().translate(new Vector3f(0.0f, -0.01f, 0.0f));
 
@@ -70,22 +73,20 @@ public class Rigidbody extends Component
         desiredVelocity.x *= (float) Math.pow(DRAG, Time.getDeltaTime());
         desiredVelocity.z *= (float) Math.pow(DRAG, Time.getDeltaTime());
 
-        Transform transform = getGameObject().getTransform();
-        Vector3f currentPosition = transform.getWorldPosition();
-
-        previousPosition.set(currentPosition);
+        Vector3f currentPos = getGameObject().getTransform().getWorldPosition();
+        previousPosition.set(currentPos);
 
         Vector3f newPosition = new Vector3f(
-                currentPosition.x + desiredVelocity.x * Time.getDeltaTime(),
-                currentPosition.y + desiredVelocity.y * Time.getDeltaTime(),
-                currentPosition.z + desiredVelocity.z * Time.getDeltaTime()
+                currentPos.x + desiredVelocity.x * Time.getDeltaTime(),
+                currentPos.y + desiredVelocity.y * Time.getDeltaTime(),
+                currentPos.z + desiredVelocity.z * Time.getDeltaTime()
         );
 
-        transform.setLocalPosition(newPosition);
+        getGameObject().getTransform().setLocalPosition(newPosition);
 
         List<Collider> colliders = ColliderManager.getAll().stream()
                 .filter(c -> c != self)
-                .filter(c -> c.getPosition().distance(transform.getWorldPosition()) < 32)
+                .filter(c -> c.getPosition().distance(getGameObject().getTransform().getWorldPosition()) < 32)
                 .toList();
 
         boolean groundCheckHit = false;
@@ -95,7 +96,6 @@ public class Rigidbody extends Component
 
         for (int iteration = 0; iteration < 10; iteration++)
         {
-            Vector3f currentResolution = new Vector3f();
             boolean resolvedAny = false;
 
             for (Collider collider : colliders)
@@ -106,22 +106,49 @@ public class Rigidbody extends Component
 
                     if (resolution.length() > 0.00001f)
                     {
-                        currentResolution.add(resolution);
                         resolvedAny = true;
 
-                        if (resolution.length() > 1.0f)
-                            resolution.normalize().mul(1.0f);
+                        Vector3f normal = new Vector3f(resolution).normalize();
 
-                        transform.translate(resolution);
-                        desiredVelocity.set(0.0f, 0.0f, 0.0f);
+                        Rigidbody otherRb = collider.getGameObject().getComponent(Rigidbody.class);
+
+                        if (otherRb != null)
+                        {
+                            Vector3f vA = new Vector3f(desiredVelocity);
+                            Vector3f vB = otherRb.getDesiredVelocity();
+
+                            Vector3f relativeVelocity = new Vector3f(vA).sub(vB);
+                            float velAlongNormal = relativeVelocity.dot(normal);
+
+                            if (velAlongNormal < 0)
+                            {
+                                float restitution = 0.5f;
+
+                                float impulseScalar = -(1 + restitution) * velAlongNormal / 2.0f;
+                                Vector3f impulse = new Vector3f(normal).mul(impulseScalar);
+
+                                desiredVelocity.add(impulse);
+
+                                otherRb.setDesiredVelocity(new Vector3f(vB).sub(impulse));
+                            }
+
+                            Vector3f halfResolution = new Vector3f(resolution).mul(0.5f);
+
+                            getGameObject().getTransform().translate(halfResolution);
+                            otherRb.getGameObject().getTransform().translate(new Vector3f(halfResolution).negate());
+                        }
+                        else
+                        {
+                            getGameObject().getTransform().translate(resolution);
+
+                            float dot = desiredVelocity.dot(normal);
+                            Vector3f correction = new Vector3f(normal).mul(dot);
+
+                            desiredVelocity.sub(correction);
+                        }
 
                         if (resolution.y > 0)
-                        {
                             collidedFromBelow = true;
-                            desiredVelocity.y = 0.0f;
-                        }
-                        else if (resolution.y < 0)
-                            desiredVelocity.y = 0.0f;
                     }
                 }
             }
@@ -129,7 +156,7 @@ public class Rigidbody extends Component
             if (!resolvedAny)
                 break;
 
-            totalResolution.add(currentResolution);
+            totalResolution.add(desiredVelocity);
 
             if (totalResolution.length() > 10.0f)
             {
@@ -137,7 +164,7 @@ public class Rigidbody extends Component
                 break;
             }
         }
-
+        // Ground check using a separate, small collider.
         for (Collider collider : colliders)
         {
             Vector3f boxPosition = groundedCheck.getPosition();
@@ -162,7 +189,8 @@ public class Rigidbody extends Component
                     }
                 }
 
-                if (groundCheckHit) break;
+                if (groundCheckHit)
+                    break;
             }
         }
 
@@ -171,7 +199,7 @@ public class Rigidbody extends Component
         if (isGrounded)
             desiredVelocity.y = 0.0f;
 
-        this.currentPosition.set(transform.getWorldPosition());
+        currentPosition.set(getGameObject().getTransform().getWorldPosition());
     }
 
     /**
@@ -187,9 +215,9 @@ public class Rigidbody extends Component
     }
 
     /**
-     * Adds force to the Rigidbody
+     * Adds force to the Rigidbody.
      *
-     * @param force The force to add
+     * @param force The force to add.
      */
     public void addForce(@NotNull Vector3f force)
     {

@@ -562,6 +562,7 @@ public class EntityPlayer extends LivingEntity
 
                         float extraDamage = item.getToolType() == Tool.SWORD ? item.getAccossiatedModifier() : 0;
 
+                        collider.getGameObject().getComponentNotNull(Rigidbody.class).addForce(getCamera().getGameObject().getTransform().getForward().mul(6.5f));
                         collider.getGameObject().getComponentNotNull(clazz).damage(this, (int) damage + (int) extraDamage);
 
                         return;
