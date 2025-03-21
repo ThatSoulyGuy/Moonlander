@@ -824,5 +824,705 @@
       "Key": "image.texture",
       "Value": "ui.hotbar_selector"
     }
+  },
+  {
+    "Name": "heart_0",
+    "Property": {
+      "Key": "default.name",
+      "Value": "heart_0"
+    }
+  },
+  {
+    "Name": "heart_0",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-172, 58]"
+    }
+  },
+  {
+    "Name": "heart_0",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 16]"
+    }
+  },
+  {
+    "Name": "heart_0",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "heart_0",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.full_heart"
+    }
+  },
+  {
+    "Name": "heart_1",
+    "Property": {
+      "Key": "default.name",
+      "Value": "heart_1"
+    }
+  },
+  {
+    "Name": "heart_1",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-156, 58]"
+    }
+  },
+  {
+    "Name": "heart_1",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 16]"
+    }
+  },
+  {
+    "Name": "heart_1",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "heart_1",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.full_heart"
+    }
+  },
+  {
+    "Name": "heart_2",
+    "Property": {
+      "Key": "default.name",
+      "Value": "heart_2"
+    }
+  },
+  {
+    "Name": "heart_2",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-140, 58]"
+    }
+  },
+  {
+    "Name": "heart_2",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 16]"
+    }
+  },
+  {
+    "Name": "heart_2",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "heart_2",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.full_heart"
+    }
+  },
+  {
+    "Name": "heart_3",
+    "Property": {
+      "Key": "default.name",
+      "Value": "heart_3"
+    }
+  },
+  {
+    "Name": "heart_3",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-124, 58]"
+    }
+  },
+  {
+    "Name": "heart_3",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 16]"
+    }
+  },
+  {
+    "Name": "heart_3",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "heart_3",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.full_heart"
+    }
+  },
+  {
+    "Name": "heart_4",
+    "Property": {
+      "Key": "default.name",
+      "Value": "heart_4"
+    }
+  },
+  {
+    "Name": "heart_4",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-108, 58]"
+    }
+  },
+  {
+    "Name": "heart_4",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 16]"
+    }
+  },
+  {
+    "Name": "heart_4",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "heart_4",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.full_heart"
+    }
+  },
+  {
+    "Name": "heart_5",
+    "Property": {
+      "Key": "default.name",
+      "Value": "heart_5"
+    }
+  },
+  {
+    "Name": "heart_5",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-92, 58]"
+    }
+  },
+  {
+    "Name": "heart_5",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 16]"
+    }
+  },
+  {
+    "Name": "heart_5",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "heart_5",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.full_heart"
+    }
+  },
+  {
+    "Name": "heart_6",
+    "Property": {
+      "Key": "default.name",
+      "Value": "heart_6"
+    }
+  },
+  {
+    "Name": "heart_6",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-76, 58]"
+    }
+  },
+  {
+    "Name": "heart_6",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 16]"
+    }
+  },
+  {
+    "Name": "heart_6",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "heart_6",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.full_heart"
+    }
+  },
+  {
+    "Name": "heart_7",
+    "Property": {
+      "Key": "default.name",
+      "Value": "heart_7"
+    }
+  },
+  {
+    "Name": "heart_7",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-60, 58]"
+    }
+  },
+  {
+    "Name": "heart_7",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 16]"
+    }
+  },
+  {
+    "Name": "heart_7",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "heart_7",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.full_heart"
+    }
+  },
+  {
+    "Name": "heart_8",
+    "Property": {
+      "Key": "default.name",
+      "Value": "heart_8"
+    }
+  },
+  {
+    "Name": "heart_8",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-44, 58]"
+    }
+  },
+  {
+    "Name": "heart_8",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 16]"
+    }
+  },
+  {
+    "Name": "heart_8",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "heart_8",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.full_heart"
+    }
+  },
+  {
+    "Name": "heart_9",
+    "Property": {
+      "Key": "default.name",
+      "Value": "heart_9"
+    }
+  },
+  {
+    "Name": "heart_9",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-28, 58]"
+    }
+  },
+  {
+    "Name": "heart_9",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 16]"
+    }
+  },
+  {
+    "Name": "heart_9",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "heart_9",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.full_heart"
+    }
+  },
+  {
+    "Name": "bubble_0",
+    "Property": {
+      "Key": "default.name",
+      "Value": "bubble_0"
+    }
+  },
+  {
+    "Name": "bubble_0",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[172, 58]"
+    }
+  },
+  {
+    "Name": "bubble_0",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 17]"
+    }
+  },
+  {
+    "Name": "bubble_0",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "bubble_0",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.bubble"
+    }
+  },
+  {
+    "Name": "bubble_1",
+    "Property": {
+      "Key": "default.name",
+      "Value": "bubble_1"
+    }
+  },
+  {
+    "Name": "bubble_1",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[156, 58]"
+    }
+  },
+  {
+    "Name": "bubble_1",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 17]"
+    }
+  },
+  {
+    "Name": "bubble_1",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "bubble_1",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.bubble"
+    }
+  },
+  {
+    "Name": "bubble_2",
+    "Property": {
+      "Key": "default.name",
+      "Value": "bubble_2"
+    }
+  },
+  {
+    "Name": "bubble_2",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[140, 58]"
+    }
+  },
+  {
+    "Name": "bubble_2",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 17]"
+    }
+  },
+  {
+    "Name": "bubble_2",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "bubble_2",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.bubble"
+    }
+  },
+  {
+    "Name": "bubble_3",
+    "Property": {
+      "Key": "default.name",
+      "Value": "bubble_3"
+    }
+  },
+  {
+    "Name": "bubble_3",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[124, 58]"
+    }
+  },
+  {
+    "Name": "bubble_3",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 17]"
+    }
+  },
+  {
+    "Name": "bubble_3",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "bubble_3",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.bubble"
+    }
+  },
+  {
+    "Name": "bubble_4",
+    "Property": {
+      "Key": "default.name",
+      "Value": "bubble_4"
+    }
+  },
+  {
+    "Name": "bubble_4",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[108, 58]"
+    }
+  },
+  {
+    "Name": "bubble_4",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 17]"
+    }
+  },
+  {
+    "Name": "bubble_4",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "bubble_4",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.bubble"
+    }
+  },
+  {
+    "Name": "bubble_5",
+    "Property": {
+      "Key": "default.name",
+      "Value": "bubble_5"
+    }
+  },
+  {
+    "Name": "bubble_5",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[92, 58]"
+    }
+  },
+  {
+    "Name": "bubble_5",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 17]"
+    }
+  },
+  {
+    "Name": "bubble_5",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "bubble_5",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.bubble"
+    }
+  },
+  {
+    "Name": "bubble_6",
+    "Property": {
+      "Key": "default.name",
+      "Value": "bubble_6"
+    }
+  },
+  {
+    "Name": "bubble_6",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[76, 58]"
+    }
+  },
+  {
+    "Name": "bubble_6",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 17]"
+    }
+  },
+  {
+    "Name": "bubble_6",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "bubble_6",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.bubble"
+    }
+  },
+  {
+    "Name": "bubble_7",
+    "Property": {
+      "Key": "default.name",
+      "Value": "bubble_7"
+    }
+  },
+  {
+    "Name": "bubble_7",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[60, 58]"
+    }
+  },
+  {
+    "Name": "bubble_7",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 17]"
+    }
+  },
+  {
+    "Name": "bubble_7",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "bubble_7",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.bubble"
+    }
+  },
+  {
+    "Name": "bubble_8",
+    "Property": {
+      "Key": "default.name",
+      "Value": "bubble_8"
+    }
+  },
+  {
+    "Name": "bubble_8",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[44, 58]"
+    }
+  },
+  {
+    "Name": "bubble_8",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 17]"
+    }
+  },
+  {
+    "Name": "bubble_8",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "bubble_8",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.bubble"
+    }
+  },
+  {
+    "Name": "bubble_9",
+    "Property": {
+      "Key": "default.name",
+      "Value": "bubble_9"
+    }
+  },
+  {
+    "Name": "bubble_9",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[28, 58]"
+    }
+  },
+  {
+    "Name": "bubble_9",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[17, 17]"
+    }
+  },
+  {
+    "Name": "bubble_9",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "bubble_9",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.bubble"
+    }
   }
 ]

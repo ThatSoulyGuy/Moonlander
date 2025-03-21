@@ -1,0 +1,10 @@
+[
+  {
+    "Key": "ui.transparency",
+    "Value": "D:\\IntelliJ\\Projects\\Moonlander\\src\\main\\resources\\assets\\moonlander\\texture\\ui\\transparency.png"
+  },
+  {
+    "Key": "ui.menu.creative_crafting",
+    "Value": "D:\\IntelliJ\\Projects\\Moonlander\\src\\main\\resources\\assets\\moonlander\\texture\\ui\\menu\\creative_crafting.png"
+  }
+]

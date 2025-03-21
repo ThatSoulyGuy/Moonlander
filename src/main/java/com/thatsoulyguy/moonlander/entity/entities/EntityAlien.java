@@ -146,7 +146,7 @@ public class EntityAlien extends LivingEntity
 
         if (attackCooldownTimer < 0 && distanceFromPlayer < 2f)
         {
-            player.damage(this, 5);
+            player.damage(this, 2);
             attackCooldownTimer = attackCooldownTimerStart;
 
             triggerLegSwing();

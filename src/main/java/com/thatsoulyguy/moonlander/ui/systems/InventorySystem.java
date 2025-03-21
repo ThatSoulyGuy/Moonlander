@@ -84,30 +84,12 @@ public class InventorySystem extends Component
 
     public void generate()
     {
-        inventory.registerOnSlotChangedCallback((position, slot) ->
-        {
-            UIPanel panel = getGameObject().getComponentNotNull(UIPanel.class);
+        inventory.registerOnSlotChangedCallback((position, slot) -> Inventory.buildSlotWithPosition(position, slot, getGameObject()));
+    }
 
-            if (slot.count() <= 0)
-            {
-                panel.getNotNull("ui.slot_" + position.x + "_" + position.y + "_text", TextUIElement.class).getGameObject().setActive(false);
-                panel.getNotNull("ui.slot_" + position.x + "_" + position.y, ButtonUIElement.class).setTexture(Objects.requireNonNull(TextureManager.get("ui.transparency")));
-            }
-            else
-            {
-                if (slot.count() > 1)
-                {
-                    panel.getNotNull("ui.slot_" + position.x + "_" + position.y + "_text", TextUIElement.class).getGameObject().setActive(true);
-
-                    panel.getNotNull("ui.slot_" + position.x + "_" + position.y + "_text", TextUIElement.class).setText(String.valueOf(slot.count()));
-                    panel.getNotNull("ui.slot_" + position.x + "_" + position.y + "_text", TextUIElement.class).build();
-                }
-                else
-                    panel.getNotNull("ui.slot_" + position.x + "_" + position.y + "_text", TextUIElement.class).getGameObject().setActive(false);
-
-                panel.getNotNull("ui.slot_" + position.x + "_" + position.y, ButtonUIElement.class).setTexture(Objects.requireNonNull(TextureAtlasManager.get("items")).createSubTexture(Objects.requireNonNull(ItemRegistry.get(slot.id())).getTexture(), false));
-            }
-        });
+    public @NotNull GrabbedItem getGrabbedItem()
+    {
+        return grabbedItem;
     }
 
     public void buildGrabbedItem()
@@ -254,7 +236,7 @@ public class InventorySystem extends Component
 
     public record GrabbedItem(@NotNull ImageUIElement image, @NotNull TextUIElement text, Wrapper<Short> id, Wrapper<Byte> count) { }
 
-    private static class Wrapper<T>
+    public static class Wrapper<T>
     {
         private T t;
 

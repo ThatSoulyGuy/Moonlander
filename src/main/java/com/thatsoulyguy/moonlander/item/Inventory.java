@@ -1,12 +1,20 @@
 package com.thatsoulyguy.moonlander.item;
 
+import com.thatsoulyguy.moonlander.render.TextureManager;
+import com.thatsoulyguy.moonlander.system.GameObject;
+import com.thatsoulyguy.moonlander.ui.UIPanel;
+import com.thatsoulyguy.moonlander.ui.elements.ButtonUIElement;
+import com.thatsoulyguy.moonlander.ui.elements.ImageUIElement;
+import com.thatsoulyguy.moonlander.ui.elements.TextUIElement;
 import com.thatsoulyguy.moonlander.util.DoubleConsumer;
+import com.thatsoulyguy.moonlander.world.TextureAtlasManager;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2i;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class Inventory implements Serializable
 {
@@ -31,7 +39,7 @@ public class Inventory implements Serializable
 
     public void initialize()
     {
-        onSlotChangedCallbackList = new ArrayList<>();
+        onSlotChangedCallbackList = new LinkedList<>();
     }
 
     public void registerOnSlotChangedCallback(@NotNull DoubleConsumer<Vector2i, SlotData> callback)
@@ -97,6 +105,47 @@ public class Inventory implements Serializable
     public @NotNull SlotData getSlot(@NotNull Vector2i position)
     {
         return new SlotData(slots[position.x][position.y], slotCounts[position.x][position.y]);
+    }
+
+    public static void buildSlotWithPosition(@NotNull Vector2i position, @NotNull SlotData data, @NotNull GameObject gameObject)
+    {
+        buildSlot(position.x + "_" + position.y, data, gameObject);
+    }
+
+    public static void buildSlot(@NotNull String name, @NotNull SlotData data, @NotNull GameObject gameObject)
+    {
+        UIPanel panel = gameObject.getComponentNotNull(UIPanel.class);
+
+        if (data.count() <= 0)
+        {
+            panel.getNotNull("ui.slot_" + name + "_text", TextUIElement.class).getGameObject().setActive(false);
+
+            ButtonUIElement element = panel.get("ui.slot_" + name, ButtonUIElement.class);
+
+            if (element == null)
+                panel.getNotNull("ui.slot_" + name, ImageUIElement.class).setTexture(Objects.requireNonNull(TextureManager.get("ui.transparency")));
+            else
+                element.setTexture(Objects.requireNonNull(TextureManager.get("ui.transparency")));
+        }
+        else
+        {
+            if (data.count() > 1)
+            {
+                panel.getNotNull("ui.slot_" + name + "_text", TextUIElement.class).getGameObject().setActive(true);
+
+                panel.getNotNull("ui.slot_" + name + "_text", TextUIElement.class).setText(String.valueOf(data.count()));
+                panel.getNotNull("ui.slot_" + name + "_text", TextUIElement.class).build();
+            }
+            else
+                panel.getNotNull("ui.slot_" + name + "_text", TextUIElement.class).getGameObject().setActive(false);
+
+            ButtonUIElement element = panel.get("ui.slot_" + name, ButtonUIElement.class);
+
+            if (element == null)
+                panel.getNotNull("ui.slot_" + name, ImageUIElement.class).setTexture(Objects.requireNonNull(TextureAtlasManager.get("items")).createSubTexture(Objects.requireNonNull(ItemRegistry.get(data.id())).getTexture(), false));
+            else
+                element.setTexture(Objects.requireNonNull(TextureAtlasManager.get("items")).createSubTexture(Objects.requireNonNull(ItemRegistry.get(data.id())).getTexture(), false));
+        }
     }
 
     public record SlotData(short id, byte count) { }

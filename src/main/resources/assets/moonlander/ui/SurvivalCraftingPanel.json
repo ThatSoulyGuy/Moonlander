@@ -1,0 +1,667 @@
+[
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "default.name",
+      "Value": "menu"
+    }
+  },
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[0, 0]"
+    }
+  },
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[154, 80]"
+    }
+  },
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.survival_crafting"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_0"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-55, -18]"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_0_0",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_1"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-55, 18]"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_0_1",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_0"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-19, -18]"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_1_0",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_1"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-19, 18]"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_1_1",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_result"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[55, 1]"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.SurvivalCraftingSystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_0_1_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_1_text"
+    }
+  },
+  {
+    "Name": "slot_0_1_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-52, 7]"
+    }
+  },
+  {
+    "Name": "slot_0_1_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[30, 30]"
+    }
+  },
+  {
+    "Name": "slot_0_1_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_0_1_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_0_1_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_0_1_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+  {
+    "Name": "slot_0_0_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_0_0_text"
+    }
+  },
+  {
+    "Name": "slot_0_0_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-52, -29]"
+    }
+  },
+  {
+    "Name": "slot_0_0_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[30, 30]"
+    }
+  },
+  {
+    "Name": "slot_0_0_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_0_0_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_0_0_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_0_0_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+  {
+    "Name": "slot_1_0_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_0_text"
+    }
+  },
+  {
+    "Name": "slot_1_0_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-16, -29]"
+    }
+  },
+  {
+    "Name": "slot_1_0_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[30, 30]"
+    }
+  },
+  {
+    "Name": "slot_1_0_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_1_0_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_1_0_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_1_0_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+  {
+    "Name": "slot_1_1_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_1_1_text"
+    }
+  },
+  {
+    "Name": "slot_1_1_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-16, 7]"
+    }
+  },
+  {
+    "Name": "slot_1_1_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[30, 30]"
+    }
+  },
+  {
+    "Name": "slot_1_1_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_1_1_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_1_1_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_1_1_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+  {
+    "Name": "slot_result_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_result_text"
+    }
+  },
+  {
+    "Name": "slot_result_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[58, -10]"
+    }
+  },
+  {
+    "Name": "slot_result_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[30, 30]"
+    }
+  },
+  {
+    "Name": "slot_result_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_result_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_result_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_result_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  }
+]
