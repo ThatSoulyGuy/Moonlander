@@ -1,0 +1,240 @@
+[
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "default.name",
+      "Value": "menu"
+    }
+  },
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[0, 0]"
+    }
+  },
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[590, 358]"
+    }
+  },
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.book"
+    }
+  },
+  {
+    "Name": "text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-20, 9]"
+    }
+  },
+  {
+    "Name": "text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[411, 243]"
+    }
+  },
+  {
+    "Name": "text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "12"
+    }
+  },
+  {
+    "Name": "text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "upper_left"
+    }
+  },
+  {
+    "Name": "text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "Some"
+    }
+  },
+  {
+    "Name": "next_page",
+    "Property": {
+      "Key": "default.name",
+      "Value": "next_page"
+    }
+  },
+  {
+    "Name": "next_page",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[120, -80]"
+    }
+  },
+  {
+    "Name": "next_page",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[36, 20]"
+    }
+  },
+  {
+    "Name": "next_page",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "next_page",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.menu.next_page"
+    }
+  },
+  {
+    "Name": "next_page",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.BookSystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "next_page",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "next_page",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.BookSystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "next_page",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.BookSystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "next_page",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "next_page",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "previous_page",
+    "Property": {
+      "Key": "default.name",
+      "Value": "previous_page"
+    }
+  },
+  {
+    "Name": "previous_page",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-180, -80]"
+    }
+  },
+  {
+    "Name": "previous_page",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[36, 20]"
+    }
+  },
+  {
+    "Name": "previous_page",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "previous_page",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.menu.previous_page"
+    }
+  },
+  {
+    "Name": "previous_page",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.BookSystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "previous_page",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "previous_page",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.BookSystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "previous_page",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.BookSystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "previous_page",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "previous_page",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  }
+]

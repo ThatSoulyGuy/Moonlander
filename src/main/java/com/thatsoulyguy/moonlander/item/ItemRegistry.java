@@ -7,6 +7,7 @@ import com.thatsoulyguy.moonlander.block.BlockRegistry;
 import com.thatsoulyguy.moonlander.entity.Entity;
 import com.thatsoulyguy.moonlander.entity.entities.EntityPlayer;
 import com.thatsoulyguy.moonlander.entity.entities.EntityRocket;
+import com.thatsoulyguy.moonlander.ui.systems.BookSystem;
 import com.thatsoulyguy.moonlander.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,6 +15,7 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -888,11 +890,8 @@ public class ItemRegistry
             """,
             """
             Notes:
-                You have a meter labeled O₂, which indicates
-                your oxygen level. When it is in the green,
-                your in safe territory. White means you might
-                want to refill, and red means that you really
-                need to refill unless you want to die.
+                You have a meter depicted by bubble icons,
+                which indicates your oxygen level.
                 \s
                 You have hearts to indicate health. If you run
                 out of oxygen, you start to lose health. If you
@@ -1074,8 +1073,12 @@ public class ItemRegistry
                 for aluminum blocks, fill the entire grid with refined (keyword 'refined') iron ingots.
                 As for the iron+coal and iron+aluminum composites, you need to go into your compositor,
                 and place 1 iron ingot in the top slot for both, and then have the bottom slot be
-                refined aluminum ingots or coal depending on what you want to make. This is the recipe
-                for the final rocket ship:
+                refined aluminum ingots or coal depending on what you want to make.
+            
+            Move to the next page to continue...
+            """,
+            """
+                Now as for the recipe, this is the recipe for the final rocket ship:
                                        I A A
                                        I A I
                                        C V C
@@ -1104,6 +1107,10 @@ public class ItemRegistry
         {
             if (interactor instanceof EntityPlayer player)
             {
+                player.pause(true);
+                player.setBackgroundShadingActive(true);
+                BookSystem.getInstance().setPages(pages);
+                BookSystem.getInstance().getGameObject().setActive(true);
             }
         }
 
@@ -1466,7 +1473,8 @@ public class ItemRegistry
         {
             if (interactor instanceof EntityPlayer player)
             {
-                World.getLocalWorld().spawnEntity(player.getGameObject().getTransform().getWorldPosition().add(new Vector3f(0.0f, 0.0f, 10.0f)), EntityRocket.class);
+                Objects.requireNonNull(World.getLocalWorld()).spawnEntity(player.getGameObject().getTransform().getWorldPosition().add(new Vector3f(0.0f, 0.0f, 10.0f)), EntityRocket.class);
+                player.getInventory().setSlot(new Vector2i(0, player.getInventory().currentlySelectedSlotIndex), new Inventory.SlotData(ItemRegistry.ITEM_AIR.getId(), (byte) 0));
             }
         }
 

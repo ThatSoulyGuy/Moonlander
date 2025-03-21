@@ -13,6 +13,8 @@ import com.thatsoulyguy.moonlander.item.ItemRegistry;
 import com.thatsoulyguy.moonlander.item.Tool;
 import com.thatsoulyguy.moonlander.system.GameObject;
 import com.thatsoulyguy.moonlander.system.GameObjectManager;
+import com.thatsoulyguy.moonlander.ui.systems.CreativeCraftingSystem;
+import com.thatsoulyguy.moonlander.ui.systems.InventorySystem;
 import com.thatsoulyguy.moonlander.world.Chunk;
 import com.thatsoulyguy.moonlander.world.World;
 import org.jetbrains.annotations.NotNull;
@@ -787,6 +789,13 @@ public class BlockRegistry
         @Override
         public void onInteractedWith(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
         {
+            if (interactor instanceof EntityPlayer player)
+            {
+                player.pause(true);
+                player.setBackgroundShadingActive(true);
+                InventorySystem.getInstance().getGameObject().setActive(true);
+                CreativeCraftingSystem.getInstance().getGameObject().setActive(true);
+            }
         }
 
         @Override

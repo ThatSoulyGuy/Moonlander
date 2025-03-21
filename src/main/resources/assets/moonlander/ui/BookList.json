@@ -1,0 +1,14 @@
+[
+  {
+    "Key": "ui.menu.book",
+    "Value": "D:\\IntelliJ\\Projects\\Moonlander\\src\\main\\resources\\assets\\moonlander\\texture\\ui\\menu\\book.png"
+  },
+  {
+    "Key": "ui.menu.next_page",
+    "Value": "D:\\IntelliJ\\Projects\\Moonlander\\src\\main\\resources\\assets\\moonlander\\texture\\ui\\menu\\next_page.png"
+  },
+  {
+    "Key": "ui.menu.previous_page",
+    "Value": "D:\\IntelliJ\\Projects\\Moonlander\\src\\main\\resources\\assets\\moonlander\\texture\\ui\\menu\\previous_page.png"
+  }
+]

@@ -31,10 +31,7 @@ import com.thatsoulyguy.moonlander.ui.UIElement;
 import com.thatsoulyguy.moonlander.ui.UIManager;
 import com.thatsoulyguy.moonlander.ui.UIPanel;
 import com.thatsoulyguy.moonlander.ui.elements.ImageUIElement;
-import com.thatsoulyguy.moonlander.ui.systems.HotbarSystem;
-import com.thatsoulyguy.moonlander.ui.systems.InventorySystem;
-import com.thatsoulyguy.moonlander.ui.systems.PauseSystem;
-import com.thatsoulyguy.moonlander.ui.systems.WinConditionSystem;
+import com.thatsoulyguy.moonlander.ui.systems.*;
 import com.thatsoulyguy.moonlander.util.AssetPath;
 import com.thatsoulyguy.moonlander.util.CoordinateHelper;
 import com.thatsoulyguy.moonlander.util.PlayerDisplay;
@@ -75,7 +72,7 @@ public class EntityPlayer extends LivingEntity
     private final float jumpCooldownTimerStart = 0.18f;
     private float jumpCooldownTimer;
 
-    private final float oxygenDepletionCooldownTimerStart = 3.0f;
+    private final float oxygenDepletionCooldownTimerStart = 15.0f;
     private float oxygenDepletionCooldownTimer;
 
     private final float suffocationCooldownTimerStart = 4.0f;
@@ -92,7 +89,7 @@ public class EntityPlayer extends LivingEntity
 
     private long lastHitTime = 0;
 
-    private int oxygen = 100;
+    private int oxygen = 20;
 
     private float footstepTimer = 0f;
 
@@ -249,7 +246,18 @@ public class EntityPlayer extends LivingEntity
         }
 
         if (getCurrentHealth() <= 0)
-            InputManager.setMouseMode(MouseMode.FREE);
+        {
+            DeathSystem.getInstance().getGameObject().setActive(true);
+            CreativeCraftingSystem.getInstance().getGameObject().setActive(false);
+            HotbarSystem.getInstance().getGameObject().setActive(false);
+            InventorySystem.getInstance().getGameObject().setActive(false);
+            PauseSystem.getInstance().getGameObject().setActive(false);
+            SurvivalCraftingSystem.getInstance().getGameObject().setActive(false);
+            WinConditionSystem.getInstance().getGameObject().setActive(false);
+
+            setBackgroundShadingActive(true);
+            pause(true);
+        }
 
         BoxCollider self = getGameObject().getComponentNotNull(BoxCollider.class);
 
@@ -335,6 +343,30 @@ public class EntityPlayer extends LivingEntity
         backgroundShading.getGameObject().setActive(false);
 
 
+        GameObject survivalCraftingPanelObject = UIPanel.fromJson("ui.survival_crafting", AssetPath.create("moonlander", "ui/SurvivalCraftingPanel.json"));
+
+        UIPanel survivalCraftingPanel = survivalCraftingPanelObject.getComponentNotNull(UIPanel.class);
+
+        survivalCraftingPanel.setOffset(new Vector2i(-179, 250));
+        survivalCraftingPanel.setPanelAlignment(UIPanel.PanelAlignment.MIDDLE_CENTER);
+
+        survivalCraftingPanelObject.addComponent(SurvivalCraftingSystem.create());
+
+        survivalCraftingPanelObject.setActive(false);
+
+
+        GameObject creativeCraftingPanelObject = UIPanel.fromJson("ui.creative_crafting", AssetPath.create("moonlander", "ui/CreativeCraftingPanel.json"));
+
+        UIPanel creativeCraftingPanel = creativeCraftingPanelObject.getComponentNotNull(UIPanel.class);
+
+        creativeCraftingPanel.setOffset(new Vector2i(-131, 285));
+        creativeCraftingPanel.setPanelAlignment(UIPanel.PanelAlignment.MIDDLE_CENTER);
+
+        creativeCraftingPanelObject.addComponent(CreativeCraftingSystem.create());
+
+        creativeCraftingPanelObject.setActive(false);
+
+
         GameObject inventoryPanelObject = UIPanel.fromJson("ui.inventory", AssetPath.create("moonlander", "ui/InventoryPanel.json"));
 
         UIPanel inventoryPanel = inventoryPanelObject.getComponentNotNull(UIPanel.class);
@@ -347,6 +379,17 @@ public class EntityPlayer extends LivingEntity
         inventorySystem.generate();
 
         inventoryPanelObject.setActive(false);
+
+
+        GameObject bookPanelObject = UIPanel.fromJson("ui.book", AssetPath.create("moonlander", "ui/BookPanel.json"));
+
+        UIPanel bookPanel = bookPanelObject.getComponentNotNull(UIPanel.class);
+
+        bookPanel.setPanelAlignment(UIPanel.PanelAlignment.MIDDLE_CENTER);
+
+        bookPanelObject.addComponent(BookSystem.create());
+
+        bookPanelObject.setActive(false);
 
 
         GameObject pausePanelObject = UIPanel.fromJson("ui.pause", AssetPath.create("moonlander", "ui/PausePanel.json"));
@@ -370,6 +413,17 @@ public class EntityPlayer extends LivingEntity
 
         winConditionPanelObject.setActive(false);
 
+
+        GameObject deathPanelObject = UIPanel.fromJson("ui.death", AssetPath.create("moonlander", "ui/DeathPanel.json"));
+
+        UIPanel deathPanel = deathPanelObject.getComponentNotNull(UIPanel.class);
+
+        deathPanel.setPanelAlignment(UIPanel.PanelAlignment.MIDDLE_CENTER);
+
+        deathPanelObject.addComponent(DeathSystem.create());
+
+        deathPanelObject.setActive(false);
+
         inventory.refreshAll();
     }
 
@@ -388,13 +442,30 @@ public class EntityPlayer extends LivingEntity
             pause(true);
             setBackgroundShadingActive(true);
             InventorySystem.getInstance().getGameObject().setActive(true);
+            SurvivalCraftingSystem.getInstance().getGameObject().setActive(true);
         }
 
-        if ((InputManager.getKeyState(KeyCode.ESCAPE, KeyState.PRESSED) || InputManager.getKeyState(KeyCode.E, KeyState.PRESSED)) && InventorySystem.getInstance().getGameObject().isActive())
+        if ((InputManager.getKeyState(KeyCode.ESCAPE, KeyState.PRESSED) || InputManager.getKeyState(KeyCode.E, KeyState.PRESSED)) && SurvivalCraftingSystem.getInstance().getGameObject().isActive())
         {
             pause(false);
             setBackgroundShadingActive(false);
             InventorySystem.getInstance().getGameObject().setActive(false);
+            SurvivalCraftingSystem.getInstance().getGameObject().setActive(false);
+        }
+
+        if (InputManager.getKeyState(KeyCode.ESCAPE, KeyState.PRESSED) && CreativeCraftingSystem.getInstance().getGameObject().isActive())
+        {
+            pause(false);
+            setBackgroundShadingActive(false);
+            InventorySystem.getInstance().getGameObject().setActive(false);
+            CreativeCraftingSystem.getInstance().getGameObject().setActive(false);
+        }
+
+        if (InputManager.getKeyState(KeyCode.ESCAPE, KeyState.PRESSED) && BookSystem.getInstance().getGameObject().isActive())
+        {
+            pause(false);
+            setBackgroundShadingActive(false);
+            BookSystem.getInstance().getGameObject().setActive(false);
         }
 
         if (InputManager.getKeyState(KeyCode.ESCAPE, KeyState.PRESSED) && !isMenuActive())
@@ -929,6 +1000,11 @@ public class EntityPlayer extends LivingEntity
         blockBreakageMesh.generate();
     }
 
+    public @NotNull Inventory getInventory()
+    {
+        return inventory;
+    }
+
     @Override
     public @NotNull String getRegistryName()
     {
@@ -996,7 +1072,7 @@ public class EntityPlayer extends LivingEntity
 
     private boolean isMenuActive()
     {
-        return InventorySystem.getInstance().getGameObject().isActive() || PauseSystem.getInstance().getGameObject().isActive();
+        return InventorySystem.getInstance().getGameObject().isActive() || BookSystem.getInstance().getGameObject().isActive() || PauseSystem.getInstance().getGameObject().isActive() || DeathSystem.getInstance().getGameObject().isActive();
     }
 
     @Override

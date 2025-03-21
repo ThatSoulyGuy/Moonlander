@@ -113,28 +113,38 @@ public class TextUIElement extends UIElement
         g2d.setFont(font);
         g2d.setColor(Color.WHITE);
 
-        AttributedString attributedText = new AttributedString(text);
-        attributedText.addAttribute(TextAttribute.FONT, font);
-        AttributedCharacterIterator iterator = attributedText.getIterator();
-
         FontRenderContext frc = g2d.getFontRenderContext();
-        LineBreakMeasurer measurer = new LineBreakMeasurer(iterator, frc);
+
+        String[] lines = text.split("\n", -1);
 
         java.util.List<TextLayout> layouts = new ArrayList<>();
         java.util.List<Float> lineHeights = new ArrayList<>();
 
+        for (String line : lines)
+        {
+            String processedLine = line.isEmpty() ? " " : line;
+
+            AttributedString attributedLine = new AttributedString(processedLine);
+            attributedLine.addAttribute(TextAttribute.FONT, font);
+            AttributedCharacterIterator lineIterator = attributedLine.getIterator();
+            LineBreakMeasurer measurer = new LineBreakMeasurer(lineIterator, frc);
+
+            while (measurer.getPosition() < lineIterator.getEndIndex())
+            {
+                TextLayout layout = measurer.nextLayout((float) width);
+
+                layouts.add(layout);
+
+                float lh = layout.getAscent() + layout.getDescent() + layout.getLeading();
+
+                lineHeights.add(lh);
+            }
+        }
+
         float totalTextHeight = 0;
 
-        while (measurer.getPosition() < iterator.getEndIndex())
-        {
-            TextLayout layout = measurer.nextLayout((float) width);
-            layouts.add(layout);
-
-            float lineHeight = layout.getAscent() + layout.getDescent() + layout.getLeading();
-
-            lineHeights.add(lineHeight);
-            totalTextHeight += lineHeight;
-        }
+        for (Float h : lineHeights)
+            totalTextHeight += h;
 
         float yOffset;
 
@@ -150,6 +160,7 @@ public class TextUIElement extends UIElement
         for (int i = 0; i < layouts.size(); i++)
         {
             TextLayout layout = layouts.get(i);
+
             float lineHeight = lineHeights.get(i);
             float lineWidth = layout.getAdvance();
             float x;
@@ -166,6 +177,7 @@ public class TextUIElement extends UIElement
             float y = yOffset + layout.getAscent();
 
             layout.draw(g2d, x, y);
+
             yOffset += lineHeight;
         }
 
@@ -182,7 +194,8 @@ public class TextUIElement extends UIElement
             int a = (pixel >> 24) & 0xFF;
             int r = (pixel >> 16) & 0xFF;
             int g = (pixel >> 8) & 0xFF;
-            int b = (pixel) & 0xFF;
+            int b = pixel & 0xFF;
+
             buffer.put((byte) r);
             buffer.put((byte) g);
             buffer.put((byte) b);

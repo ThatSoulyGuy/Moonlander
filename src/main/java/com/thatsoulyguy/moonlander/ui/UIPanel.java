@@ -78,7 +78,7 @@ public class UIPanel extends Component
         if (!getGameObject().hasChild(name))
             return null;
 
-        return getGameObject().getChild(name).getComponentNotNull(clazz);
+        return getGameObject().getChild(name).getComponent(clazz);
     }
 
     public <T extends UIElement> @NotNull T getNotNull(@NotNull String name, @NotNull Class<T> clazz)

@@ -10,5 +10,13 @@
   {
     "Key": "ui.transparency",
     "Value": "D:\\IntelliJ\\Projects\\Moonlander\\src\\main\\resources\\assets\\moonlander\\texture\\ui\\transparency.png"
+  },
+  {
+    "Key": "ui.menu.full_heart",
+    "Value": "D:\\IntelliJ\\Projects\\Moonlander\\src\\main\\resources\\assets\\moonlander\\texture\\ui\\menu\\full_heart.png"
+  },
+  {
+    "Key": "ui.menu.bubble",
+    "Value": "D:\\IntelliJ\\Projects\\Moonlander\\src\\main\\resources\\assets\\moonlander\\texture\\ui\\menu\\bubble.png"
   }
 ]
