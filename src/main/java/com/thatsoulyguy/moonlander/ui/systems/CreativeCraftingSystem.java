@@ -189,17 +189,7 @@ public class CreativeCraftingSystem extends Component
         {
             instance.setSlot(position, new Inventory.SlotData(grabbedItem.id().get(), (byte) (instance.getSlot(position).count() + 1)));
 
-            if (grabbedItem.count().get() == 0)
-            {
-                grabbedItem.id().set((short) 0);
-
-                grabbedItem.image().getGameObject().setActive(false);
-                grabbedItem.text().getGameObject().setActive(false);
-            }
-            else
-                grabbedItem.count().set((byte) (grabbedItem.count().get() - 1));
-
-            InventorySystem.getInstance().buildGrabbedItem();
+            checkGrabbedItem(grabbedItem);
         }
     }
 
@@ -211,6 +201,21 @@ public class CreativeCraftingSystem extends Component
     public static void onHoverEnd(@NotNull ButtonUIElement element)
     {
 
+    }
+
+    public static void checkGrabbedItem(InventorySystem.GrabbedItem grabbedItem)
+    {
+        if (grabbedItem.count().get() == 0)
+        {
+            grabbedItem.id().set((short) 0);
+
+            grabbedItem.image().getGameObject().setActive(false);
+            grabbedItem.text().getGameObject().setActive(false);
+        }
+        else
+            grabbedItem.count().set((byte) (grabbedItem.count().get() - 1));
+
+        InventorySystem.getInstance().buildGrabbedItem();
     }
 
     private void build(@NotNull Vector2i position, @NotNull Inventory.SlotData data)

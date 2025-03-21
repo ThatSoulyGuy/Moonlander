@@ -207,7 +207,7 @@ public class PlayerDisplay extends Component
                     getGameObject().getComponentNotNull(Texture.class).uninitialize_NoOverride();
                     getGameObject().removeComponent(Texture.class);
                 }
-                else if (getGameObject().getComponentNotNull(Texture.class).getName().equals("entity.player_arm"))
+                else if (getGameObject().hasComponent(Texture.class) && getGameObject().getComponentNotNull(Texture.class).getName().equals("entity.player_arm"))
                     getGameObject().removeComponent(Texture.class);
 
                 getGameObject().addComponent(Objects.requireNonNull(TextureAtlasManager.get("blocks")));

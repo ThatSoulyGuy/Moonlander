@@ -195,7 +195,8 @@ public class EntityPlayer extends LivingEntity
         {
             inventory.addItem(ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT.getId(), (byte) 10);
             inventory.addItem(ItemRegistry.ITEM_KNOWLEDGE_BOOK.getId(), (byte) 1);
-            inventory.addItem(ItemRegistry.ITEM_SOFT_MOON_ROCK_BLOCK.getId(), (byte) 1);
+            inventory.addItem(ItemRegistry.ITEM_OIL_BUCKET.getId(), (byte) 1);
+            inventory.addItem(ItemRegistry.ITEM_FUEL_BUCKET.getId(), (byte) 1);
 
             starterItemsGiven = true;
         }
@@ -367,6 +368,18 @@ public class EntityPlayer extends LivingEntity
         creativeCraftingPanelObject.setActive(false);
 
 
+        GameObject compositorPanelObject = UIPanel.fromJson("ui.compositor", AssetPath.create("moonlander", "ui/CompositorPanel.json"));
+
+        UIPanel compositorPanel = compositorPanelObject.getComponentNotNull(UIPanel.class);
+
+        compositorPanel.setOffset(new Vector2i(-208, 265));
+        compositorPanel.setPanelAlignment(UIPanel.PanelAlignment.MIDDLE_CENTER);
+
+        compositorPanelObject.addComponent(CompositorSystem.create());
+
+        compositorPanelObject.setActive(false);
+
+
         GameObject inventoryPanelObject = UIPanel.fromJson("ui.inventory", AssetPath.create("moonlander", "ui/InventoryPanel.json"));
 
         UIPanel inventoryPanel = inventoryPanelObject.getComponentNotNull(UIPanel.class);
@@ -445,6 +458,14 @@ public class EntityPlayer extends LivingEntity
             SurvivalCraftingSystem.getInstance().getGameObject().setActive(true);
         }
 
+        if (InputManager.getKeyState(KeyCode.K, KeyState.PRESSED))
+        {
+            pause(true);
+            setBackgroundShadingActive(true);
+            InventorySystem.getInstance().getGameObject().setActive(true);
+            CompositorSystem.getInstance().getGameObject().setActive(true);
+        }
+
         if ((InputManager.getKeyState(KeyCode.ESCAPE, KeyState.PRESSED) || InputManager.getKeyState(KeyCode.E, KeyState.PRESSED)) && SurvivalCraftingSystem.getInstance().getGameObject().isActive())
         {
             pause(false);
@@ -459,6 +480,14 @@ public class EntityPlayer extends LivingEntity
             setBackgroundShadingActive(false);
             InventorySystem.getInstance().getGameObject().setActive(false);
             CreativeCraftingSystem.getInstance().getGameObject().setActive(false);
+        }
+
+        if (InputManager.getKeyState(KeyCode.ESCAPE, KeyState.PRESSED) && CompositorSystem.getInstance().getGameObject().isActive())
+        {
+            pause(false);
+            setBackgroundShadingActive(false);
+            InventorySystem.getInstance().getGameObject().setActive(false);
+            CompositorSystem.getInstance().getGameObject().setActive(false);
         }
 
         if (InputManager.getKeyState(KeyCode.ESCAPE, KeyState.PRESSED) && BookSystem.getInstance().getGameObject().isActive())

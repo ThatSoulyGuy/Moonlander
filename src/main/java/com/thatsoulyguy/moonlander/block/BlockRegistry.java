@@ -8,11 +8,13 @@ import com.thatsoulyguy.moonlander.core.Time;
 import com.thatsoulyguy.moonlander.entity.Entity;
 import com.thatsoulyguy.moonlander.entity.entities.EntityPlayer;
 import com.thatsoulyguy.moonlander.gameplay.OxygenBubble;
+import com.thatsoulyguy.moonlander.item.Inventory;
 import com.thatsoulyguy.moonlander.item.Item;
 import com.thatsoulyguy.moonlander.item.ItemRegistry;
 import com.thatsoulyguy.moonlander.item.Tool;
 import com.thatsoulyguy.moonlander.system.GameObject;
 import com.thatsoulyguy.moonlander.system.GameObjectManager;
+import com.thatsoulyguy.moonlander.ui.systems.CompositorSystem;
 import com.thatsoulyguy.moonlander.ui.systems.CreativeCraftingSystem;
 import com.thatsoulyguy.moonlander.ui.systems.InventorySystem;
 import com.thatsoulyguy.moonlander.world.Chunk;
@@ -1181,6 +1183,13 @@ public class BlockRegistry
         @Override
         public void onInteractedWith(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
         {
+            if (interactor instanceof EntityPlayer player)
+            {
+                player.pause(true);
+                player.setBackgroundShadingActive(true);
+                InventorySystem.getInstance().getGameObject().setActive(true);
+                CompositorSystem.getInstance().getGameObject().setActive(true);
+            }
         }
 
         @Override
@@ -1279,6 +1288,12 @@ public class BlockRegistry
         {
             if (interactor instanceof EntityPlayer player)
             {
+                if (Objects.requireNonNull(player.getInventory().getSlot(new Vector2i(0, player.getInventory().currentlySelectedSlotIndex))).id() == ItemRegistry.ITEM_EMPTY_BUCKET.getId())
+                {
+                    player.getInventory().setSlot(new Vector2i(0, player.getInventory().currentlySelectedSlotIndex), new Inventory.SlotData(ItemRegistry.ITEM_OIL_BUCKET.getId(), (byte) 1));
+
+                    Objects.requireNonNull(World.getLocalWorld()).setBlock(interactor, new Vector3f(globalBlockPosition), BlockRegistry.BLOCK_AIR.getId());
+                }
             }
         }
 
@@ -1370,6 +1385,15 @@ public class BlockRegistry
         @Override
         public void onInteractedWith(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
         {
+            if (interactor instanceof EntityPlayer player)
+            {
+                if (Objects.requireNonNull(player.getInventory().getSlot(new Vector2i(0, player.getInventory().currentlySelectedSlotIndex))).id() == ItemRegistry.ITEM_EMPTY_BUCKET.getId())
+                {
+                    player.getInventory().setSlot(new Vector2i(0, player.getInventory().currentlySelectedSlotIndex), new Inventory.SlotData(ItemRegistry.ITEM_FUEL_BUCKET.getId(), (byte) 1));
+
+                    Objects.requireNonNull(World.getLocalWorld()).setBlock(interactor, new Vector3f(globalBlockPosition), BlockRegistry.BLOCK_AIR.getId());
+                }
+            }
         }
 
         @Override

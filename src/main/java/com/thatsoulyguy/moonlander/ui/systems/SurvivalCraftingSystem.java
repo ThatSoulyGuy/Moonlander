@@ -195,17 +195,7 @@ public class SurvivalCraftingSystem extends Component
         {
             instance.setSlot(position, new Inventory.SlotData(grabbedItem.id().get(), (byte) (instance.getSlot(position).count() + 1)));
 
-            if (grabbedItem.count().get() == 0)
-            {
-                grabbedItem.id().set((short) 0);
-
-                grabbedItem.image().getGameObject().setActive(false);
-                grabbedItem.text().getGameObject().setActive(false);
-            }
-            else
-                grabbedItem.count().set((byte) (grabbedItem.count().get() - 1));
-
-            InventorySystem.getInstance().buildGrabbedItem();
+            CreativeCraftingSystem.checkGrabbedItem(grabbedItem);
         }
     }
 
