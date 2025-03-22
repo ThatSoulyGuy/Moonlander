@@ -1,14 +1,21 @@
 package com.thatsoulyguy.moonlander.ui.systems;
 
 import com.thatsoulyguy.moonlander.annotation.CustomConstructor;
+import com.thatsoulyguy.moonlander.core.Window;
 import com.thatsoulyguy.moonlander.entity.entities.EntityPlayer;
 import com.thatsoulyguy.moonlander.item.Inventory;
+import com.thatsoulyguy.moonlander.item.ItemRegistry;
 import com.thatsoulyguy.moonlander.render.TextureManager;
 import com.thatsoulyguy.moonlander.system.Component;
+import com.thatsoulyguy.moonlander.ui.UIElement;
+import com.thatsoulyguy.moonlander.ui.UIManager;
 import com.thatsoulyguy.moonlander.ui.UIPanel;
 import com.thatsoulyguy.moonlander.ui.elements.ImageUIElement;
 import com.thatsoulyguy.moonlander.ui.elements.TextUIElement;
+import com.thatsoulyguy.moonlander.util.AssetPath;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 import java.util.Objects;
@@ -18,6 +25,10 @@ public class HotbarSystem extends Component
 {
     private Inventory inventory;
 
+    private TextUIElement currentlySelectedItemName;
+
+    private int lastSlotIndex;
+
     private static HotbarSystem instance = null;
 
     private HotbarSystem() { }
@@ -26,6 +37,15 @@ public class HotbarSystem extends Component
     public void initialize()
     {
         instance = this;
+
+        currentlySelectedItemName = UIElement.createGameObject("ui.currently_selected_item_name", TextUIElement.class, new Vector2f(0, 0), new Vector2f(500, 40), UIManager.getCanvas()).getComponentNotNull(TextUIElement.class);
+
+        currentlySelectedItemName.setText("Some");
+        currentlySelectedItemName.setFontSize(10);
+        currentlySelectedItemName.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
+        currentlySelectedItemName.setAlignment(TextUIElement.TextAlignment.MIDDLE_CENTER);
+
+        currentlySelectedItemName.build();
 
         UIPanel panel = getGameObject().getComponentNotNull(UIPanel.class);
 
@@ -54,6 +74,21 @@ public class HotbarSystem extends Component
 
         if (inventory.currentlySelectedSlotIndex < 0)
             inventory.currentlySelectedSlotIndex = 8;
+
+        if (inventory.currentlySelectedSlotIndex != lastSlotIndex)
+        {
+            Vector2i dimensions = Window.getDimensions();
+
+            float baseY = dimensions.y;
+
+            float offsetY = -180.0f;
+
+            currentlySelectedItemName.getGameObject().getTransform().setLocalPosition(new Vector3f((float) dimensions.x / 2, baseY + offsetY, 0.0f));
+            currentlySelectedItemName.setText(Objects.requireNonNull(ItemRegistry.get(inventory.getCurrentlySelectedSlot().id())).getDisplayName());
+            currentlySelectedItemName.build();
+
+            lastSlotIndex = inventory.currentlySelectedSlotIndex;
+        }
 
         panel.getNotNull("ui.hotbar_selector", ImageUIElement.class).getGameObject().getTransform().setLocalPosition(new Vector3f(((inventory.currentlySelectedSlotIndex * 40.0f) - 160.0f), -21.0f, 0.0f));
 
@@ -102,11 +137,6 @@ public class HotbarSystem extends Component
                 }
             }
         }
-    }
-
-    public @NotNull Inventory getInventory()
-    {
-        return inventory;
     }
 
     public void setInventory(@NotNull Inventory inventory)

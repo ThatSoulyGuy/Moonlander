@@ -1,0 +1,415 @@
+[
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "default.name",
+      "Value": "menu"
+    }
+  },
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[0, 0]"
+    }
+  },
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[125, 97]"
+    }
+  },
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "default.type",
+      "Value": "image"
+    }
+  },
+  {
+    "Name": "menu",
+    "Property": {
+      "Key": "image.texture",
+      "Value": "ui.menu.furnace"
+    }
+  },
+  {
+    "Name": "slot_upper",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_upper"
+    }
+  },
+  {
+    "Name": "slot_upper",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-40.5, 26.5]"
+    }
+  },
+  {
+    "Name": "slot_upper",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_upper",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_upper",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_upper",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.FurnaceSystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_upper",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.FurnaceSystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_upper",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.FurnaceSystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_upper",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.FurnaceSystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_upper",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_upper",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_lower",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_lower"
+    }
+  },
+  {
+    "Name": "slot_lower",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-40.5, -26.5]"
+    }
+  },
+  {
+    "Name": "slot_lower",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_lower",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_lower",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_lower",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.FurnaceSystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_lower",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.FurnaceSystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_lower",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.FurnaceSystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_lower",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.FurnaceSystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_lower",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_lower",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_result"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[40.5, 0.5]"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[32, 32]"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "default.type",
+      "Value": "button"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "button.texture",
+      "Value": "ui.transparency"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "button.on_left_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.FurnaceSystem::onLeftMousePressed"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "button.on_right_pressed_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.FurnaceSystem::onRightMousePressed"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "button.on_hover_begin_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.FurnaceSystem::onHoverBegin"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "button.on_hover_end_callback",
+      "Value": "com.thatsoulyguy.moonlander.ui.systems.FurnaceSystem::onHoverEnd"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "button.on_left_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_result",
+    "Property": {
+      "Key": "button.on_right_released_callback",
+      "Value": "null"
+    }
+  },
+  {
+    "Name": "slot_upper_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_upper_text"
+    }
+  },
+  {
+    "Name": "slot_upper_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-37.5, 15.5]"
+    }
+  },
+  {
+    "Name": "slot_upper_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[30, 30]"
+    }
+  },
+  {
+    "Name": "slot_upper_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_upper_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_upper_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_upper_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+  {
+    "Name": "slot_lower_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_lower_text"
+    }
+  },
+  {
+    "Name": "slot_lower_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[-37.5, -37.5]"
+    }
+  },
+  {
+    "Name": "slot_lower_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[30, 30]"
+    }
+  },
+  {
+    "Name": "slot_lower_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_lower_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_lower_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_lower_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  },
+  {
+    "Name": "slot_result_text",
+    "Property": {
+      "Key": "default.name",
+      "Value": "slot_result_text"
+    }
+  },
+  {
+    "Name": "slot_result_text",
+    "Property": {
+      "Key": "default.position",
+      "Value": "[43.5, -10.5]"
+    }
+  },
+  {
+    "Name": "slot_result_text",
+    "Property": {
+      "Key": "default.size",
+      "Value": "[30, 30]"
+    }
+  },
+  {
+    "Name": "slot_result_text",
+    "Property": {
+      "Key": "default.type",
+      "Value": "text"
+    }
+  },
+  {
+    "Name": "slot_result_text",
+    "Property": {
+      "Key": "text.font_size",
+      "Value": "15"
+    }
+  },
+  {
+    "Name": "slot_result_text",
+    "Property": {
+      "Key": "text.alignment",
+      "Value": "middle_right"
+    }
+  },
+  {
+    "Name": "slot_result_text",
+    "Property": {
+      "Key": "text.value",
+      "Value": "0"
+    }
+  }
+]

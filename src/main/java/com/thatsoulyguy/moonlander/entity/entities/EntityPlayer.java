@@ -193,10 +193,9 @@ public class EntityPlayer extends LivingEntity
 
         if (!starterItemsGiven)
         {
-            inventory.addItem(ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT.getId(), (byte) 10);
+            inventory.addItem(ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT.getId(), (byte) 12);
             inventory.addItem(ItemRegistry.ITEM_KNOWLEDGE_BOOK.getId(), (byte) 1);
-            inventory.addItem(ItemRegistry.ITEM_OIL_BUCKET.getId(), (byte) 1);
-            inventory.addItem(ItemRegistry.ITEM_FUEL_BUCKET.getId(), (byte) 1);
+            inventory.addItem(ItemRegistry.ITEM_EMERALD_BLOCK.getId(), (byte) 64);
 
             starterItemsGiven = true;
         }
@@ -380,6 +379,18 @@ public class EntityPlayer extends LivingEntity
         compositorPanelObject.setActive(false);
 
 
+        GameObject furnacePanelObject = UIPanel.fromJson("ui.furnace", AssetPath.create("moonlander", "ui/FurnacePanel.json"));
+
+        UIPanel furnacePanel = furnacePanelObject.getComponentNotNull(UIPanel.class);
+
+        furnacePanel.setOffset(new Vector2i(-208, 265));
+        furnacePanel.setPanelAlignment(UIPanel.PanelAlignment.MIDDLE_CENTER);
+
+        furnacePanelObject.addComponent(FurnaceSystem.create());
+
+        furnacePanelObject.setActive(false);
+
+
         GameObject inventoryPanelObject = UIPanel.fromJson("ui.inventory", AssetPath.create("moonlander", "ui/InventoryPanel.json"));
 
         UIPanel inventoryPanel = inventoryPanelObject.getComponentNotNull(UIPanel.class);
@@ -463,7 +474,7 @@ public class EntityPlayer extends LivingEntity
             pause(true);
             setBackgroundShadingActive(true);
             InventorySystem.getInstance().getGameObject().setActive(true);
-            CompositorSystem.getInstance().getGameObject().setActive(true);
+            FurnaceSystem.getInstance().getGameObject().setActive(true);
         }
 
         if ((InputManager.getKeyState(KeyCode.ESCAPE, KeyState.PRESSED) || InputManager.getKeyState(KeyCode.E, KeyState.PRESSED)) && SurvivalCraftingSystem.getInstance().getGameObject().isActive())
@@ -480,6 +491,14 @@ public class EntityPlayer extends LivingEntity
             setBackgroundShadingActive(false);
             InventorySystem.getInstance().getGameObject().setActive(false);
             CreativeCraftingSystem.getInstance().getGameObject().setActive(false);
+        }
+
+        if (InputManager.getKeyState(KeyCode.ESCAPE, KeyState.PRESSED) && FurnaceSystem.getInstance().getGameObject().isActive())
+        {
+            pause(false);
+            setBackgroundShadingActive(false);
+            InventorySystem.getInstance().getGameObject().setActive(false);
+            FurnaceSystem.getInstance().getGameObject().setActive(false);
         }
 
         if (InputManager.getKeyState(KeyCode.ESCAPE, KeyState.PRESSED) && CompositorSystem.getInstance().getGameObject().isActive())

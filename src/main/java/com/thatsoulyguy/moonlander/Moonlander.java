@@ -103,6 +103,7 @@ public class Moonlander
         TextureManager.register(Texture.create("ui.menu.survival_crafting", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/survival_crafting.png")));
         TextureManager.register(Texture.create("ui.menu.creative_crafting", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/creative_crafting.png")));
         TextureManager.register(Texture.create("ui.menu.compositor", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/compositor.png")));
+        TextureManager.register(Texture.create("ui.menu.furnace", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/furnace.png")));
         TextureManager.register(Texture.create("ui.menu.crafting_table", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/crafting_table.png")));
         TextureManager.register(Texture.create("ui.menu.slot_darken", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/slot_darken.png")));
         TextureManager.register(Texture.create("ui.menu.empty_heart", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/menu/empty_heart.png")));

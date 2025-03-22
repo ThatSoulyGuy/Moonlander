@@ -547,7 +547,7 @@ public class ItemRegistry
         @Override
         public float getAccossiatedModifier()
         {
-            return 0.3f;
+            return 0.2f;
         }
     };
 
@@ -902,6 +902,9 @@ public class ItemRegistry
                 them. If you left-click them with a sword, you
                 can kill them faster.
                 \s
+                You have markers to mark where you've been to
+                ensure you don't get lost.
+                \s
                 This guide only provides you with the bare
                 minimum to beat the game- not any of the fun
                 stuff you could do.
@@ -1079,7 +1082,7 @@ public class ItemRegistry
             """,
             """
                 Now as for the recipe, this is the recipe for the final rocket ship:
-                                       I A A
+                                       I A I
                                        I A I
                                        C V C
                 A = Aluminum Block
@@ -1376,6 +1379,51 @@ public class ItemRegistry
         }
     };
 
+    public static final Item ITEM_EMERALD_BLOCK = new Item()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "item_emerald_block";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Emerald Block";
+        }
+
+        @Override
+        public @NotNull String getTexture()
+        {
+            return "emerald_block";
+        }
+
+        @Override
+        public @NotNull Vector3f getColor()
+        {
+            return new Vector3f(1.0f);
+        }
+
+        @Override
+        public boolean isBlockItem()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean isSmeltable()
+        {
+            return false;
+        }
+
+        @Override
+        public @NotNull Block getAssociatedBlock()
+        {
+            return BlockRegistry.BLOCK_EMERALD_BLOCK;
+        }
+    };
+
     public static final Item ITEM_ALUMINUM_BLOCK = new Item()
     {
         @Override
@@ -1625,6 +1673,7 @@ public class ItemRegistry
         register(ITEM_OXYGEN_GENERATOR_BLOCK);
         register(ITEM_COMPOSITOR_BLOCK);
         register(ITEM_FUEL_REFINER);
+        register(ITEM_EMERALD_BLOCK);
         register(ITEM_ALUMINUM_BLOCK);
         register(ITEM_IRON_BLOCK);
         register(ITEM_ROCKET_ENTITY);

@@ -132,7 +132,7 @@ public class BookSystem extends Component
     {
         this.pages = pages;
 
-        getGameObject().getComponentNotNull(UIPanel.class).getNotNull("ui.text", TextUIElement.class).setText(instance.pages.getFirst());
+        getGameObject().getComponentNotNull(UIPanel.class).getNotNull("ui.text", TextUIElement.class).setText(instance.pages.get(instance.pageIndex));
         getGameObject().getComponentNotNull(UIPanel.class).getNotNull("ui.text", TextUIElement.class).build();
     }
 

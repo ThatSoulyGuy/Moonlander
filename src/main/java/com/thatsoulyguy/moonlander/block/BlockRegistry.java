@@ -16,6 +16,7 @@ import com.thatsoulyguy.moonlander.system.GameObject;
 import com.thatsoulyguy.moonlander.system.GameObjectManager;
 import com.thatsoulyguy.moonlander.ui.systems.CompositorSystem;
 import com.thatsoulyguy.moonlander.ui.systems.CreativeCraftingSystem;
+import com.thatsoulyguy.moonlander.ui.systems.FurnaceSystem;
 import com.thatsoulyguy.moonlander.ui.systems.InventorySystem;
 import com.thatsoulyguy.moonlander.world.Chunk;
 import com.thatsoulyguy.moonlander.world.World;
@@ -891,64 +892,16 @@ public class BlockRegistry
 
     public static final Block BLOCK_FURNACE = new Block()
     {
-        private @Nullable EntityPlayer lastInteractor;
-
-        private final @NotNull Map<Vector3i, LinkedList<Short>> furnaceCookingItemsMap = new HashMap<>();
-        private final @NotNull Map<Vector3i, LinkedList<Float>> furnaceCookingTimesMap = new HashMap<>();
-        private final @NotNull Map<Vector3i, Integer> coalConsumptionMap = new HashMap<>();
-
-        private final float coalConsumptionCooldownTimerStart = 5.0f;
-        private float coalConsumptionCooldownTimer;
-
         @Override
         public void onInteractedWith(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
         {
-        }
-
-        @Override
-        public void onTick(@NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
-        {
-            if (!coalConsumptionMap.containsKey(globalBlockPosition) || lastInteractor == null)
-                return;
-
-            if (coalConsumptionCooldownTimer < 0)
+            if (interactor instanceof EntityPlayer player)
             {
-                Integer coal = coalConsumptionMap.get(globalBlockPosition);
-
-                coal -= 1;
-
-                coalConsumptionMap.put(globalBlockPosition, coal);
-
-                coalConsumptionCooldownTimer = coalConsumptionCooldownTimerStart;
+                player.pause(true);
+                player.setBackgroundShadingActive(true);
+                InventorySystem.getInstance().getGameObject().setActive(true);
+                FurnaceSystem.getInstance().getGameObject().setActive(true);
             }
-
-            if (coalConsumptionMap.get(globalBlockPosition) <= 0)
-                return;
-
-            furnaceCookingTimesMap.forEach((position, list) ->
-            {
-                Map<Integer, Float> changesToBeMade = new HashMap<>();
-
-                list.forEach(time -> changesToBeMade.put(list.indexOf(time), time - 0.01f));
-
-                changesToBeMade.forEach((index, time) -> furnaceCookingTimesMap.get(position).set(index, time));
-
-                List<Integer> cookTimesToBeRemoved = new ArrayList<>();
-
-                list.forEach(time ->
-                {
-                    if (time <= 0)
-                    {
-                        furnaceCookingItemsMap.get(position).remove(list.indexOf(time));
-
-                        cookTimesToBeRemoved.add(list.indexOf(time));
-                    }
-                });
-
-                cookTimesToBeRemoved.forEach(index -> furnaceCookingTimesMap.get(position).remove((int) index));
-            });
-
-            coalConsumptionCooldownTimer -= 0.01f;
         }
 
         @Override
@@ -1012,7 +965,7 @@ public class BlockRegistry
         @Override
         public boolean updates()
         {
-            return true;
+            return false;
         }
 
         @Override
@@ -1723,13 +1676,110 @@ public class BlockRegistry
         public @NotNull String[] getTextures()
         {
             return new String[]
+                    {
+                            "aluminum_block",
+                            "aluminum_block",
+                            "aluminum_block",
+                            "aluminum_block",
+                            "aluminum_block",
+                            "aluminum_block"
+                    };
+        }
+
+        @Override
+        public @NotNull Vector3f[] getColors()
+        {
+            return new Vector3f[]
+                    {
+                            new Vector3f(1.0f),
+                            new Vector3f(1.0f),
+                            new Vector3f(1.0f),
+                            new Vector3f(1.0f),
+                            new Vector3f(1.0f),
+                            new Vector3f(1.0f),
+                    };
+        }
+
+        @Override
+        public boolean isInteractable()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean updates()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isSolid()
+        {
+            return true;
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getMiningAudioClips()
+        {
+            return List.of(AudioManager.get("block.mining.stone.0"), AudioManager.get("block.mining.stone.1"), AudioManager.get("block.mining.stone.2"));
+        }
+
+        @Override
+        public @NotNull List<AudioClip> getBrokenAudioClips()
+        {
+            return List.of(AudioManager.get("block.break.stone.0"), AudioManager.get("block.break.stone.1"), AudioManager.get("block.break.stone.2"), AudioManager.get("block.break.stone.3"));
+        }
+
+        @Override
+        public @NotNull Item getAssociatedItem()
+        {
+            return ItemRegistry.ITEM_ALUMINUM_BLOCK;
+        }
+
+        @Override
+        public @NotNull Tool toolRequired()
+        {
+            return Tool.PICKAXE;
+        }
+    };
+
+    public static final Block BLOCK_EMERALD_BLOCK = new Block()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "block_emerald_block";
+        }
+
+        @Override
+        public @NotNull String getDisplayName()
+        {
+            return "Emerald Block";
+        }
+
+        @Override
+        public float getHardness()
+        {
+            return 15.25f;
+        }
+
+        @Override
+        public float getResistance()
+        {
+            return 0.1f;
+        }
+
+        @Override
+        public @NotNull String[] getTextures()
+        {
+            return new String[]
             {
-                "aluminum_block",
-                "aluminum_block",
-                "aluminum_block",
-                "aluminum_block",
-                "aluminum_block",
-                "aluminum_block"
+                "emerald_block",
+                "emerald_block",
+                "emerald_block",
+                "emerald_block",
+                "emerald_block",
+                "emerald_block"
             };
         }
 
@@ -1780,7 +1830,7 @@ public class BlockRegistry
         @Override
         public @NotNull Item getAssociatedItem()
         {
-            return ItemRegistry.ITEM_ALUMINUM_BLOCK;
+            return ItemRegistry.ITEM_EMERALD_BLOCK;
         }
 
         @Override
@@ -1813,6 +1863,7 @@ public class BlockRegistry
         register(BLOCK_COMPOSITOR);
         register(BLOCK_FUEL_REFINER);
         register(BLOCK_IRON_BLOCK);
+        register(BLOCK_EMERALD_BLOCK);
         register(BLOCK_ALUMINUM_BLOCK);
     }
 
