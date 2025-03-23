@@ -1097,9 +1097,13 @@ public class ItemRegistry
             """,
             """
             Step XII - FINAL:
-                Congratulations for making it this far! Now, all you need to do is place the rocket by
-                right-clicking the ground whilst holding it, and you will have beaten the game. Thank you
-                so much for playing!
+                Congratulations for making it this far! Now, all you need to do
+                is fill the rocket with two buckets of fuel from the fuel refiner
+                in order to launch it. Right click the rocket with fuel to fill
+                it, and once you have filled it, right click it with an empty hand
+                to get inside of the rocket and launch it.
+                \s
+                Thank you for playing.
                 \s
             END
             """
@@ -1390,7 +1394,7 @@ public class ItemRegistry
         @Override
         public @NotNull String getDisplayName()
         {
-            return "Emerald Block";
+            return "Location Marker";
         }
 
         @Override
