@@ -3,10 +3,13 @@ package com.thatsoulyguy.moonlander.entity.entities;
 import com.thatsoulyguy.moonlander.audio.AudioClip;
 import com.thatsoulyguy.moonlander.audio.AudioListener;
 import com.thatsoulyguy.moonlander.audio.AudioManager;
+import com.thatsoulyguy.moonlander.core.GameManager;
+import com.thatsoulyguy.moonlander.core.GameState;
 import com.thatsoulyguy.moonlander.core.Time;
 import com.thatsoulyguy.moonlander.entity.Entity;
 import com.thatsoulyguy.moonlander.entity.model.EntityModel;
 import com.thatsoulyguy.moonlander.entity.model.models.ModelRocket;
+import com.thatsoulyguy.moonlander.item.Inventory;
 import com.thatsoulyguy.moonlander.item.ItemRegistry;
 import com.thatsoulyguy.moonlander.math.Rigidbody;
 import com.thatsoulyguy.moonlander.system.GameObject;
@@ -26,7 +29,7 @@ public class EntityRocket extends Entity
     private float countDown = 5;
 
     private boolean launch = false;
-    private int fuelBucketCount = 20;
+    private int fuelBucketCount = 0;
 
     @Override
     public void initialize()
@@ -80,8 +83,10 @@ public class EntityRocket extends Entity
     {
         if (interator instanceof EntityPlayer player)
         {
-            if (fuelBucketCount >= 20)
+            if (fuelBucketCount >= 2)
             {
+                GameManager.setState(GameState.COMPLETED);
+
                 World.getLocalWorld().killEntity(this, player.getId(), EntityPlayer.class);
 
                 player.getCamera().getGameObject().getParent().removeChild(player.getCamera().getGameObject());
@@ -102,6 +107,20 @@ public class EntityRocket extends Entity
 
                 clip.setLooping(false);
                 clip.play(true);
+            }
+            else
+            {
+                Inventory.SlotData slot = player.getInventory().getCurrentlySelectedSlot();
+
+                if (slot.id() == ItemRegistry.ITEM_FUEL_BUCKET.getId())
+                {
+                    fuelBucketCount += 1;
+
+                    if (slot.count() > 0)
+                        player.getInventory().setSlot(new Vector2i(0, player.getInventory().currentlySelectedSlotIndex), new Inventory.SlotData(ItemRegistry.ITEM_FUEL_BUCKET.getId(), (byte) (player.getInventory().getCurrentlySelectedSlot().count() - 1)));
+                    else
+                        player.getInventory().setSlot(new Vector2i(0, player.getInventory().currentlySelectedSlotIndex), new Inventory.SlotData(ItemRegistry.ITEM_EMPTY_BUCKET.getId(), (byte) 1));
+                }
             }
         }
     }

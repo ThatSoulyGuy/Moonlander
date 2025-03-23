@@ -2,6 +2,8 @@ package com.thatsoulyguy.moonlander.entity.entities;
 
 import com.thatsoulyguy.moonlander.audio.AudioClip;
 import com.thatsoulyguy.moonlander.audio.AudioManager;
+import com.thatsoulyguy.moonlander.core.GameManager;
+import com.thatsoulyguy.moonlander.core.GameState;
 import com.thatsoulyguy.moonlander.core.Time;
 import com.thatsoulyguy.moonlander.entity.Entity;
 import com.thatsoulyguy.moonlander.entity.IntelligenceCommon;
@@ -58,6 +60,9 @@ public class EntityAlien extends LivingEntity
     @Override
     public void update()
     {
+        if (GameManager.getState() == GameState.DEAD || GameManager.getState() == GameState.COMPLETED)
+            return;
+
         EntityPlayer player = EntityPlayer.getLocalPlayer();
         float distanceFromPlayer = getGameObject().getTransform().getWorldPosition()
                 .distance(player.getGameObject().getTransform().getWorldPosition());

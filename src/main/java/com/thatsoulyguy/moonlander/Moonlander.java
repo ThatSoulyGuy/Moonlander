@@ -67,7 +67,7 @@ public class Moonlander
 
         MainThreadExecutor.initialize();
 
-        Window.initialize("Moonlander* 1.62.18", windowSize);
+        Window.initialize("Moonlander* 1.82.18", windowSize);
 
         DebugRenderer.initialize();
 

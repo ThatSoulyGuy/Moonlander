@@ -9,6 +9,8 @@ import com.thatsoulyguy.moonlander.block.Block;
 import com.thatsoulyguy.moonlander.block.BlockRegistry;
 import com.thatsoulyguy.moonlander.collider.Collider;
 import com.thatsoulyguy.moonlander.collider.colliders.BoxCollider;
+import com.thatsoulyguy.moonlander.core.GameManager;
+import com.thatsoulyguy.moonlander.core.GameState;
 import com.thatsoulyguy.moonlander.core.Time;
 import com.thatsoulyguy.moonlander.core.Window;
 import com.thatsoulyguy.moonlander.entity.Entity;
@@ -214,6 +216,8 @@ public class EntityPlayer extends LivingEntity
     {
         super.updateMainThread();
 
+        GameManager.setState(isMenuActive() ? GameState.IN_MENU : GameState.PLAYING);
+
         backgroundShading.getGameObject().getTransform().setLocalPosition(new Vector3f((float) Window.getDimensions().x / 2, (float) Window.getDimensions().y / 2, 0.0f));
         backgroundShading.getGameObject().getTransform().setLocalScale(new Vector3f(Window.getDimensions().x, Window.getDimensions().y, 0.0f));
 
@@ -247,6 +251,8 @@ public class EntityPlayer extends LivingEntity
 
         if (getCurrentHealth() <= 0)
         {
+            GameManager.setState(GameState.DEAD);
+
             DeathSystem.getInstance().getGameObject().setActive(true);
             CreativeCraftingSystem.getInstance().getGameObject().setActive(false);
             HotbarSystem.getInstance().getGameObject().setActive(false);

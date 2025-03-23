@@ -2,6 +2,7 @@ package com.thatsoulyguy.moonlander.ui.systems;
 
 import com.thatsoulyguy.moonlander.annotation.CustomConstructor;
 import com.thatsoulyguy.moonlander.core.Settings;
+import com.thatsoulyguy.moonlander.core.Window;
 import com.thatsoulyguy.moonlander.input.InputManager;
 import com.thatsoulyguy.moonlander.item.Inventory;
 import com.thatsoulyguy.moonlander.item.ItemRegistry;
@@ -33,6 +34,8 @@ public class InventorySystem extends Component
 
     private transient GrabbedItem grabbedItem;
 
+    private transient TextUIElement hoveredItemText;
+
     private InventorySystem() { }
 
     @Override
@@ -62,6 +65,15 @@ public class InventorySystem extends Component
 
         grabbedItem.image.getGameObject().setActive(false);
         grabbedItem.text.getGameObject().setActive(false);
+
+        hoveredItemText = UIElement.createGameObject("ui.hovered_item", TextUIElement.class, new Vector2f(0, 0), new Vector2f(500, 50), UIManager.getCanvas()).getComponentNotNull(TextUIElement.class);
+
+        hoveredItemText.setText("Some");
+        hoveredItemText.setFontSize(15);
+        hoveredItemText.setFontPath(AssetPath.create("moonlander", "font/Invasion2-Default.ttf"));
+        hoveredItemText.setAlignment(TextUIElement.TextAlignment.MIDDLE_CENTER);
+
+        hoveredItemText.getGameObject().setActive(false);
     }
 
     @Override
@@ -80,6 +92,18 @@ public class InventorySystem extends Component
             grabbedItem.image.getGameObject().setActive(false);
             grabbedItem.text.getGameObject().setActive(false);
         }
+
+        Vector2i dimensions = Window.getDimensions();
+
+        float baseX = dimensions.x;
+        float baseY = 0;
+
+        float offsetX = -510.0f;
+        float offsetY = 60.0f;
+
+        hoveredItemText.getGameObject().getTransform().setLocalPosition(new Vector3f(baseX + offsetX, baseY + offsetY, 0.0f));
+
+        hoveredItemText.getGameObject().setActive(true);
     }
 
     public void generate()
@@ -123,6 +147,14 @@ public class InventorySystem extends Component
     public void setInventory(@NotNull Inventory inventory)
     {
         this.inventory = inventory;
+    }
+
+    public static boolean isSlotFormat(@NotNull String input)
+    {
+        Pattern pattern = Pattern.compile(".*_(-?\\d+)_(-?\\d+)$");
+        Matcher matcher = pattern.matcher(input);
+
+        return matcher.matches();
     }
 
     public static @NotNull Vector2i parseSlot(@NotNull String input)
@@ -221,7 +253,14 @@ public class InventorySystem extends Component
 
     public static void onHoverBegin(@NotNull ButtonUIElement element)
     {
+        if (isSlotFormat(element.getGameObject().getName()))
+        {
+            Vector2i position = parseSlot(element.getGameObject().getName());
+            InventorySystem instance = InventorySystem.getInstance();
 
+            instance.hoveredItemText.setText(Objects.requireNonNull(ItemRegistry.get(instance.inventory.getSlot(position).id())).getDisplayName());
+            instance.hoveredItemText.build();
+        }
     }
 
     public static void onHoverEnd(@NotNull ButtonUIElement element)
