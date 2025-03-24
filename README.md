@@ -15,6 +15,6 @@ A renamed project (Invasion2)
     * Minecraft Texturepack 'Faithful'
     * Minecraft 1.8.9 audio assets
 * ## Images
-    * ![Screenshot](https://i.imgur.com/hwnaDIN_d.webp?maxwidth=1520&fidelity=grand)
+    * ![Screenshot](https://i.imgur.com/vxhKmB4.png)
     * ![Screenshot](https://i.imgur.com/y42Dez9.png)
     * ![Screenshot](https://i.imgur.com/Vn0NoCt.png)
