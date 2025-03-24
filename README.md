@@ -16,5 +16,5 @@ A renamed project (Invasion2)
     * Minecraft 1.8.9 audio assets
 * ## Images
     * ![Screenshot](https://i.imgur.com/vxhKmB4.png)
-    * ![Screenshot](https://i.imgur.com/f3Sl9XZ.png)
+    * ![Screenshot](https://i.imgur.com/cZAVBH6.png)
     * ![Screenshot](https://i.imgur.com/lgvJbWu.png)
