@@ -1032,6 +1032,17 @@ public class BlockRegistry
         @Override
         public void onInteractedWith(@NotNull Entity interactor, @NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
         {
+            if (interactor instanceof EntityPlayer player)
+            {
+                Inventory.SlotData currentSlot = player.getInventory().getCurrentlySelectedSlot();
+
+                if (currentSlot.id() == ItemRegistry.ITEM_COAL.getId() && currentSlot.count() > 0)
+                {
+                    coalConsumptionMap.put(globalBlockPosition, coalConsumptionMap.get(globalBlockPosition) + 1);
+
+                    player.getInventory().setSlot(new Vector2i(0, player.getInventory().currentlySelectedSlotIndex), new Inventory.SlotData(currentSlot.id(), (byte) (currentSlot.count() - 1)));
+                }
+            }
         }
 
         @Override

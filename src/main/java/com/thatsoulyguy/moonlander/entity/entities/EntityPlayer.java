@@ -196,7 +196,7 @@ public class EntityPlayer extends LivingEntity
         if (!starterItemsGiven)
         {
             inventory.addItem(ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT.getId(), (byte) 12);
-            inventory.addItem(ItemRegistry.ITEM_ROCKET_ENTITY.getId(), (byte) 1);
+            inventory.addItem(ItemRegistry.ITEM_KNOWLEDGE_BOOK.getId(), (byte) 1);
             inventory.addItem(ItemRegistry.ITEM_EMERALD_BLOCK.getId(), (byte) 64);
 
             starterItemsGiven = true;

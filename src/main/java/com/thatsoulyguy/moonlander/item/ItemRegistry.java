@@ -928,9 +928,11 @@ public class ItemRegistry
                 the crafting grid. You will see it gives you 4 moon
                 rock pebbles. Once you have those, put them into the
                 crafting grid in a row of two. Like this:
+                \s
                                        # # #
                                        # P #
                                        # P #
+                \s
                 P = Moon Rock Pebble
                 \s
                 Then take the resulting moon rock sticks.
@@ -945,9 +947,11 @@ public class ItemRegistry
                 whilst the entire 1st row of the crafting grid is filled
                 with the refined aluminum ingots you get at the start of
                 the game. It should look like this:
+                \s
                                        A A A
                                        # S #
                                        # S #
+                \s
                 S = Stick
                 A = Refined Aluminum Ingot
             
@@ -958,9 +962,11 @@ public class ItemRegistry
                 Now, your need to create a sword to defend yourself against
                 mobs. In order to do that, you are going to need 2 refined
                 aluminum ingots and 1 stick. You should arrange them as follows:
+                \s
                                        # A #
                                        # A #
                                        # S #
+                \s
                 S = Stick
                 A = Refined Aluminum Ingot
             
@@ -976,9 +982,11 @@ public class ItemRegistry
                 After you have collected 5 moon rock and 1 redstone dust, then
                 take your earnings back to your crafting table and lay out
                 the resources you gathered as follows:
+                \s
                                        A A A
                                        M R M
                                        M M M
+                \s
                 A = Refined Aluminum Ingot
                 M = Moon Rock
                 R = Redstone Dust
@@ -1008,9 +1016,11 @@ public class ItemRegistry
                 In order to craft this, you need 8 moon rock and 1 redstone. Moon rock is the
                 slightly darker variant of Soft Moon Rock that requires a pickaxe to mine. Place
                 the redstone in the center, and surround it with moon rock. Layout:
+                \s
                                        M M M
                                        M R M
                                        M M M
+                \s
                 M = Moon Rock
                 R = Redstone
             
@@ -1037,9 +1047,11 @@ public class ItemRegistry
                 Aluminum Ingots in the top-right and top-left slots of the crafting grid,
                 and the 2 Iron ingots in the opposite slots. Then, place the redstone in
                 center of te grid, and fill the rest with soft moon rock. Layout:
+                \s
                                        A M A
                                        M R M
                                        I M I
+                \s
                 A = Refined Aluminum Ingot
                 M = Soft Moon Rock
                 R = Redstone
@@ -1055,9 +1067,11 @@ public class ItemRegistry
                 Now, you are going to need to create a fuel refiner, in order to refine fuel
                 for the rocket you are going to make. For this, you will need 3 refined aluminum
                 ingots, 3 moon rock, and 3 iron ingots. They must be laid out as such:
+                \s
                                        A A A
                                        M M M
                                        I I I
+                \s
                 A = Refined Aluminum Ingot
                 M = Moon Rock
                 I = Iron Ingot
@@ -1082,9 +1096,11 @@ public class ItemRegistry
             """,
             """
                 Now as for the recipe, this is the recipe for the final rocket ship:
+                \s
                                        I A I
                                        I A I
                                        C V C
+                \s
                 A = Aluminum Block
                 C = Iron+Coal Composite
                 V = Iron+Aluminum Composite
