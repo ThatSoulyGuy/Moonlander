@@ -1,4 +1,4 @@
-package com.thatsoulyguy.moonlander.mod;
+package com.thatsoulyguy.moonlander.mod.patch;
 
 @FunctionalInterface
 public interface PatchInvoker

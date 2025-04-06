@@ -1,6 +1,4 @@
-package com.thatsoulyguy.moonlander.mod;
-
-import org.jetbrains.annotations.NotNull;
+package com.thatsoulyguy.moonlander.mod.accessor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,8 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface PatchFunction
+@Target(ElementType.FIELD)
+public @interface MethodReference
 {
-    @NotNull String value();
+    String value();
 }

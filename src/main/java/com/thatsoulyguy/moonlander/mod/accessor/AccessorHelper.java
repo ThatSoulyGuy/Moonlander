@@ -1,4 +1,4 @@
-package com.thatsoulyguy.moonlander.mod;
+package com.thatsoulyguy.moonlander.mod.accessor;
 
 import org.jetbrains.annotations.NotNull;
 

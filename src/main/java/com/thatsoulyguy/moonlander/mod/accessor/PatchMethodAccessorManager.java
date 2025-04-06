@@ -1,5 +1,6 @@
-package com.thatsoulyguy.moonlander.mod;
+package com.thatsoulyguy.moonlander.mod.accessor;
 
+import com.thatsoulyguy.moonlander.annotation.Static;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -8,13 +9,16 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PatchFieldManager
+@Static
+public class PatchMethodAccessorManager
 {
     private static final List<Class<?>> patchClasses = new ArrayList<>();
 
-    public static void register(@NotNull Class<?> object)
+    private PatchMethodAccessorManager() { }
+
+    public static void register(@NotNull Class<?> patchClass)
     {
-        patchClasses.add(object);
+        patchClasses.add(patchClass);
     }
 
     public static void applyPatches()
@@ -23,24 +27,22 @@ public class PatchFieldManager
         {
             for (Field field : patchClass.getDeclaredFields())
             {
-                if (field.isAnnotationPresent(FieldReference.class))
+                if (field.isAnnotationPresent(MethodReference.class))
                 {
-                    FieldReference annotation = field.getAnnotation(FieldReference.class);
+                    MethodReference annotation = field.getAnnotation(MethodReference.class);
 
                     String spec = annotation.value();
                     String[] parts = spec.split("::");
 
                     if (parts.length != 2)
-                        throw new IllegalArgumentException("Invalid accessor spec: " + spec);
+                        throw new IllegalArgumentException("Invalid method reference spec: " + spec);
 
                     String targetClassName = parts[0];
-                    String targetFieldName = parts[1];
+                    String targetMethodName = parts[1];
 
                     try
                     {
-                        Class<?> targetClass = Class.forName(targetClassName);
-
-                        Class<?> accessorType;
+                        Class<?> targetClass = patchClass.getClassLoader().loadClass(targetClassName);
 
                         Type genericType = field.getGenericType();
 
@@ -49,24 +51,23 @@ public class PatchFieldManager
                             Type[] typeArgs = pt.getActualTypeArguments();
 
                             if (typeArgs.length > 0 && typeArgs[0] instanceof Class)
-                                accessorType = (Class<?>) typeArgs[0];
+                                ;
                             else
-                                accessorType = Object.class;
+                                ;
                         }
                         else
-                            accessorType = Object.class;
+                            ;
 
-                        FieldAccessor<?> accessor = AccessorHelper.createFieldAccessor(targetClass, targetFieldName, accessorType);
+                        MethodAccessor<?> accessor = MethodAccessorHelper.createMethodAccessor(targetClass, targetMethodName);
 
                         field.setAccessible(true);
-
                         field.set(null, accessor);
-                        System.out.println("Injected accessor for " + spec + " into " + patchClass.getName());
 
+                        System.out.println("Injected method accessor for " + spec + " into " + patchClass.getName());
                     }
                     catch (Exception e)
                     {
-                        throw new RuntimeException("Failed to inject accessor for field: " + field.getName(), e);
+                        throw new RuntimeException("Failed to inject method accessor for field: " + field.getName(), e);
                     }
                 }
             }

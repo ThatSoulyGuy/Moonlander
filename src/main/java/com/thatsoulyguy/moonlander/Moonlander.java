@@ -14,10 +14,10 @@ import com.thatsoulyguy.moonlander.core.Window;
 import com.thatsoulyguy.moonlander.crafting.CraftingRecipeRegistry;
 import com.thatsoulyguy.moonlander.input.InputManager;
 import com.thatsoulyguy.moonlander.item.ItemRegistry;
-import com.thatsoulyguy.moonlander.mod.ModManager;
-import com.thatsoulyguy.moonlander.mod.PatchFieldManager;
-import com.thatsoulyguy.moonlander.mod.PatchFunctionManager;
-import com.thatsoulyguy.moonlander.mod.PatchMethodAccessorManager;
+import com.thatsoulyguy.moonlander.mod.*;
+import com.thatsoulyguy.moonlander.mod.accessor.PatchFieldAccessorManager;
+import com.thatsoulyguy.moonlander.mod.accessor.PatchMethodAccessorManager;
+import com.thatsoulyguy.moonlander.mod.patch.CentralPatchManager;
 import com.thatsoulyguy.moonlander.render.*;
 import com.thatsoulyguy.moonlander.render.advanced.RenderPassManager;
 import com.thatsoulyguy.moonlander.render.advanced.core.renderpasses.GeometryRenderPass;
@@ -72,7 +72,7 @@ public class Moonlander
 
         MainThreadExecutor.initialize();
 
-        Window.initialize("Moonlander* 2.1.1-beta", windowSize);
+        Window.initialize("Moonlander* 2.2.1-beta", windowSize);
 
         DebugRenderer.initialize();
 
@@ -413,6 +413,8 @@ public class Moonlander
 
         DebugRenderer.uninitialize();
 
+        CentralPatchManager.uninitialize();
+
         Window.uninitialize();
     }
 
@@ -424,9 +426,9 @@ public class Moonlander
 
         ModManager.registerPatches();
 
-        PatchFieldManager.applyPatches();
+        PatchFieldAccessorManager.applyPatches();
         PatchMethodAccessorManager.applyPatches();
-        PatchFunctionManager.applyPatches();
+        CentralPatchManager.applyAllPatches();
 
         try
         {

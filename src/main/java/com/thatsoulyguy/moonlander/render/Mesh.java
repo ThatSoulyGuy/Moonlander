@@ -374,48 +374,50 @@ public class Mesh extends Component
 
     private void updateBufferData()
     {
-        List<Vertex> localVertices;
-        List<Integer> localIndices;
-
-        synchronized (vertices)
+        synchronized (this)
         {
-            localVertices = new ArrayList<>(vertices);
+            List<Vertex> localVertices;
+            List<Integer> localIndices;
+
+            synchronized (vertices)
+            {
+                localVertices = new ArrayList<>(vertices);
+            }
+
+            synchronized (indices)
+            {
+                localIndices = new ArrayList<>(indices);
+            }
+
+            if (localVertices.isEmpty() || localIndices.isEmpty())
+                return;
+
+            GL41.glBindVertexArray(vao);
+
+            VertexLayout layout = localVertices.getFirst().getVertexLayout();
+
+            int numAttributes = layout.attributes().size();
+
+            for (int i = 0; i < numAttributes; i++) {
+                GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, vboIds[i]);
+
+                FloatBuffer buffer = toBufferForAttribute(localVertices, i, layout.attributes().get(i).count());
+                resizeOrSubData(GL41.GL_ARRAY_BUFFER, buffer);
+            }
+
+            GL41.glBindBuffer(GL41.GL_ELEMENT_ARRAY_BUFFER, ibo);
+
+            IntBuffer idxBuffer = toBuffer(localIndices);
+
+            resizeOrSubData(GL41.GL_ELEMENT_ARRAY_BUFFER, idxBuffer);
+
+            GL41.glBindVertexArray(0);
+
+            int error = GL41.glGetError();
+
+            if (error != GL41.GL_NO_ERROR)
+                System.err.println("OpenGL Error (updateBufferData): " + error);
         }
-
-        synchronized (indices)
-        {
-            localIndices = new ArrayList<>(indices);
-        }
-
-        if (localVertices.isEmpty() || localIndices.isEmpty())
-            return;
-
-        GL41.glBindVertexArray(vao);
-
-        VertexLayout layout = localVertices.getFirst().getVertexLayout();
-
-        int numAttributes = layout.attributes().size();
-
-        for (int i = 0; i < numAttributes; i++)
-        {
-            GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, vboIds[i]);
-
-            FloatBuffer buffer = toBufferForAttribute(localVertices, i, layout.attributes().get(i).count());
-            resizeOrSubData(GL41.GL_ARRAY_BUFFER, buffer);
-        }
-
-        GL41.glBindBuffer(GL41.GL_ELEMENT_ARRAY_BUFFER, ibo);
-
-        IntBuffer idxBuffer = toBuffer(localIndices);
-
-        resizeOrSubData(GL41.GL_ELEMENT_ARRAY_BUFFER, idxBuffer);
-
-        GL41.glBindVertexArray(0);
-
-        int error = GL41.glGetError();
-
-        if (error != GL41.GL_NO_ERROR)
-            System.err.println("OpenGL Error (updateBufferData): " + error);
     }
 
     private <T1 extends java.nio.Buffer> void resizeOrSubData(int target, @NotNull T1 data)

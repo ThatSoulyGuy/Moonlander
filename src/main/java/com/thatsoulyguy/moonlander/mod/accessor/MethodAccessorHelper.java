@@ -1,4 +1,4 @@
-package com.thatsoulyguy.moonlander.mod;
+package com.thatsoulyguy.moonlander.mod.accessor;
 
 import java.lang.reflect.Method;
 

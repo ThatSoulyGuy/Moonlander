@@ -1,4 +1,4 @@
-package com.thatsoulyguy.moonlander.mod;
+package com.thatsoulyguy.moonlander.mod.accessor;
 
 @FunctionalInterface
 public interface MethodAccessor<T>

@@ -197,7 +197,7 @@ public class EntityPlayer extends LivingEntity
         {
             inventory.addItem(ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT.getId(), (byte) 12);
             inventory.addItem(ItemRegistry.ITEM_KNOWLEDGE_BOOK.getId(), (byte) 1);
-            inventory.addItem(ItemRegistry.ITEM_CRAFTING_TABLE_BLOCK.getId(), (byte) 64);
+            inventory.addItem(ItemRegistry.ITEM_EMERALD_BLOCK.getId(), (byte) 64);
 
             starterItemsGiven = true;
         }
