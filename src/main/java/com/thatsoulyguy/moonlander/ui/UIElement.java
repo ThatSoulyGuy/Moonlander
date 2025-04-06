@@ -3,7 +3,7 @@ package com.thatsoulyguy.moonlander.ui;
 import com.thatsoulyguy.moonlander.render.Mesh;
 import com.thatsoulyguy.moonlander.render.ShaderManager;
 import com.thatsoulyguy.moonlander.render.TextureManager;
-import com.thatsoulyguy.moonlander.render.Vertex;
+import com.thatsoulyguy.moonlander.render.DefaultVertex;
 import com.thatsoulyguy.moonlander.system.Component;
 import com.thatsoulyguy.moonlander.system.GameObject;
 import com.thatsoulyguy.moonlander.system.Layer;
@@ -17,26 +17,26 @@ import java.util.Objects;
 
 public abstract class UIElement extends Component
 {
-    private static final List<Vertex> DEFAULT_VERTICES = List.of(
-            Vertex.create(
+    private static final List<DefaultVertex> DEFAULT_VERTICES = List.of(
+            DefaultVertex.create(
                     new Vector3f(-0.5f, -0.5f, 0.0f),
                     new Vector3f(1.0f, 1.0f, 1.0f),
                     new Vector3f(0.0f, 0.0f, -1.0f),
                     new Vector2f(0.0f, 0.0f)
             ),
-            Vertex.create(
+            DefaultVertex.create(
                     new Vector3f(0.5f, -0.5f, 0.0f),
                     new Vector3f(1.0f, 1.0f, 1.0f),
                     new Vector3f(0.0f, 0.0f, -1.0f),
                     new Vector2f(1.0f, 0.0f)
             ),
-            Vertex.create(
+            DefaultVertex.create(
                     new Vector3f(0.5f, 0.5f, 0.0f),
                     new Vector3f(1.0f, 1.0f, 1.0f),
                     new Vector3f(0.0f, 0.0f, -1.0f),
                     new Vector2f(1.0f, 1.0f)
             ),
-            Vertex.create(
+            DefaultVertex.create(
                     new Vector3f(-0.5f, 0.5f, 0.0f),
                     new Vector3f(1.0f, 1.0f, 1.0f),
                     new Vector3f(0.0f, 0.0f, -1.0f),
@@ -53,7 +53,7 @@ public abstract class UIElement extends Component
     {
         Mesh mesh = getGameObject().getComponentNotNull(Mesh.class);
 
-        List<Vertex> centeredVertices = centerPolygon(DEFAULT_VERTICES);
+        List<DefaultVertex> centeredVertices = centerPolygon(DEFAULT_VERTICES);
         mesh.setVertices(centeredVertices);
         mesh.setIndices(DEFAULT_INDICES);
 
@@ -63,7 +63,7 @@ public abstract class UIElement extends Component
 
     public abstract void onGenerate(@NotNull Mesh mesh);
 
-    public static List<Vertex> centerPolygon(List<Vertex> vertices)
+    public static List<DefaultVertex> centerPolygon(List<DefaultVertex> vertices)
     {
         if (vertices.isEmpty())
             return vertices;
@@ -71,7 +71,7 @@ public abstract class UIElement extends Component
         float minX = Float.MAX_VALUE, maxX = -Float.MAX_VALUE;
         float minY = Float.MAX_VALUE, maxY = -Float.MAX_VALUE;
 
-        for (Vertex vertex : vertices)
+        for (DefaultVertex vertex : vertices)
         {
             Vector3f pos = vertex.getPosition();
 
@@ -91,14 +91,14 @@ public abstract class UIElement extends Component
         float centerX = (minX + maxX) / 2.0f;
         float centerY = (minY + maxY) / 2.0f;
 
-        List<Vertex> centered = new ArrayList<>();
+        List<DefaultVertex> centered = new ArrayList<>();
 
-        for (Vertex vertex : vertices)
+        for (DefaultVertex vertex : vertices)
         {
             Vector3f pos = vertex.getPosition();
             Vector3f centeredPos = new Vector3f(pos.x - centerX, pos.y - centerY, pos.z);
 
-            centered.add(Vertex.create(centeredPos, vertex.getColor(), vertex.getNormal(), vertex.getUVs()));
+            centered.add(DefaultVertex.create(centeredPos, vertex.getColor(), vertex.getNormal(), vertex.getUVs()));
         }
 
         return centered;

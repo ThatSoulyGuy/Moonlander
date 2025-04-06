@@ -24,7 +24,7 @@ import java.util.function.Function;
 @CustomConstructor("create")
 public class OxygenBubble extends Component
 {
-    private final @NotNull List<Vertex> vertices = new ArrayList<>();
+    private final @NotNull List<DefaultVertex> vertices = new ArrayList<>();
     private final @NotNull List<Integer> indices = new ArrayList<>();
 
     private boolean oxygenActive;
@@ -61,7 +61,7 @@ public class OxygenBubble extends Component
 
                 Vector2f uv = new Vector2f(slicePercent, v);
 
-                vertices.add(Vertex.create(position, new Vector3f(1.0f, 1.0f, 1.0f), normal, uv));
+                vertices.add(DefaultVertex.create(position, new Vector3f(1.0f, 1.0f, 1.0f), normal, uv));
             }
         }
 
@@ -89,25 +89,25 @@ public class OxygenBubble extends Component
 
             vbo = GL41.glGenBuffers();
             GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, vbo);
-            GL41.glBufferData(GL41.GL_ARRAY_BUFFER, toBuffer(vertices, Vertex::getPosition), GL41.GL_DYNAMIC_DRAW);
+            GL41.glBufferData(GL41.GL_ARRAY_BUFFER, toBuffer(vertices, DefaultVertex::getPosition), GL41.GL_DYNAMIC_DRAW);
             GL41.glVertexAttribPointer(0, 3, GL41.GL_FLOAT, false, 0, 0);
             GL41.glEnableVertexAttribArray(0);
 
             cbo = GL41.glGenBuffers();
             GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, cbo);
-            GL41.glBufferData(GL41.GL_ARRAY_BUFFER, toBuffer(vertices, Vertex::getColor), GL41.GL_DYNAMIC_DRAW);
+            GL41.glBufferData(GL41.GL_ARRAY_BUFFER, toBuffer(vertices, DefaultVertex::getColor), GL41.GL_DYNAMIC_DRAW);
             GL41.glVertexAttribPointer(1, 3, GL41.GL_FLOAT, false, 0, 0);
             GL41.glEnableVertexAttribArray(1);
 
             nbo = GL41.glGenBuffers();
             GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, nbo);
-            GL41.glBufferData(GL41.GL_ARRAY_BUFFER, toBuffer(vertices, Vertex::getNormal), GL41.GL_DYNAMIC_DRAW);
+            GL41.glBufferData(GL41.GL_ARRAY_BUFFER, toBuffer(vertices, DefaultVertex::getNormal), GL41.GL_DYNAMIC_DRAW);
             GL41.glVertexAttribPointer(2, 3, GL41.GL_FLOAT, false, 0, 0);
             GL41.glEnableVertexAttribArray(2);
 
             uvbo = GL41.glGenBuffers();
             GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, uvbo);
-            GL41.glBufferData(GL41.GL_ARRAY_BUFFER, toBuffer(vertices, Vertex::getUVs), GL41.GL_DYNAMIC_DRAW);
+            GL41.glBufferData(GL41.GL_ARRAY_BUFFER, toBuffer(vertices, DefaultVertex::getUVs), GL41.GL_DYNAMIC_DRAW);
             GL41.glVertexAttribPointer(3, 2, GL41.GL_FLOAT, false, 0, 0);
             GL41.glEnableVertexAttribArray(3);
 
@@ -173,7 +173,7 @@ public class OxygenBubble extends Component
         return oxygenActive;
     }
 
-    private static <T> FloatBuffer toBuffer(List<Vertex> vertices, Function<Vertex, T> extractor)
+    private static <T> FloatBuffer toBuffer(List<DefaultVertex> vertices, Function<DefaultVertex, T> extractor)
     {
         if (vertices.isEmpty())
             throw new IllegalArgumentException("The list of vertices cannot be empty.");
@@ -191,7 +191,7 @@ public class OxygenBubble extends Component
 
         FloatBuffer buffer = BufferUtils.createFloatBuffer(vertices.size() * dimensions);
 
-        for (Vertex vertex : vertices)
+        for (DefaultVertex vertex : vertices)
         {
             T vector = extractor.apply(vertex);
             if (vector instanceof Vector3f vec3)

@@ -9,18 +9,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Moonlander-Annotation" exported="" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="file://$MODULE_DIR$/library" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/library" />
-        </SOURCES>
-        <jarDirectory url="file://$MODULE_DIR$/library" recursive="false" />
-        <jarDirectory url="file://$MODULE_DIR$/library" recursive="false" type="SOURCES" />
-      </library>
-    </orderEntry>
+    <orderEntry type="library" exported="" name="Libraries" level="project" />
   </component>
 </module>

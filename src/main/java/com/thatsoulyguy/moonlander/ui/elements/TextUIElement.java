@@ -3,13 +3,10 @@ package com.thatsoulyguy.moonlander.ui.elements;
 import com.thatsoulyguy.moonlander.core.Settings;
 import com.thatsoulyguy.moonlander.render.Mesh;
 import com.thatsoulyguy.moonlander.render.Texture;
-import com.thatsoulyguy.moonlander.render.Vertex;
 import com.thatsoulyguy.moonlander.ui.UIElement;
 import com.thatsoulyguy.moonlander.util.AssetPath;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector2f;
 import org.joml.Vector2i;
-import org.joml.Vector3f;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;

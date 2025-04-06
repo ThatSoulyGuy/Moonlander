@@ -67,7 +67,7 @@ public class Moonlander
 
         MainThreadExecutor.initialize();
 
-        Window.initialize("Moonlander* 1.0.1-beta", windowSize);
+        Window.initialize("Moonlander* 2.1.1-beta", windowSize);
 
         DebugRenderer.initialize();
 
@@ -75,6 +75,7 @@ public class Moonlander
         ShaderManager.register(Shader.create("ui", AssetPath.create("moonlander", "shader/ui")));
         ShaderManager.register(Shader.create("pass.passthrough", AssetPath.create("moonlander", "shader/pass/passthrough")));
         ShaderManager.register(Shader.create("pass.geometry", AssetPath.create("moonlander", "shader/pass/geometry")));
+        ShaderManager.register(Shader.create("pass.chunk", AssetPath.create("moonlander", "shader/pass/chunk")));
         ShaderManager.register(Shader.create("ssao.default", AssetPath.create("moonlander", "shader/ssao/default")));
         ShaderManager.register(Shader.create("ssao.blur", AssetPath.create("moonlander", "shader/ssao/blur")));
         ShaderManager.register(Shader.create("ssao.conclusion", AssetPath.create("moonlander", "shader/ssao/conclusion")));  

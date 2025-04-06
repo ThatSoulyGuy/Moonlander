@@ -125,7 +125,7 @@ public class World extends Component
             object.getTransform().setLocalPosition(CoordinateHelper.chunkToWorldCoordinates(chunkPosition));
 
             object.addComponent(Collider.create(VoxelMeshCollider.class));
-            object.addComponent(Objects.requireNonNull(ShaderManager.get("pass.geometry")));
+            object.addComponent(Settings.DEFAULT_RENDERING_SHADER.getValue().getName().equals("legacy.default") ? Settings.DEFAULT_RENDERING_SHADER.getValue() : Objects.requireNonNull(ShaderManager.get("pass.chunk")));
             object.addComponent(Objects.requireNonNull(TextureAtlasManager.get("blocks")));
             object.addComponent(Mesh.create(new ArrayList<>(), new ArrayList<>()));
 
@@ -168,7 +168,7 @@ public class World extends Component
 
         object.addComponent(Collider.create(VoxelMeshCollider.class));
 
-        object.addComponent(Objects.requireNonNull(ShaderManager.get("pass.geometry")));
+        object.addComponent(Settings.DEFAULT_RENDERING_SHADER.getValue().getName().equals("legacy.default") ? Settings.DEFAULT_RENDERING_SHADER.getValue() : Objects.requireNonNull(ShaderManager.get("pass.chunk")));
         object.addComponent(Objects.requireNonNull(TextureAtlasManager.get("blocks")));
 
         object.addComponent(Mesh.create(new ArrayList<>(), new ArrayList<>()));

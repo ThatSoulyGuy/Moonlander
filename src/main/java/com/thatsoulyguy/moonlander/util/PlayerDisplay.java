@@ -9,14 +9,13 @@ import com.thatsoulyguy.moonlander.math.Transform;
 import com.thatsoulyguy.moonlander.render.Mesh;
 import com.thatsoulyguy.moonlander.render.Texture;
 import com.thatsoulyguy.moonlander.render.TextureManager;
-import com.thatsoulyguy.moonlander.render.Vertex;
+import com.thatsoulyguy.moonlander.render.DefaultVertex;
 import com.thatsoulyguy.moonlander.system.Component;
 import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
 import com.thatsoulyguy.moonlander.world.TextureAtlasManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
-import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -100,7 +99,7 @@ public class PlayerDisplay extends Component
 
         MainThreadExecutor.submit(() ->
         {
-            List<Vertex> vertices = new ArrayList<>();
+            List<DefaultVertex> vertices = new ArrayList<>();
             List<Integer> indices = new ArrayList<>();
 
             Mesh mesh = getGameObject().getComponentNotNull(Mesh.class);
@@ -117,35 +116,35 @@ public class PlayerDisplay extends Component
 
                 Vector3f color = new Vector3f(1.0f, 1.0f, 1.0f);
 
-                vertices.add(Vertex.create(new Vector3f(0.0f, 0.0f, 0.0f), color, new Vector3f(0, 0, -1), new Vector2f(0, 0)));
-                vertices.add(Vertex.create(new Vector3f(2.0f, 0.0f, 0.0f), color, new Vector3f(0, 0, -1), new Vector2f(1, 0)));
-                vertices.add(Vertex.create(new Vector3f(2.0f, 0.5f, 0.0f), color, new Vector3f(0, 0, -1), new Vector2f(1, 1)));
-                vertices.add(Vertex.create(new Vector3f(0.0f, 0.5f, 0.0f), color, new Vector3f(0, 0, -1), new Vector2f(0, 1)));
+                vertices.add(DefaultVertex.create(new Vector3f(0.0f, 0.0f, 0.0f), color, new Vector3f(0, 0, -1), new Vector2f(0, 0)));
+                vertices.add(DefaultVertex.create(new Vector3f(2.0f, 0.0f, 0.0f), color, new Vector3f(0, 0, -1), new Vector2f(1, 0)));
+                vertices.add(DefaultVertex.create(new Vector3f(2.0f, 0.5f, 0.0f), color, new Vector3f(0, 0, -1), new Vector2f(1, 1)));
+                vertices.add(DefaultVertex.create(new Vector3f(0.0f, 0.5f, 0.0f), color, new Vector3f(0, 0, -1), new Vector2f(0, 1)));
 
-                vertices.add(Vertex.create(new Vector3f(2.0f, 0.0f, 0.5f), color, new Vector3f(0, 0, 1), new Vector2f(0, 0)));
-                vertices.add(Vertex.create(new Vector3f(0.0f, 0.0f, 0.5f), color, new Vector3f(0, 0, 1), new Vector2f(1, 0)));
-                vertices.add(Vertex.create(new Vector3f(0.0f, 0.5f, 0.5f), color, new Vector3f(0, 0, 1), new Vector2f(1, 1)));
-                vertices.add(Vertex.create(new Vector3f(2.0f, 0.5f, 0.5f), color, new Vector3f(0, 0, 1), new Vector2f(0, 1)));
+                vertices.add(DefaultVertex.create(new Vector3f(2.0f, 0.0f, 0.5f), color, new Vector3f(0, 0, 1), new Vector2f(0, 0)));
+                vertices.add(DefaultVertex.create(new Vector3f(0.0f, 0.0f, 0.5f), color, new Vector3f(0, 0, 1), new Vector2f(1, 0)));
+                vertices.add(DefaultVertex.create(new Vector3f(0.0f, 0.5f, 0.5f), color, new Vector3f(0, 0, 1), new Vector2f(1, 1)));
+                vertices.add(DefaultVertex.create(new Vector3f(2.0f, 0.5f, 0.5f), color, new Vector3f(0, 0, 1), new Vector2f(0, 1)));
 
-                vertices.add(Vertex.create(new Vector3f(0.0f, 0.0f, 0.5f), color, new Vector3f(-1, 0, 0), new Vector2f(0, 0)));
-                vertices.add(Vertex.create(new Vector3f(0.0f, 0.0f, 0.0f), color, new Vector3f(-1, 0, 0), new Vector2f(1, 0)));
-                vertices.add(Vertex.create(new Vector3f(0.0f, 0.5f, 0.0f), color, new Vector3f(-1, 0, 0), new Vector2f(1, 1)));
-                vertices.add(Vertex.create(new Vector3f(0.0f, 0.5f, 0.5f), color, new Vector3f(-1, 0, 0), new Vector2f(0, 1)));
+                vertices.add(DefaultVertex.create(new Vector3f(0.0f, 0.0f, 0.5f), color, new Vector3f(-1, 0, 0), new Vector2f(0, 0)));
+                vertices.add(DefaultVertex.create(new Vector3f(0.0f, 0.0f, 0.0f), color, new Vector3f(-1, 0, 0), new Vector2f(1, 0)));
+                vertices.add(DefaultVertex.create(new Vector3f(0.0f, 0.5f, 0.0f), color, new Vector3f(-1, 0, 0), new Vector2f(1, 1)));
+                vertices.add(DefaultVertex.create(new Vector3f(0.0f, 0.5f, 0.5f), color, new Vector3f(-1, 0, 0), new Vector2f(0, 1)));
 
-                vertices.add(Vertex.create(new Vector3f(2.0f, 0.0f, 0.0f), color, new Vector3f(1, 0, 0), new Vector2f(0, 0)));
-                vertices.add(Vertex.create(new Vector3f(2.0f, 0.0f, 0.5f), color, new Vector3f(1, 0, 0), new Vector2f(1, 0)));
-                vertices.add(Vertex.create(new Vector3f(2.0f, 0.5f, 0.5f), color, new Vector3f(1, 0, 0), new Vector2f(1, 1)));
-                vertices.add(Vertex.create(new Vector3f(2.0f, 0.5f, 0.0f), color, new Vector3f(1, 0, 0), new Vector2f(0, 1)));
+                vertices.add(DefaultVertex.create(new Vector3f(2.0f, 0.0f, 0.0f), color, new Vector3f(1, 0, 0), new Vector2f(0, 0)));
+                vertices.add(DefaultVertex.create(new Vector3f(2.0f, 0.0f, 0.5f), color, new Vector3f(1, 0, 0), new Vector2f(1, 0)));
+                vertices.add(DefaultVertex.create(new Vector3f(2.0f, 0.5f, 0.5f), color, new Vector3f(1, 0, 0), new Vector2f(1, 1)));
+                vertices.add(DefaultVertex.create(new Vector3f(2.0f, 0.5f, 0.0f), color, new Vector3f(1, 0, 0), new Vector2f(0, 1)));
 
-                vertices.add(Vertex.create(new Vector3f(0.0f, 0.0f, 0.5f), color, new Vector3f(0, -1, 0), new Vector2f(0, 0)));
-                vertices.add(Vertex.create(new Vector3f(2.0f, 0.0f, 0.5f), color, new Vector3f(0, -1, 0), new Vector2f(1, 0)));
-                vertices.add(Vertex.create(new Vector3f(2.0f, 0.0f, 0.0f), color, new Vector3f(0, -1, 0), new Vector2f(1, 1)));
-                vertices.add(Vertex.create(new Vector3f(0.0f, 0.0f, 0.0f), color, new Vector3f(0, -1, 0), new Vector2f(0, 1)));
+                vertices.add(DefaultVertex.create(new Vector3f(0.0f, 0.0f, 0.5f), color, new Vector3f(0, -1, 0), new Vector2f(0, 0)));
+                vertices.add(DefaultVertex.create(new Vector3f(2.0f, 0.0f, 0.5f), color, new Vector3f(0, -1, 0), new Vector2f(1, 0)));
+                vertices.add(DefaultVertex.create(new Vector3f(2.0f, 0.0f, 0.0f), color, new Vector3f(0, -1, 0), new Vector2f(1, 1)));
+                vertices.add(DefaultVertex.create(new Vector3f(0.0f, 0.0f, 0.0f), color, new Vector3f(0, -1, 0), new Vector2f(0, 1)));
 
-                vertices.add(Vertex.create(new Vector3f(0.0f, 0.5f, 0.0f), color, new Vector3f(0, 1, 0), new Vector2f(0, 0)));
-                vertices.add(Vertex.create(new Vector3f(2.0f, 0.5f, 0.0f), color, new Vector3f(0, 1, 0), new Vector2f(1, 0)));
-                vertices.add(Vertex.create(new Vector3f(2.0f, 0.5f, 0.5f), color, new Vector3f(0, 1, 0), new Vector2f(1, 1)));
-                vertices.add(Vertex.create(new Vector3f(0.0f, 0.5f, 0.5f), color, new Vector3f(0, 1, 0), new Vector2f(0, 1)));
+                vertices.add(DefaultVertex.create(new Vector3f(0.0f, 0.5f, 0.0f), color, new Vector3f(0, 1, 0), new Vector2f(0, 0)));
+                vertices.add(DefaultVertex.create(new Vector3f(2.0f, 0.5f, 0.0f), color, new Vector3f(0, 1, 0), new Vector2f(1, 0)));
+                vertices.add(DefaultVertex.create(new Vector3f(2.0f, 0.5f, 0.5f), color, new Vector3f(0, 1, 0), new Vector2f(1, 1)));
+                vertices.add(DefaultVertex.create(new Vector3f(0.0f, 0.5f, 0.5f), color, new Vector3f(0, 1, 0), new Vector2f(0, 1)));
 
                 indices.addAll(getCommonIndices());
 
@@ -170,35 +169,35 @@ public class PlayerDisplay extends Component
 
                 Vector3f color = new Vector3f(1.0f, 1.0f, 1.0f);
 
-                vertices.add(Vertex.create(new Vector3f(0, 0, 0), color, new Vector3f(0, 0, -1), uvs.getFirst()[0]));
-                vertices.add(Vertex.create(new Vector3f(1, 0, 0), color, new Vector3f(0, 0, -1), uvs.getFirst()[1]));
-                vertices.add(Vertex.create(new Vector3f(1, 1, 0), color, new Vector3f(0, 0, -1), uvs.getFirst()[2]));
-                vertices.add(Vertex.create(new Vector3f(0, 1, 0), color, new Vector3f(0, 0, -1), uvs.getFirst()[3]));
+                vertices.add(DefaultVertex.create(new Vector3f(0, 0, 0), color, new Vector3f(0, 0, -1), uvs.getFirst()[0]));
+                vertices.add(DefaultVertex.create(new Vector3f(1, 0, 0), color, new Vector3f(0, 0, -1), uvs.getFirst()[1]));
+                vertices.add(DefaultVertex.create(new Vector3f(1, 1, 0), color, new Vector3f(0, 0, -1), uvs.getFirst()[2]));
+                vertices.add(DefaultVertex.create(new Vector3f(0, 1, 0), color, new Vector3f(0, 0, -1), uvs.getFirst()[3]));
 
-                vertices.add(Vertex.create(new Vector3f(1, 0, 1), color, new Vector3f(0, 0, 1), uvs.get(1)[0]));
-                vertices.add(Vertex.create(new Vector3f(0, 0, 1), color, new Vector3f(0, 0, 1), uvs.get(1)[1]));
-                vertices.add(Vertex.create(new Vector3f(0, 1, 1), color, new Vector3f(0, 0, 1), uvs.get(1)[2]));
-                vertices.add(Vertex.create(new Vector3f(1, 1, 1), color, new Vector3f(0, 0, 1), uvs.get(1)[3]));
+                vertices.add(DefaultVertex.create(new Vector3f(1, 0, 1), color, new Vector3f(0, 0, 1), uvs.get(1)[0]));
+                vertices.add(DefaultVertex.create(new Vector3f(0, 0, 1), color, new Vector3f(0, 0, 1), uvs.get(1)[1]));
+                vertices.add(DefaultVertex.create(new Vector3f(0, 1, 1), color, new Vector3f(0, 0, 1), uvs.get(1)[2]));
+                vertices.add(DefaultVertex.create(new Vector3f(1, 1, 1), color, new Vector3f(0, 0, 1), uvs.get(1)[3]));
 
-                vertices.add(Vertex.create(new Vector3f(0, 0, 1), color, new Vector3f(-1, 0, 0), uvs.get(2)[0]));
-                vertices.add(Vertex.create(new Vector3f(0, 0, 0), color, new Vector3f(-1, 0, 0), uvs.get(2)[1]));
-                vertices.add(Vertex.create(new Vector3f(0, 1, 0), color, new Vector3f(-1, 0, 0), uvs.get(2)[2]));
-                vertices.add(Vertex.create(new Vector3f(0, 1, 1), color, new Vector3f(-1, 0, 0), uvs.get(2)[3]));
+                vertices.add(DefaultVertex.create(new Vector3f(0, 0, 1), color, new Vector3f(-1, 0, 0), uvs.get(2)[0]));
+                vertices.add(DefaultVertex.create(new Vector3f(0, 0, 0), color, new Vector3f(-1, 0, 0), uvs.get(2)[1]));
+                vertices.add(DefaultVertex.create(new Vector3f(0, 1, 0), color, new Vector3f(-1, 0, 0), uvs.get(2)[2]));
+                vertices.add(DefaultVertex.create(new Vector3f(0, 1, 1), color, new Vector3f(-1, 0, 0), uvs.get(2)[3]));
 
-                vertices.add(Vertex.create(new Vector3f(1, 0, 0), color, new Vector3f(1, 0, 0), uvs.get(3)[0]));
-                vertices.add(Vertex.create(new Vector3f(1, 0, 1), color, new Vector3f(1, 0, 0), uvs.get(3)[1]));
-                vertices.add(Vertex.create(new Vector3f(1, 1, 1), color, new Vector3f(1, 0, 0), uvs.get(3)[2]));
-                vertices.add(Vertex.create(new Vector3f(1, 1, 0), color, new Vector3f(1, 0, 0), uvs.get(3)[3]));
+                vertices.add(DefaultVertex.create(new Vector3f(1, 0, 0), color, new Vector3f(1, 0, 0), uvs.get(3)[0]));
+                vertices.add(DefaultVertex.create(new Vector3f(1, 0, 1), color, new Vector3f(1, 0, 0), uvs.get(3)[1]));
+                vertices.add(DefaultVertex.create(new Vector3f(1, 1, 1), color, new Vector3f(1, 0, 0), uvs.get(3)[2]));
+                vertices.add(DefaultVertex.create(new Vector3f(1, 1, 0), color, new Vector3f(1, 0, 0), uvs.get(3)[3]));
 
-                vertices.add(Vertex.create(new Vector3f(0, 0, 1), color, new Vector3f(0, -1, 0), uvs.get(4)[0]));
-                vertices.add(Vertex.create(new Vector3f(1, 0, 1), color, new Vector3f(0, -1, 0), uvs.get(4)[1]));
-                vertices.add(Vertex.create(new Vector3f(1, 0, 0), color, new Vector3f(0, -1, 0), uvs.get(4)[2]));
-                vertices.add(Vertex.create(new Vector3f(0, 0, 0), color, new Vector3f(0, -1, 0), uvs.get(4)[3]));
+                vertices.add(DefaultVertex.create(new Vector3f(0, 0, 1), color, new Vector3f(0, -1, 0), uvs.get(4)[0]));
+                vertices.add(DefaultVertex.create(new Vector3f(1, 0, 1), color, new Vector3f(0, -1, 0), uvs.get(4)[1]));
+                vertices.add(DefaultVertex.create(new Vector3f(1, 0, 0), color, new Vector3f(0, -1, 0), uvs.get(4)[2]));
+                vertices.add(DefaultVertex.create(new Vector3f(0, 0, 0), color, new Vector3f(0, -1, 0), uvs.get(4)[3]));
 
-                vertices.add(Vertex.create(new Vector3f(0, 1, 0), color, new Vector3f(0, 1, 0), uvs.get(5)[0]));
-                vertices.add(Vertex.create(new Vector3f(1, 1, 0), color, new Vector3f(0, 1, 0), uvs.get(5)[1]));
-                vertices.add(Vertex.create(new Vector3f(1, 1, 1), color, new Vector3f(0, 1, 0), uvs.get(5)[2]));
-                vertices.add(Vertex.create(new Vector3f(0, 1, 1), color, new Vector3f(0, 1, 0), uvs.get(5)[3]));
+                vertices.add(DefaultVertex.create(new Vector3f(0, 1, 0), color, new Vector3f(0, 1, 0), uvs.get(5)[0]));
+                vertices.add(DefaultVertex.create(new Vector3f(1, 1, 0), color, new Vector3f(0, 1, 0), uvs.get(5)[1]));
+                vertices.add(DefaultVertex.create(new Vector3f(1, 1, 1), color, new Vector3f(0, 1, 0), uvs.get(5)[2]));
+                vertices.add(DefaultVertex.create(new Vector3f(0, 1, 1), color, new Vector3f(0, 1, 0), uvs.get(5)[3]));
 
                 indices.addAll(getCommonIndices());
 
@@ -222,7 +221,7 @@ public class PlayerDisplay extends Component
 
                 Texture texture = Objects.requireNonNull(TextureAtlasManager.get("items")).createSubTexture(currentItem.getTexture(), true);
 
-                Pair<List<Vertex>, List<Integer>> data = DataAlgorithms.extrudeTextureIntoMeshData(texture, 0.1f);
+                Pair<List<DefaultVertex>, List<Integer>> data = DataAlgorithms.extrudeTextureIntoMeshData(texture, 0.1f);
 
                 vertices.addAll(data.t());
                 indices.addAll(data.a());

@@ -3,6 +3,7 @@ package com.thatsoulyguy.moonlander.collider;
 import com.thatsoulyguy.moonlander.collider.colliders.BoxCollider;
 import com.thatsoulyguy.moonlander.collider.colliders.VoxelMeshCollider;
 import com.thatsoulyguy.moonlander.collider.handler.CollisionHandlerManager;
+import com.thatsoulyguy.moonlander.render.DebugRenderer;
 import com.thatsoulyguy.moonlander.system.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -209,6 +210,9 @@ public abstract class Collider extends Component
 
             voxelMin.set(voxelWorldPos.x - 0.5f, voxelWorldPos.y - 0.5f, voxelWorldPos.z - 0.5f);
             voxelMax.set(voxelWorldPos.x + 0.5f, voxelWorldPos.y + 0.5f, voxelWorldPos.z + 0.5f);
+
+            //DebugRenderer.addBox(voxelMin, voxelMax, new Vector3f(1.0f, 0.0f, 0.0f));
+            //DebugRenderer.addBox(boxMin, boxMax, new Vector3f(0.0f, 1.0f, 0.0f));
 
             if (Collider.intersectsGeneric(boxMin, boxMax, voxelMin, voxelMax))
             {

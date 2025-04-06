@@ -2,7 +2,6 @@ package com.thatsoulyguy.moonlander.render;
 
 import com.thatsoulyguy.moonlander.annotation.CustomConstructor;
 import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
-import com.thatsoulyguy.moonlander.core.Settings;
 import com.thatsoulyguy.moonlander.core.Window;
 import com.thatsoulyguy.moonlander.system.Component;
 import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
@@ -32,13 +31,18 @@ public class Mesh extends Component
 {
     private final @NotNull List<Vertex> vertices = new CopyOnWriteArrayList<>();
     private final @NotNull List<Integer> indices = new CopyOnWriteArrayList<>();
+    private @NotNull List<Consumer<Shader>> shaderCalls;
 
-    private transient int vao, vbo, cbo, nbo, uvbo, ibo;
+    private transient int vao;
+    private transient int[] vboIds;
+    private transient int ibo;
 
     private boolean isTransparent = false;
     private boolean inFront = false;
 
-    private transient @EffectivelyNotNull CountDownLatch initializationLatch = new CountDownLatch(1);
+    private transient CountDownLatch initializationLatch = new CountDownLatch(1);
+
+    private volatile boolean isUninitialized = false;
 
     private Mesh() { }
 
@@ -46,12 +50,10 @@ public class Mesh extends Component
     public void initialize()
     {
         initializationLatch = new CountDownLatch(1);
+        shaderCalls = new ArrayList<>();
 
         vao = -1;
-        vbo = -1;
-        cbo = -1;
-        nbo = -1;
-        uvbo = -1;
+        vboIds = null;
         ibo = -1;
     }
 
@@ -93,6 +95,11 @@ public class Mesh extends Component
         }
     }
 
+    public void addShaderCall(@NotNull Consumer<Shader> function)
+    {
+        shaderCalls.add(function);
+    }
+
     @Override
     public void renderDefault(@Nullable Camera camera)
     {
@@ -116,14 +123,19 @@ public class Mesh extends Component
         Shader shader = getGameObject().getComponentNotNull(Shader.class);
 
         GL41.glBindVertexArray(vao);
-        GL41.glEnableVertexAttribArray(0);
-        GL41.glEnableVertexAttribArray(1);
-        GL41.glEnableVertexAttribArray(2);
-        GL41.glEnableVertexAttribArray(3);
+
+        VertexLayout layout = vertices.isEmpty() ? null : vertices.getFirst().getVertexLayout();
+
+        if (layout != null)
+        {
+            for (int i = 0; i < layout.attributes().size(); i++)
+                GL41.glEnableVertexAttribArray(i);
+        }
 
         assert texture != null;
 
         texture.bind(0);
+
         shader.bind();
 
         shader.setUniform("diffuse", 0);
@@ -131,25 +143,29 @@ public class Mesh extends Component
         shader.setUniform("view", camera.getViewMatrix());
         shader.setUniform("model", getGameObject().getTransform().getModelMatrix());
 
+        shaderCalls.forEach(call -> call.accept(shader));
+        shaderCalls.clear();
+
         GL41.glDrawElements(GL41.GL_TRIANGLES, indices.size(), GL41.GL_UNSIGNED_INT, 0);
 
         shader.unbind();
         texture.unbind();
 
-        GL41.glDisableVertexAttribArray(0);
-        GL41.glDisableVertexAttribArray(1);
-        GL41.glDisableVertexAttribArray(2);
-        GL41.glDisableVertexAttribArray(3);
-        GL41.glBindVertexArray(0);
+        if (layout != null)
+        {
+            for (int i = 0; i < layout.attributes().size(); i++)
+                GL41.glDisableVertexAttribArray(i);
+        }
 
+        GL41.glBindVertexArray(0);
         GL41.glDisable(GL41.GL_BLEND);
         GL41.glDepthFunc(GL41.GL_LESS);
 
         int error = GL41.glGetError();
+
         if (error != GL41.GL_NO_ERROR)
             System.err.println("OpenGL Error (renderDefault): " + error);
     }
-
 
     @Override
     public void renderUI()
@@ -166,11 +182,11 @@ public class Mesh extends Component
         }
 
         Texture texture = getGameObject().getComponent(Texture.class);
-
         if (texture == null)
             texture = Objects.requireNonNull(getGameObject().getComponent(TextureAtlas.class)).getOutputTexture();
 
         Shader shader = getGameObject().getComponent(Shader.class);
+
         if (texture == null || shader == null)
         {
             System.err.println("Shader or Texture component(s) missing from GameObject: '" + getGameObject().getName() + "'!");
@@ -178,24 +194,25 @@ public class Mesh extends Component
         }
 
         Vector2i windowDimensions = Window.getDimensions();
+
         int windowWidth = windowDimensions.x;
         int windowHeight = windowDimensions.y;
 
         Matrix4f projectionMatrix = new Matrix4f().ortho2D(0, windowWidth, windowHeight, 0);
 
         GL41.glBindVertexArray(vao);
+        VertexLayout layout = vertices.isEmpty() ? null : vertices.getFirst().getVertexLayout();
 
-        GL41.glEnableVertexAttribArray(0);
-        GL41.glEnableVertexAttribArray(1);
-        GL41.glEnableVertexAttribArray(2);
-        GL41.glEnableVertexAttribArray(3);
+        if (layout != null)
+        {
+            for (int i = 0; i < layout.attributes().size(); i++)
+                GL41.glEnableVertexAttribArray(i);
+        }
 
         texture.bind(0);
         shader.bind();
-
         shader.setUniform("diffuse", 0);
         shader.setUniform("projection", projectionMatrix);
-
         shader.setUniform("model", getGameObject().getTransform().getModelMatrix());
 
         GL41.glDrawElements(GL41.GL_TRIANGLES, indices.size(), GL41.GL_UNSIGNED_INT, 0);
@@ -203,12 +220,13 @@ public class Mesh extends Component
         shader.unbind();
         texture.unbind();
 
-        GL41.glDisableVertexAttribArray(0);
-        GL41.glDisableVertexAttribArray(1);
-        GL41.glDisableVertexAttribArray(2);
-        GL41.glDisableVertexAttribArray(3);
-        GL41.glBindVertexArray(0);
+        if (layout != null)
+        {
+            for (int i = 0; i < layout.attributes().size(); i++)
+                GL41.glDisableVertexAttribArray(i);
+        }
 
+        GL41.glBindVertexArray(0);
         GL41.glEnable(GL41.GL_CULL_FACE);
 
         if (isTransparent)
@@ -220,26 +238,18 @@ public class Mesh extends Component
             System.err.println("OpenGL Error (renderUI): " + error);
     }
 
-    /**
-     * Provide read-only access to vertices.
-     */
-    public @NotNull List<Vertex> getVertices()
+    @SuppressWarnings("unchecked")
+    public <T extends Vertex> @NotNull List<T> getVertices()
     {
-        return List.copyOf(vertices);
+        return (List<T>) List.copyOf(vertices);
     }
 
-    /**
-     * Provide read-only access to indices.
-     */
     public @NotNull List<Integer> getIndices()
     {
         return List.copyOf(indices);
     }
 
-    /**
-     * Set the vertex list completely (replaces the old one).
-     */
-    public void setVertices(@NotNull List<Vertex> vertices)
+    public <T extends Vertex> void setVertices(@NotNull List<T> vertices)
     {
         synchronized (this.vertices)
         {
@@ -248,9 +258,6 @@ public class Mesh extends Component
         }
     }
 
-    /**
-     * Set the index list completely (replaces the old one).
-     */
     public void setIndices(@NotNull List<Integer> indices)
     {
         synchronized (this.indices)
@@ -280,13 +287,6 @@ public class Mesh extends Component
         this.inFront = inFront;
     }
 
-    /**
-     * Modify existing vertices and/or indices in-place. Once complete,
-     * the data is re-uploaded to the GPU so the changes appear in the mesh.
-     *
-     * @param vertexModifier The consumer for modifying the vertices
-     * @param indexModifier  The consumer for modifying the indices
-     */
     public void modify(@NotNull Consumer<List<Vertex>> vertexModifier, @NotNull Consumer<List<Integer>> indexModifier)
     {
         synchronized (this.vertices)
@@ -296,7 +296,6 @@ public class Mesh extends Component
 
             if (vertices.isEmpty() || indices.isEmpty())
                 return;
-
             if (vao != -1)
                 MainThreadExecutor.submit(this::updateBufferData);
             else
@@ -316,10 +315,7 @@ public class Mesh extends Component
 
     private boolean checkInitialization()
     {
-        if (initializationLatch.getCount() != 0)
-            return false;
-
-        return vao != -1 && vbo != -1 && cbo != -1 && uvbo != -1 && ibo != -1;
+        return initializationLatch.getCount() == 0 && vao != -1 && vboIds != null && ibo != -1;
     }
 
     private void createOrUpdateBuffers()
@@ -343,48 +339,35 @@ public class Mesh extends Component
         vao = GL41.glGenVertexArrays();
         GL41.glBindVertexArray(vao);
 
-        vbo = GL41.glGenBuffers();
-        GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, vbo);
-        GL41.glBufferData(GL41.GL_ARRAY_BUFFER,
-                toBuffer(localVertices, Vertex::getPosition),
-                GL41.GL_DYNAMIC_DRAW);
-        GL41.glVertexAttribPointer(0, 3, GL41.GL_FLOAT, false, 0, 0);
-        GL41.glEnableVertexAttribArray(0);
+        VertexLayout layout = localVertices.getFirst().getVertexLayout();
 
-        cbo = GL41.glGenBuffers();
-        GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, cbo);
-        GL41.glBufferData(GL41.GL_ARRAY_BUFFER,
-                toBuffer(localVertices, Vertex::getColor),
-                GL41.GL_DYNAMIC_DRAW);
-        GL41.glVertexAttribPointer(1, 3, GL41.GL_FLOAT, false, 0, 0);
-        GL41.glEnableVertexAttribArray(1);
+        int numAttributes = layout.attributes().size();
 
-        nbo = GL41.glGenBuffers();
-        GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, nbo);
-        GL41.glBufferData(GL41.GL_ARRAY_BUFFER,
-                toBuffer(localVertices, Vertex::getNormal),
-                GL41.GL_DYNAMIC_DRAW);
-        GL41.glVertexAttribPointer(2, 3, GL41.GL_FLOAT, false, 0, 0);
-        GL41.glEnableVertexAttribArray(2);
+        vboIds = new int[numAttributes];
 
-        uvbo = GL41.glGenBuffers();
-        GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, uvbo);
-        GL41.glBufferData(GL41.GL_ARRAY_BUFFER,
-                toBuffer(localVertices, Vertex::getUVs),
-                GL41.GL_DYNAMIC_DRAW);
-        GL41.glVertexAttribPointer(3, 2, GL41.GL_FLOAT, false, 0, 0);
-        GL41.glEnableVertexAttribArray(3);
+        for (int i = 0; i < numAttributes; i++)
+        {
+            vboIds[i] = GL41.glGenBuffers();
+
+            GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, vboIds[i]);
+            FloatBuffer buffer = toBufferForAttribute(localVertices, i, layout.attributes().get(i).count());
+            GL41.glBufferData(GL41.GL_ARRAY_BUFFER, buffer, GL41.GL_DYNAMIC_DRAW);
+
+            VertexAttribute attr = layout.attributes().get(i);
+
+            GL41.glVertexAttribPointer(i, attr.count(), attr.type(), false, 0, 0);
+            GL41.glEnableVertexAttribArray(i);
+        }
 
         ibo = GL41.glGenBuffers();
+
         GL41.glBindBuffer(GL41.GL_ELEMENT_ARRAY_BUFFER, ibo);
-        GL41.glBufferData(GL41.GL_ELEMENT_ARRAY_BUFFER,
-                toBuffer(localIndices),
-                GL41.GL_DYNAMIC_DRAW);
+        IntBuffer idxBuffer = toBuffer(localIndices);
+        GL41.glBufferData(GL41.GL_ELEMENT_ARRAY_BUFFER, idxBuffer, GL41.GL_DYNAMIC_DRAW);
 
         GL41.glBindVertexArray(0);
 
         int error = GL41.glGetError();
-
         if (error != GL41.GL_NO_ERROR)
             System.err.println("OpenGL Error (createOrUpdateBuffers):" + error);
     }
@@ -409,34 +392,33 @@ public class Mesh extends Component
 
         GL41.glBindVertexArray(vao);
 
-        FloatBuffer posBuffer = toBuffer(localVertices, Vertex::getPosition);
-        GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, vbo);
-        resizeOrSubData(GL41.GL_ARRAY_BUFFER, posBuffer);
+        VertexLayout layout = localVertices.getFirst().getVertexLayout();
 
-        FloatBuffer colBuffer = toBuffer(localVertices, Vertex::getColor);
-        GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, cbo);
-        resizeOrSubData(GL41.GL_ARRAY_BUFFER, colBuffer);
+        int numAttributes = layout.attributes().size();
 
-        FloatBuffer norBuffer = toBuffer(localVertices, Vertex::getNormal);
-        GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, nbo);
-        resizeOrSubData(GL41.GL_ARRAY_BUFFER, norBuffer);
+        for (int i = 0; i < numAttributes; i++)
+        {
+            GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, vboIds[i]);
 
-        FloatBuffer uvBuffer = toBuffer(localVertices, Vertex::getUVs);
-        GL41.glBindBuffer(GL41.GL_ARRAY_BUFFER, uvbo);
-        resizeOrSubData(GL41.GL_ARRAY_BUFFER, uvBuffer);
+            FloatBuffer buffer = toBufferForAttribute(localVertices, i, layout.attributes().get(i).count());
+            resizeOrSubData(GL41.GL_ARRAY_BUFFER, buffer);
+        }
+
+        GL41.glBindBuffer(GL41.GL_ELEMENT_ARRAY_BUFFER, ibo);
 
         IntBuffer idxBuffer = toBuffer(localIndices);
-        GL41.glBindBuffer(GL41.GL_ELEMENT_ARRAY_BUFFER, ibo);
+
         resizeOrSubData(GL41.GL_ELEMENT_ARRAY_BUFFER, idxBuffer);
 
         GL41.glBindVertexArray(0);
 
         int error = GL41.glGetError();
+
         if (error != GL41.GL_NO_ERROR)
             System.err.println("OpenGL Error (updateBufferData): " + error);
     }
 
-    private <T extends Buffer> void resizeOrSubData(int target, @NotNull T data)
+    private <T1 extends java.nio.Buffer> void resizeOrSubData(int target, @NotNull T1 data)
     {
         int newSize = data.capacity() * (data instanceof FloatBuffer ? Float.BYTES : Integer.BYTES);
         int currentSize = GL41.glGetBufferParameteri(target, GL41.GL_BUFFER_SIZE);
@@ -450,32 +432,12 @@ public class Mesh extends Component
             GL41.glBufferSubData(target, 0, buffer);
     }
 
-    private static <T> @NotNull FloatBuffer toBuffer(@NotNull List<Vertex> vertices, @NotNull Function<Vertex, T> extractor)
+    private static <T2 extends Vertex> @NotNull FloatBuffer toBufferForAttribute(@NotNull List<T2> vertices, int attributeIndex, int count)
     {
-        if (vertices.isEmpty())
-            throw new IllegalArgumentException("The list of vertices cannot be empty.");
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(vertices.size() * count);
 
-        Object sample = extractor.apply(vertices.getFirst());
-
-        final int dimensions;
-
-        if (sample instanceof Vector3f)
-            dimensions = 3;
-        else if (sample instanceof Vector2f)
-            dimensions = 2;
-        else
-            throw new IllegalArgumentException("Unsupported vector type: " + sample.getClass().getName());
-
-        FloatBuffer buffer = BufferUtils.createFloatBuffer(vertices.size() * dimensions);
-
-        for (Vertex vertex : vertices)
-        {
-            T vector = extractor.apply(vertex);
-            if (vector instanceof Vector3f vec3)
-                buffer.put(vec3.x).put(vec3.y).put(vec3.z);
-            else if (vector instanceof Vector2f vec2)
-                buffer.put(vec2.x).put(vec2.y);
-        }
+        for (T2 vertex : vertices)
+            vertex.putAttributeData(attributeIndex, buffer);
 
         buffer.flip();
 
@@ -499,12 +461,33 @@ public class Mesh extends Component
     {
         MainThreadExecutor.submit(() ->
         {
-            GL41.glDeleteVertexArrays(vao);
-            GL41.glDeleteBuffers(vbo);
-            GL41.glDeleteBuffers(cbo);
-            GL41.glDeleteBuffers(nbo);
-            GL41.glDeleteBuffers(uvbo);
-            GL41.glDeleteBuffers(ibo);
+            synchronized (this)
+            {
+                if (isUninitialized)
+                    return;
+
+                isUninitialized = true;
+
+                if (vao != -1)
+                {
+                    GL41.glDeleteVertexArrays(vao);
+                    vao = -1;
+                }
+
+                if (vboIds != null)
+                {
+                    for (int id : vboIds)
+                        GL41.glDeleteBuffers(id);
+
+                    vboIds = null;
+                }
+
+                if (ibo != -1)
+                {
+                    GL41.glDeleteBuffers(ibo);
+                    ibo = -1;
+                }
+            }
         });
     }
 

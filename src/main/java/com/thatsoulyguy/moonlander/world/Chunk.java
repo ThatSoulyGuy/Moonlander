@@ -6,12 +6,9 @@ import com.thatsoulyguy.moonlander.block.BlockRegistry;
 import com.thatsoulyguy.moonlander.collider.colliders.VoxelMeshCollider;
 import com.thatsoulyguy.moonlander.entity.Entity;
 import com.thatsoulyguy.moonlander.render.Mesh;
-import com.thatsoulyguy.moonlander.render.Vertex;
 import com.thatsoulyguy.moonlander.system.Component;
-import com.thatsoulyguy.moonlander.thread.MainThreadExecutor;
 import com.thatsoulyguy.moonlander.util.CoordinateHelper;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
@@ -21,12 +18,16 @@ import java.util.*;
 @CustomConstructor("create")
 public class Chunk extends Component
 {
-    public static final byte SIZE = 16;
+    public static final int SIZE = 16;
 
-    private transient List<Vertex> vertices = new ArrayList<>();
+    private transient List<ChunkVertex> vertices = new ArrayList<>();
     private transient List<Integer> indices = new ArrayList<>();
 
-    private Map<Integer, Short> blocks = new HashMap<>();
+    private transient List<Vector3f> renderingVoxelPositions;
+
+    private long[] blockData;
+    private List<Short> palette;
+    private int bitsPerBlock;
 
     private boolean modified = false;
     private boolean needsToUpdate = false;
@@ -43,10 +44,17 @@ public class Chunk extends Component
     {
         vertices = new ArrayList<>();
         indices = new ArrayList<>();
+        renderingVoxelPositions = new ArrayList<>();
 
-        List<Vector3f> renderingVoxelPositions = new ArrayList<>();
+        TextureAtlas textureAtlas = getGameObject().getComponent(TextureAtlas.class);
 
-        needsToUpdate = false;
+        if (textureAtlas == null)
+        {
+            System.err.println("Texture atlas was not found on chunk object!");
+            return;
+        }
+
+        greedyMesh(textureAtlas);
 
         for (int x = 0; x < SIZE; x++)
         {
@@ -54,25 +62,14 @@ public class Chunk extends Component
             {
                 for (int z = 0; z < SIZE; z++)
                 {
-                    short blockId = getBlock(x, y, z);
-
-                    if (blockId == BlockRegistry.BLOCK_AIR.getId())
+                    if (getBlock(x, y, z) == BlockRegistry.BLOCK_AIR.getId())
                         continue;
 
-                    TextureAtlas textureAtlas = getGameObject().getComponent(TextureAtlas.class);
-
-                    if (textureAtlas == null)
-                    {
-                        System.err.println("Texture atlas was not found on chunk object!");
-                        return;
-                    }
-
-                    Block block = Objects.requireNonNull(BlockRegistry.get(blockId));
-
-                    if (block.updates())
+                    if (Objects.requireNonNull(BlockRegistry.get(getBlock(x, y, z))).updates())
                         needsToUpdate = true;
 
-                    renderFaceIfNeeded(x, y, z, textureAtlas, block, renderingVoxelPositions);
+                    if (isBlockExposed(x, y, z))
+                        addRenderingVoxelPosition(x, y, z);
                 }
             }
         }
@@ -97,15 +94,14 @@ public class Chunk extends Component
 
         if (!vertices.isEmpty() && !indices.isEmpty())
         {
-            mesh.modify((verticesIn ->
+            mesh.modify(vertList ->
             {
-                verticesIn.clear();
-                verticesIn.addAll(vertices);
-            }),
-            (indicesIn) ->
+                vertList.clear();
+                vertList.addAll(vertices);
+            }, idxList ->
             {
-                indicesIn.clear();
-                indicesIn.addAll(indices);
+                idxList.clear();
+                idxList.addAll(indices);
             });
 
             collider.setVoxels(renderingVoxelPositions);
@@ -119,131 +115,763 @@ public class Chunk extends Component
             return;
 
         Vector3f chunkWorldPos = getGameObject().getTransform().getWorldPosition();
+        int totalBlocks = SIZE * SIZE * SIZE;
 
-        blocks.entrySet().parallelStream().forEach(entry ->
+        for (int index = 0; index < totalBlocks; index++)
         {
-            int index = entry.getKey();
-            short blockId = entry.getValue();
-
             Vector3i localPos = fromIndex(index);
 
-            Vector3i globalBlockPos = new Vector3i(
-                    (int)(chunkWorldPos.x) + localPos.x,
-                    (int)(chunkWorldPos.y) + localPos.y,
-                    (int)(chunkWorldPos.z) + localPos.z
-            );
+            short blockId = getBlock(localPos.x, localPos.y, localPos.z);
 
-            BlockRegistry.get(blockId).onTick(World.getLocalWorld(), this, globalBlockPos);
-        });
-    }
+            if (blockId == BlockRegistry.BLOCK_AIR.getId())
+                continue;
 
-    private void renderFaceIfNeeded(int x, int y, int z, TextureAtlas textureAtlas, Block block, List<Vector3f> renderingVoxelPositions)
-    {
-        Vector3f basePosition = new Vector3f(x + 0.5f, y + 0.5f, z + 0.5f);
+            Block block = BlockRegistry.get(blockId);
 
-        if (!renderingVoxelPositions.contains(basePosition) && block.isSolid())
-            renderingVoxelPositions.add(basePosition);
-
-        Vector3i[] directions =
-        {
-            new Vector3i( 0,  0,  1),
-            new Vector3i( 0,  0, -1),
-            new Vector3i( 0,  1,  0),
-            new Vector3i( 0, -1,  0),
-            new Vector3i( 1,  0,  0),
-            new Vector3i(-1,  0,  0)
-        };
-
-        int[] textureRotations = { 180, 180, 0, 0, -90, 90 };
-        int[] colorIndices = { 2, 3, 0, 1, 4, 5 };
-
-        for (int i = 0; i < directions.length; i++)
-        {
-            Vector3i direction = directions[i];
-            int colorIndex = colorIndices[i];
-            int rotation = textureRotations[i];
-            Vector3i neighborPosition = new Vector3i(x + direction.x, y + direction.y, z + direction.z);
-
-            Block neighborBlock = BlockRegistry.get(getBlock(neighborPosition));
-
-            if (shouldRenderFace(neighborPosition) || (neighborBlock != null && !neighborBlock.isSolid()))
+            if (block != null && block.updates())
             {
-                addFace(
-                        new Vector3i(x, y, z),
-                        direction,
-                        block.getColors()[colorIndex],
-                        textureAtlas.getSubTextureCoordinates(block.getTextures()[colorIndex], rotation)
+                Vector3i globalBlockPos = new Vector3i(
+                        (int) (chunkWorldPos.x) + localPos.x,
+                        (int) (chunkWorldPos.y) + localPos.y,
+                        (int) (chunkWorldPos.z) + localPos.z
                 );
+
+                block.onTick(World.getLocalWorld(), this, globalBlockPos);
             }
         }
     }
 
-    private void addRenderingVoxelPosition(@NotNull List<Vector3f> voxelPositions, int x, int y, int z)
+    private void greedyMesh(@NotNull TextureAtlas textureAtlas)
     {
-        Vector3f position = new Vector3f(x + 0.5f, y + 0.5f, z + 0.5f);
-
-        if (!voxelPositions.contains(position))
-            voxelPositions.add(position);
+        greedyMeshPosZ(textureAtlas);
+        greedyMeshNegZ(textureAtlas);
+        greedyMeshPosY(textureAtlas);
+        greedyMeshNegY(textureAtlas);
+        greedyMeshPosX(textureAtlas);
+        greedyMeshNegX(textureAtlas);
     }
 
-    /**
-     * Sets the block at the given position to 'type' and updates the chunk mesh.
-     * If you "break" a block (set it to air), this will remove its faces.
-     * If you place a new block, it'll add its faces.
-     *
-     * @param interactor The entity setting the block
-     * @param blockPosition The (x, y, z) position in chunk space
-     * @param type The block ID to place
-     */
+    private void greedyMeshPosZ(@NotNull TextureAtlas textureAtlas)
+    {
+        int airId = BlockRegistry.BLOCK_AIR.getId();
+
+        for (int z = 0; z < SIZE; z++)
+        {
+            int[][] mask = new int[SIZE][SIZE];
+
+            for (int x = 0; x < SIZE; x++)
+            {
+                for (int y = 0; y < SIZE; y++)
+                {
+                    short blockId = getBlock(x, y, z);
+                    short neighbor = getNeighborBlock(x, y, z, new Vector3i(0, 0, 1));
+
+                    if (blockId != airId && neighbor != -1 && (!BlockRegistry.get(neighbor).isSolid() || neighbor == airId))
+                        mask[x][y] = blockId;
+                    else
+                        mask[x][y] = -1;
+                }
+            }
+
+            boolean[][] visited = new boolean[SIZE][SIZE];
+
+            for (int y = 0; y < SIZE; y++)
+            {
+                for (int x = 0; x < SIZE; x++)
+                {
+                    if (visited[x][y] || mask[x][y] == -1)
+                        continue;
+
+                    int id = mask[x][y];
+                    int w = 1;
+
+                    while (x + w < SIZE && mask[x + w][y] == id && !visited[x + w][y])
+                        w++;
+
+                    int h = 1;
+
+                    boolean done = false;
+
+                    while (y + h < SIZE && !done)
+                    {
+                        for (int k = 0; k < w; k++)
+                        {
+                            if (mask[x + k][y + h] != id || visited[x + k][y + h])
+                            {
+                                done = true;
+                                break;
+                            }
+                        }
+
+                        if (!done)
+                            h++;
+                    }
+
+                    for (int dy = 0; dy < h; dy++)
+                        for (int dx = 0; dx < w; dx++)
+                            visited[x + dx][y + dy] = true;
+
+                    addMergedFacePosZ(x, y, z, w, h, (short) id, textureAtlas);
+                }
+            }
+        }
+    }
+
+    private void greedyMeshNegZ(@NotNull TextureAtlas textureAtlas)
+    {
+        int airId = BlockRegistry.BLOCK_AIR.getId();
+
+        for (int z = 0; z < SIZE; z++)
+        {
+            int[][] mask = new int[SIZE][SIZE];
+
+            for (int x = 0; x < SIZE; x++)
+            {
+                for (int y = 0; y < SIZE; y++)
+                {
+                    short blockId = getBlock(x, y, z);
+                    short neighbor = getNeighborBlock(x, y, z, new Vector3i(0, 0, -1));
+
+                    if (blockId != airId && neighbor != -1 && (!BlockRegistry.get(neighbor).isSolid() || neighbor == airId))
+                        mask[x][y] = blockId;
+                    else
+                        mask[x][y] = -1;
+                }
+            }
+
+            boolean[][] visited = new boolean[SIZE][SIZE];
+
+            for (int y = 0; y < SIZE; y++)
+            {
+                for (int x = 0; x < SIZE; x++)
+                {
+                    if (visited[x][y] || mask[x][y] == -1)
+                        continue;
+
+                    int id = mask[x][y];
+                    int w = 1;
+
+                    while (x + w < SIZE && mask[x + w][y] == id && !visited[x + w][y])
+                        w++;
+
+                    int h = 1;
+                    boolean done = false;
+
+                    while (y + h < SIZE && !done)
+                    {
+                        for (int k = 0; k < w; k++)
+                        {
+                            if (mask[x + k][y + h] != id || visited[x + k][y + h])
+                            {
+                                done = true;
+                                break;
+                            }
+                        }
+
+                        if (!done)
+                            h++;
+                    }
+
+                    for (int dy = 0; dy < h; dy++)
+                        for (int dx = 0; dx < w; dx++)
+                            visited[x + dx][y + dy] = true;
+
+                    addMergedFaceNegZ(x, y, z, w, h, (short) id, textureAtlas);
+                }
+            }
+        }
+    }
+
+    private void greedyMeshPosY(@NotNull TextureAtlas textureAtlas)
+    {
+        int airId = BlockRegistry.BLOCK_AIR.getId();
+
+        for (int y = 0; y < SIZE; y++)
+        {
+            int[][] mask = new int[SIZE][SIZE];
+
+            for (int x = 0; x < SIZE; x++)
+            {
+                for (int z = 0; z < SIZE; z++)
+                {
+                    short blockId = getBlock(x, y, z);
+                    short neighbor = getNeighborBlock(x, y, z, new Vector3i(0, 1, 0));
+
+                    if (blockId != airId && neighbor != -1 && (!BlockRegistry.get(neighbor).isSolid() || neighbor == airId))
+                        mask[x][z] = blockId;
+                    else
+                        mask[x][z] = -1;
+                }
+            }
+
+            boolean[][] visited = new boolean[SIZE][SIZE];
+
+            for (int z = 0; z < SIZE; z++)
+            {
+                for (int x = 0; x < SIZE; x++)
+                {
+                    if (visited[x][z] || mask[x][z] == -1)
+                        continue;
+
+                    int id = mask[x][z];
+                    int w = 1;
+
+                    while (x + w < SIZE && mask[x + w][z] == id && !visited[x + w][z])
+                        w++;
+
+                    int h = 1;
+                    boolean done = false;
+
+                    while (z + h < SIZE && !done)
+                    {
+                        for (int k = 0; k < w; k++)
+                        {
+                            if (mask[x + k][z + h] != id || visited[x + k][z + h])
+                            {
+                                done = true;
+                                break;
+                            }
+                        }
+
+                        if (!done)
+                            h++;
+                    }
+
+                    for (int dz = 0; dz < h; dz++)
+                        for (int dx = 0; dx < w; dx++)
+                            visited[x + dx][z + dz] = true;
+
+                    addMergedFacePosY(x, y, z, w, h, (short) id, textureAtlas);
+                }
+            }
+        }
+    }
+
+    private void greedyMeshNegY(@NotNull TextureAtlas textureAtlas)
+    {
+        int airId = BlockRegistry.BLOCK_AIR.getId();
+
+        for (int y = 0; y < SIZE; y++)
+        {
+            int[][] mask = new int[SIZE][SIZE];
+            for (int x = 0; x < SIZE; x++)
+            {
+                for (int z = 0; z < SIZE; z++)
+                {
+                    short blockId = getBlock(x, y, z);
+                    short neighbor = getNeighborBlock(x, y, z, new Vector3i(0, -1, 0));
+
+                    if (blockId != airId && neighbor != -1 && (!BlockRegistry.get(neighbor).isSolid() || neighbor == airId))
+                        mask[x][z] = blockId;
+                    else
+                        mask[x][z] = -1;
+                }
+            }
+
+            boolean[][] visited = new boolean[SIZE][SIZE];
+
+            for (int z = 0; z < SIZE; z++)
+            {
+                for (int x = 0; x < SIZE; x++)
+                {
+                    if (visited[x][z] || mask[x][z] == -1)
+                        continue;
+
+                    int id = mask[x][z];
+                    int w = 1;
+
+                    while (x + w < SIZE && mask[x + w][z] == id && !visited[x + w][z])
+                        w++;
+
+                    int h = 1;
+                    boolean done = false;
+
+                    while (z + h < SIZE && !done)
+                    {
+                        for (int k = 0; k < w; k++)
+                        {
+                            if (mask[x + k][z + h] != id || visited[x + k][z + h])
+                            {
+                                done = true;
+                                break;
+                            }
+                        }
+
+                        if (!done)
+                            h++;
+                    }
+
+                    for (int dz = 0; dz < h; dz++)
+                        for (int dx = 0; dx < w; dx++)
+                            visited[x + dx][z + dz] = true;
+
+                    addMergedFaceNegY(x, y, z, w, h, (short) id, textureAtlas);
+                }
+            }
+        }
+    }
+
+    private void greedyMeshPosX(@NotNull TextureAtlas textureAtlas)
+    {
+        int airId = BlockRegistry.BLOCK_AIR.getId();
+
+        for (int x = 0; x < SIZE; x++)
+        {
+            int[][] mask = new int[SIZE][SIZE];
+
+            for (int y = 0; y < SIZE; y++)
+            {
+                for (int z = 0; z < SIZE; z++)
+                {
+                    short blockId = getBlock(x, y, z);
+                    short neighbor = getNeighborBlock(x, y, z, new Vector3i(1, 0, 0));
+
+                    if (blockId != airId && neighbor != -1 && (!BlockRegistry.get(neighbor).isSolid() || neighbor == airId))
+                        mask[y][z] = blockId;
+                    else
+                        mask[y][z] = -1;
+                }
+            }
+
+            boolean[][] visited = new boolean[SIZE][SIZE];
+
+            for (int z = 0; z < SIZE; z++)
+            {
+                for (int y = 0; y < SIZE; y++)
+                {
+                    if (visited[y][z] || mask[y][z] == -1)
+                        continue;
+
+                    int id = mask[y][z];
+                    int w = 1;
+
+                    while (y + w < SIZE && mask[y + w][z] == id && !visited[y + w][z])
+                        w++;
+
+                    int h = 1;
+
+                    boolean done = false;
+
+                    while (z + h < SIZE && !done)
+                    {
+                        for (int k = 0; k < w; k++)
+                        {
+                            if (mask[y + k][z + h] != id || visited[y + k][z + h])
+                            {
+                                done = true;
+                                break;
+                            }
+                        }
+
+                        if (!done)
+                            h++;
+                    }
+
+                    for (int dy = 0; dy < w; dy++)
+                        for (int dz = 0; dz < h; dz++)
+                            visited[y + dy][z + dz] = true;
+
+                    addMergedFacePosX(x, y, z, w, h, (short) id, textureAtlas);
+                }
+            }
+        }
+    }
+
+    private void greedyMeshNegX(@NotNull TextureAtlas textureAtlas)
+    {
+        int airId = BlockRegistry.BLOCK_AIR.getId();
+
+        for (int x = 0; x < SIZE; x++)
+        {
+            int[][] mask = new int[SIZE][SIZE];
+
+            for (int y = 0; y < SIZE; y++)
+            {
+                for (int z = 0; z < SIZE; z++)
+                {
+                    short blockId = getBlock(x, y, z);
+                    short neighbor = getNeighborBlock(x, y, z, new Vector3i(-1, 0, 0));
+
+                    if (blockId != airId && neighbor != -1 && (!BlockRegistry.get(neighbor).isSolid() || neighbor == airId))
+                        mask[y][z] = blockId;
+                    else
+                        mask[y][z] = -1;
+                }
+            }
+
+            boolean[][] visited = new boolean[SIZE][SIZE];
+
+            for (int z = 0; z < SIZE; z++)
+            {
+                for (int y = 0; y < SIZE; y++)
+                {
+                    if (visited[y][z] || mask[y][z] == -1)
+                        continue;
+
+                    int id = mask[y][z];
+                    int w = 1;
+
+                    while (y + w < SIZE && mask[y + w][z] == id && !visited[y + w][z])
+                        w++;
+
+                    int h = 1;
+
+                    boolean done = false;
+
+                    while (z + h < SIZE && !done)
+                    {
+                        for (int k = 0; k < w; k++)
+                        {
+                            if (mask[y + k][z + h] != id || visited[y + k][z + h])
+                            {
+                                done = true;
+                                break;
+                            }
+                        }
+
+                        if (!done)
+                            h++;
+                    }
+
+                    for (int dy = 0; dy < w; dy++)
+                        for (int dz = 0; dz < h; dz++)
+                            visited[y + dy][z + dz] = true;
+
+                    addMergedFaceNegX(x, y, z, w, h, (short) id, textureAtlas);
+                }
+            }
+        }
+    }
+
+    private void addMergedFacePosZ(int x, int y, int z, int w, int h, short blockId, @NotNull TextureAtlas textureAtlas)
+    {
+        Vector3f v0 = new Vector3f(x,     y,     z + 1);
+        Vector3f v1 = new Vector3f(x,     y + h, z + 1);
+        Vector3f v2 = new Vector3f(x + w, y + h, z + 1);
+        Vector3f v3 = new Vector3f(x + w, y,     z + 1);
+
+        Block block = BlockRegistry.get(blockId);
+        Vector3f color = block.getColors()[2];
+
+        Vector2f[] localUVs = textureAtlas.getSubTextureCoordinates(block.getTextures()[2], 180);
+        
+        Vector2f base = new Vector2f(localUVs[0]);
+        Vector2f tileSize = new Vector2f(localUVs[2]).sub(localUVs[0]);
+
+        Vector2f uv0 = new Vector2f(0, 0);
+        Vector2f uv1 = new Vector2f(0, h);
+        Vector2f uv2 = new Vector2f(w, h);
+        Vector2f uv3 = new Vector2f(w, 0);
+
+        Vector2f atlasOffset = base;
+        Vector2f atlasTileSize = tileSize;
+
+        int startIndex = vertices.size();
+
+        vertices.add(ChunkVertex.create(v0, color, new Vector3f(0, 0, 1), uv0, atlasOffset, atlasTileSize));
+        vertices.add(ChunkVertex.create(v1, color, new Vector3f(0, 0, 1), uv1, atlasOffset, atlasTileSize));
+        vertices.add(ChunkVertex.create(v2, color, new Vector3f(0, 0, 1), uv2, atlasOffset, atlasTileSize));
+        vertices.add(ChunkVertex.create(v3, color, new Vector3f(0, 0, 1), uv3, atlasOffset, atlasTileSize));
+
+        indices.add(startIndex);
+        indices.add(startIndex + 2);
+        indices.add(startIndex + 1);
+        indices.add(startIndex + 2);
+        indices.add(startIndex);
+        indices.add(startIndex + 3);
+    }
+
+    private void addMergedFaceNegZ(int x, int y, int z, int w, int h, short blockId, @NotNull TextureAtlas textureAtlas)
+    {
+        Vector3f v0 = new Vector3f(x,     y,     z);
+        Vector3f v1 = new Vector3f(x,     y + h, z);
+        Vector3f v2 = new Vector3f(x + w, y + h, z);
+        Vector3f v3 = new Vector3f(x + w, y,     z);
+
+        Block block = BlockRegistry.get(blockId);
+        Vector3f color = block.getColors()[3];
+
+        Vector2f[] localUVs = textureAtlas.getSubTextureCoordinates(block.getTextures()[3], 180);
+        
+        Vector2f base = new Vector2f(localUVs[0]);
+        Vector2f tileSize = new Vector2f(localUVs[2]).sub(localUVs[0]);
+
+        Vector2f uv0 = new Vector2f(w, 0);
+        Vector2f uv1 = new Vector2f(w, h);
+        Vector2f uv2 = new Vector2f(0, h);
+        Vector2f uv3 = new Vector2f(0, 0);
+
+        Vector2f atlasOffset = base;
+        Vector2f atlasTileSize = tileSize;
+
+        int startIndex = vertices.size();
+
+        vertices.add(ChunkVertex.create(v0, color, new Vector3f(0, 0, -1), uv0, atlasOffset, atlasTileSize));
+        vertices.add(ChunkVertex.create(v1, color, new Vector3f(0, 0, -1), uv1, atlasOffset, atlasTileSize));
+        vertices.add(ChunkVertex.create(v2, color, new Vector3f(0, 0, -1), uv2, atlasOffset, atlasTileSize));
+        vertices.add(ChunkVertex.create(v3, color, new Vector3f(0, 0, -1), uv3, atlasOffset, atlasTileSize));
+
+        indices.add(startIndex);
+        indices.add(startIndex + 1);
+        indices.add(startIndex + 2);
+        indices.add(startIndex + 2);
+        indices.add(startIndex + 3);
+        indices.add(startIndex);
+    }
+
+    private void addMergedFacePosY(int x, int y, int z, int w, int h, short blockId, @NotNull TextureAtlas textureAtlas)
+    {
+        Vector3f v0 = new Vector3f(x,     y + 1, z);
+        Vector3f v1 = new Vector3f(x,     y + 1, z + h);
+        Vector3f v2 = new Vector3f(x + w, y + 1, z + h);
+        Vector3f v3 = new Vector3f(x + w, y + 1, z);
+
+        Block block = BlockRegistry.get(blockId);
+        Vector3f color = block.getColors()[0];
+
+        Vector2f[] localUVs = textureAtlas.getSubTextureCoordinates(block.getTextures()[0]);
+        
+        Vector2f base = new Vector2f(localUVs[0]);
+        Vector2f tileSize = new Vector2f(localUVs[2]).sub(localUVs[0]);
+
+        float eps = 0.0001f;
+
+        Vector2f uv0 = new Vector2f(0, 0);
+        Vector2f uv1 = new Vector2f(0, h - eps);
+        Vector2f uv2 = new Vector2f(w - eps, h - eps);
+        Vector2f uv3 = new Vector2f(w - eps, 0);
+
+        Vector2f atlasOffset = base;
+        Vector2f atlasTileSize = tileSize;
+
+        int startIndex = vertices.size();
+
+        vertices.add(ChunkVertex.create(v0, color, new Vector3f(0, 1, 0), uv0, atlasOffset, atlasTileSize));
+        vertices.add(ChunkVertex.create(v1, color, new Vector3f(0, 1, 0), uv1, atlasOffset, atlasTileSize));
+        vertices.add(ChunkVertex.create(v2, color, new Vector3f(0, 1, 0), uv2, atlasOffset, atlasTileSize));
+        vertices.add(ChunkVertex.create(v3, color, new Vector3f(0, 1, 0), uv3, atlasOffset, atlasTileSize));
+
+        indices.add(startIndex);
+        indices.add(startIndex + 1);
+        indices.add(startIndex + 2);
+        indices.add(startIndex + 2);
+        indices.add(startIndex + 3);
+        indices.add(startIndex);
+    }
+
+    private void addMergedFaceNegY(int x, int y, int z, int w, int h, short blockId, @NotNull TextureAtlas textureAtlas)
+    {
+        Vector3f v0 = new Vector3f(x,     y, z);
+        Vector3f v1 = new Vector3f(x,     y, z + h);
+        Vector3f v2 = new Vector3f(x + w, y, z + h);
+        Vector3f v3 = new Vector3f(x + w, y, z);
+
+        Block block = BlockRegistry.get(blockId);
+        Vector3f color = block.getColors()[1];
+
+        Vector2f[] localUVs = textureAtlas.getSubTextureCoordinates(block.getTextures()[1]);
+        
+        Vector2f base = new Vector2f(localUVs[0]);
+        Vector2f tileSize = new Vector2f(localUVs[2]).sub(localUVs[0]);
+
+        float eps = 0.0001f;
+
+        Vector2f uv0 = new Vector2f(0,         0);
+        Vector2f uv1 = new Vector2f(0,         h - eps);
+        Vector2f uv2 = new Vector2f(w - eps,   h - eps);
+        Vector2f uv3 = new Vector2f(w - eps,   0);
+
+        Vector2f atlasOffset = base;
+        Vector2f atlasTileSize = tileSize;
+
+        int startIndex = vertices.size();
+        vertices.add(ChunkVertex.create(v0, color, new Vector3f(0, -1, 0), uv0, atlasOffset, atlasTileSize));
+        vertices.add(ChunkVertex.create(v1, color, new Vector3f(0, -1, 0), uv1, atlasOffset, atlasTileSize));
+        vertices.add(ChunkVertex.create(v2, color, new Vector3f(0, -1, 0), uv2, atlasOffset, atlasTileSize));
+        vertices.add(ChunkVertex.create(v3, color, new Vector3f(0, -1, 0), uv3, atlasOffset, atlasTileSize));
+
+        indices.add(startIndex);
+        indices.add(startIndex + 2);
+        indices.add(startIndex + 1);
+        indices.add(startIndex + 2);
+        indices.add(startIndex);
+        indices.add(startIndex + 3);
+    }
+
+    private void addMergedFacePosX(int x, int y, int z, int w, int h, short blockId, @NotNull TextureAtlas textureAtlas)
+    {
+        Vector3f v0 = new Vector3f(x + 1, y,     z);
+        Vector3f v1 = new Vector3f(x + 1, y + w, z);
+        Vector3f v2 = new Vector3f(x + 1, y + w, z + h);
+        Vector3f v3 = new Vector3f(x + 1, y,     z + h);
+
+        Block block = BlockRegistry.get(blockId);
+        Vector3f color = block.getColors()[4];
+
+        Vector2f[] localUVs = textureAtlas.getSubTextureCoordinates(block.getTextures()[4], -90);
+        
+        Vector2f base = new Vector2f(localUVs[0]);
+        Vector2f tileSize = new Vector2f(localUVs[2]).sub(localUVs[0]);
+
+        float eps = 0.0001f;
+
+        Vector2f uv0 = new Vector2f(0, 0);
+        Vector2f uv1 = new Vector2f(0, w - eps);
+        Vector2f uv2 = new Vector2f(h - eps, w - eps);
+        Vector2f uv3 = new Vector2f(h - eps, 0);
+
+        Vector2f atlasOffset = base;
+        Vector2f atlasTileSize = tileSize;
+
+        int startIndex = vertices.size();
+
+        vertices.add(ChunkVertex.create(v0, color, new Vector3f(1, 0, 0), uv0, atlasOffset, atlasTileSize));
+        vertices.add(ChunkVertex.create(v1, color, new Vector3f(1, 0, 0), uv1, atlasOffset, atlasTileSize));
+        vertices.add(ChunkVertex.create(v2, color, new Vector3f(1, 0, 0), uv2, atlasOffset, atlasTileSize));
+        vertices.add(ChunkVertex.create(v3, color, new Vector3f(1, 0, 0), uv3, atlasOffset, atlasTileSize));
+
+
+        indices.add(startIndex);
+        indices.add(startIndex + 1);
+        indices.add(startIndex + 2);
+        indices.add(startIndex + 2);
+        indices.add(startIndex + 3);
+        indices.add(startIndex);
+    }
+
+    private void addMergedFaceNegX(int x, int y, int z, int w, int h, short blockId, @NotNull TextureAtlas textureAtlas)
+    {
+        Vector3f v0 = new Vector3f(x,     y,     z);
+        Vector3f v1 = new Vector3f(x,     y + w, z);
+        Vector3f v2 = new Vector3f(x,     y + w, z + h);
+        Vector3f v3 = new Vector3f(x,     y,     z + h);
+
+        Block block = BlockRegistry.get(blockId);
+        Vector3f color = block.getColors()[5];
+
+        Vector2f[] localUVs = textureAtlas.getSubTextureCoordinates(block.getTextures()[5], -90);
+
+        float eps = 0.0001f;
+
+        Vector2f base = new Vector2f(localUVs[0]);
+        Vector2f tileSize = new Vector2f(localUVs[2]).sub(localUVs[0]);
+
+        Vector2f uv0 = new Vector2f(0, 0);
+        Vector2f uv1 = new Vector2f(0, w - eps);
+        Vector2f uv2 = new Vector2f(h - eps, w - eps);
+        Vector2f uv3 = new Vector2f(h - eps, 0);
+
+        int startIndex = vertices.size();
+
+        vertices.add(ChunkVertex.create(v0, color, new Vector3f(-1, 0, 0), uv0, base, tileSize));
+        vertices.add(ChunkVertex.create(v1, color, new Vector3f(-1, 0, 0), uv1, base, tileSize));
+        vertices.add(ChunkVertex.create(v2, color, new Vector3f(-1, 0, 0), uv2, base, tileSize));
+        vertices.add(ChunkVertex.create(v3, color, new Vector3f(-1, 0, 0), uv3, base, tileSize));
+
+        indices.add(startIndex);
+        indices.add(startIndex + 2);
+        indices.add(startIndex + 1);
+        indices.add(startIndex + 2);
+        indices.add(startIndex);
+        indices.add(startIndex + 3);
+    }
+
     public void setBlock(@NotNull Entity interactor, @NotNull Vector3i blockPosition, short type)
     {
         if (!isValidPosition(blockPosition))
             return;
 
-        modified = true;
-
-        int index = toIndex(blockPosition.x, blockPosition.y, blockPosition.z);
-
-        Vector3i globalBlockCoordinates = CoordinateHelper.worldToGlobalBlockCoordinates(CoordinateHelper.blockToWorldCoordinates(blockPosition, CoordinateHelper.worldToChunkCoordinates(getGameObject().getTransform().getWorldPosition())));
-
-        if (type == BlockRegistry.BLOCK_AIR.getId())
+        synchronized(this)
         {
-            blocks.remove(index);
-            BlockRegistry.get(type).onBroken(interactor, World.getLocalWorld(), this, globalBlockCoordinates);
-        }
-        else
-        {
-            blocks.put(index, type);
-            BlockRegistry.get(type).onPlaced(interactor, World.getLocalWorld(), this, globalBlockCoordinates);
-        }
+            modified = true;
+            int index = toIndex(blockPosition.x, blockPosition.y, blockPosition.z);
 
-        List<Vector3i> neighboringChunkOffsets = List.of(
+            Vector3i globalBlockCoordinates = CoordinateHelper.worldToGlobalBlockCoordinates(CoordinateHelper.blockToWorldCoordinates(blockPosition, CoordinateHelper.worldToChunkCoordinates(getGameObject().getTransform().getWorldPosition())));
+
+            short airId = BlockRegistry.BLOCK_AIR.getId();
+
+            if (type == airId)
+            {
+                int airPaletteIndex = palette.indexOf(airId);
+
+                if (airPaletteIndex < 0)
+                    airPaletteIndex = 0;
+
+                setPaletteIndex(index, airPaletteIndex);
+                BlockRegistry.get(airId).onBroken(interactor, World.getLocalWorld(), this, globalBlockCoordinates);
+            }
+            else
+            {
+                int paletteIndex = palette.indexOf(type);
+                if (paletteIndex < 0)
+                {
+                    palette.add(type);
+
+                    int neededBits = Math.max(1, Integer.SIZE - Integer.numberOfLeadingZeros(palette.size() - 1));
+
+                    if (neededBits > bitsPerBlock)
+                    {
+                        int oldBits = bitsPerBlock;
+
+                        bitsPerBlock = neededBits;
+                        repackBlockData(oldBits);
+                    }
+
+                    paletteIndex = palette.size() - 1;
+                }
+                setPaletteIndex(index, paletteIndex);
+                BlockRegistry.get(type).onPlaced(interactor, World.getLocalWorld(), this, globalBlockCoordinates);
+            }
+
+            List<Vector3i> neighboringChunkOffsets = List.of
+            (
                 new Vector3i(0, 1, 0),
                 new Vector3i(0, -1, 0),
                 new Vector3i(0, 0, 1),
                 new Vector3i(0, 0, -1),
                 new Vector3i(1, 0, 0),
                 new Vector3i(-1, 0, 0)
-        );
+            );
 
-        for (final Vector3i offset : neighboringChunkOffsets)
-        {
-            Vector3i position = CoordinateHelper.worldToChunkCoordinates(getGameObject().getTransform().getWorldPosition()).add(offset, new Vector3i());
+            for (final Vector3i offset : neighboringChunkOffsets)
+            {
+                Vector3i position = CoordinateHelper.worldToChunkCoordinates(getGameObject().getTransform().getWorldPosition()).add(offset, new Vector3i());
 
-            if (World.getLocalWorld().getChunk(position) != null)
-                World.getLocalWorld().scheduleRegeneration(position);
+                if (World.getLocalWorld().getChunk(position) != null)
+                    World.getLocalWorld().scheduleRegeneration(position);
+            }
+
+            generate();
         }
-
-        rebuildMeshAndCollider();
     }
 
-    /**
-     * Gets the type of the block at the specified position.
-     * Returns -1 if the block is outside the bounds of the chunk
-     *
-     * @param blockPosition The position in block coordinates
-     * @return The type of block retrieved
-     */
+    private static Vector2f[] addPadding(Vector2f[] localUVs, float pad)
+    {
+        Vector2f[] padded = new Vector2f[4];
+
+        padded[0] = new Vector2f(
+                localUVs[0].x + pad,
+                localUVs[0].y + pad
+        );
+
+        padded[1] = new Vector2f(
+                localUVs[1].x - pad,
+                localUVs[1].y + pad
+        );
+
+        padded[2] = new Vector2f(
+                localUVs[2].x - pad,
+                localUVs[2].y - pad
+        );
+
+        padded[3] = new Vector2f(
+                localUVs[3].x + pad,
+                localUVs[3].y - pad
+        );
+
+        return padded;
+    }
+
     public short getBlock(@NotNull Vector3i blockPosition)
     {
         if (!isValidPosition(blockPosition))
@@ -252,18 +880,43 @@ public class Chunk extends Component
         return getBlock(blockPosition.x, blockPosition.y, blockPosition.z);
     }
 
-    public short[][][] getBlocks()
+    public short getBlock(int x, int y, int z)
     {
-        short[][][] blocks = new short[16][16][16];
+        if (!isValidPosition(new Vector3i(x, y, z)))
+            return -1;
 
-        for (Map.Entry<Integer, Short> entry : this.blocks.entrySet())
+        int index = toIndex(x, y, z);
+
+        int neededBits = Math.max(1, Integer.SIZE - Integer.numberOfLeadingZeros(palette.size() - 1));
+
+        if (neededBits > bitsPerBlock)
         {
-            Vector3i position = fromIndex(entry.getKey());
+            int oldBits = bitsPerBlock;
 
-            blocks[position.x][position.y][position.z] = entry.getValue();
+            bitsPerBlock = neededBits;
+
+            repackBlockData(oldBits);
         }
 
-        return blocks;
+        int paletteIndex = getPaletteIndex(index, bitsPerBlock);
+
+        return palette.get(paletteIndex);
+    }
+
+    public short[][][] getBlocks()
+    {
+        short[][][] blocksArray = new short[SIZE][SIZE][SIZE];
+
+        for (int x = 0; x < SIZE; x++)
+        {
+            for (int y = 0; y < SIZE; y++)
+            {
+                for (int z = 0; z < SIZE; z++)
+                    blocksArray[x][y][z] = getBlock(x, y, z);
+            }
+        }
+
+        return blocksArray;
     }
 
     public boolean isModified()
@@ -276,20 +929,73 @@ public class Chunk extends Component
         this.modified = modified;
     }
 
-    private short getBlock(int x, int y, int z)
+    private boolean isBlockExposed(int x, int y, int z)
     {
-        int index = toIndex(x, y, z);
-        return blocks.getOrDefault(index, BlockRegistry.BLOCK_AIR.getId());
+        short blockId = getBlock(x, y, z);
+
+        if (blockId == BlockRegistry.BLOCK_AIR.getId() || !BlockRegistry.get(blockId).isSolid())
+            return false;
+
+        if (x == 0 || (getNeighborBlock(x, y, z, new Vector3i(-1, 0, 0)) == BlockRegistry.BLOCK_AIR.getId() && getNeighborBlock(x, y, z, new Vector3i(-1, 0, 0)) != -1 || !BlockRegistry.get(getNeighborBlock(x, y, z, new Vector3i(-1, 0, 0))).isSolid()))
+            return true;
+
+        if (x == SIZE - 1 || (getNeighborBlock(x, y, z, new Vector3i(1, 0, 0)) == BlockRegistry.BLOCK_AIR.getId() && getNeighborBlock(x, y, z, new Vector3i(1, 0, 0)) != -1 || !BlockRegistry.get(getNeighborBlock(x, y, z, new Vector3i(1, 0, 0))).isSolid()))
+            return true;
+
+        if (y == 0 || (getNeighborBlock(x, y, z, new Vector3i(0, -1, 0)) == BlockRegistry.BLOCK_AIR.getId() && getNeighborBlock(x, y, z, new Vector3i(0, -1, 0)) != -1 || !BlockRegistry.get(getNeighborBlock(x, y, z, new Vector3i(0, -1, 0))).isSolid()))
+            return true;
+
+        if (y == SIZE - 1 || (getNeighborBlock(x, y, z, new Vector3i(0, 1, 0)) == BlockRegistry.BLOCK_AIR.getId() && getNeighborBlock(x, y, z, new Vector3i(0, 1, 0)) != -1 || !BlockRegistry.get(getNeighborBlock(x, y, z, new Vector3i(0, 1, 0))).isSolid()))
+            return true;
+
+        if (z == 0 || (getNeighborBlock(x, y, z, new Vector3i(0, 0, -1)) == BlockRegistry.BLOCK_AIR.getId() && getNeighborBlock(x, y, z, new Vector3i(0, 0, -1)) == -1 || !BlockRegistry.get(getNeighborBlock(x, y, z, new Vector3i(0, 0, -1))).isSolid()))
+            return true;
+
+        if (z == SIZE - 1 || (getNeighborBlock(x, y, z, new Vector3i(0, 0, 1)) == BlockRegistry.BLOCK_AIR.getId() && getNeighborBlock(x, y, z, new Vector3i(0, 0, 1)) == -1 || !BlockRegistry.get(getNeighborBlock(x, y, z, new Vector3i(0, 0, 1))).isSolid()))
+            return true;
+
+        return false;
+    }
+
+    private short getNeighborBlock(int x, int y, int z, @NotNull Vector3i offset)
+    {
+        int nx = x + offset.x;
+        int ny = y + offset.y;
+        int nz = z + offset.z;
+
+        if (nx < 0 || nx >= SIZE || ny < 0 || ny >= SIZE || nz < 0 || nz >= SIZE)
+        {
+            Vector3i neighborPos = new Vector3i(nx, ny, nz);
+
+            short worldBlock = World.getLocalWorld().getBlock(CoordinateHelper.blockToWorldCoordinates(neighborPos, CoordinateHelper.worldToChunkCoordinates(getGameObject().getTransform().getWorldPosition())));
+
+            if (worldBlock != -1 && worldBlock == BlockRegistry.BLOCK_AIR.getId())
+                return BlockRegistry.BLOCK_AIR.getId();
+
+            return worldBlock;
+        }
+
+        return getBlock(nx, ny, nz);
     }
 
     private boolean shouldRenderFace(@NotNull Vector3i position)
     {
         short block = World.getLocalWorld().getBlock(CoordinateHelper.blockToWorldCoordinates(position, CoordinateHelper.worldToChunkCoordinates(getGameObject().getTransform().getWorldPosition())));
 
-        if (block == -1)
-            return false;
-        else
-            return block == BlockRegistry.BLOCK_AIR.getId();
+        return block != -1 && block == BlockRegistry.BLOCK_AIR.getId();
+    }
+
+    private float fract(float value)
+    {
+        return value - (float)Math.floor(value);
+    }
+
+    private Vector2f computeFinalUV(Vector2f base, Vector2f tileSize, float localU, float localV)
+    {
+        float u = fract(localU);
+        float v = fract(localV);
+
+        return new Vector2f(base).add(new Vector2f(u, v).mul(tileSize));
     }
 
     private boolean isValidPosition(@NotNull Vector3i position)
@@ -313,123 +1019,90 @@ public class Chunk extends Component
         return (x & 0xF) | ((y & 0xF) << 4) | ((z & 0xF) << 8);
     }
 
-    private void rebuildMeshAndCollider()
+    private int getPaletteIndex(int index, int bits)
     {
-        vertices.clear();
-        indices.clear();
+        int bitIndex = index * bits;
+        int arrayIndex = bitIndex / 64;
+        int offset = bitIndex % 64;
 
-        List<Vector3f> renderingVoxelPositions = new ArrayList<>();
-
-        TextureAtlas textureAtlas = getGameObject().getComponent(TextureAtlas.class);
-        if (textureAtlas == null)
+        if (arrayIndex >= blockData.length)
         {
-            System.err.println("Texture atlas was not found on chunk object!");
-            return;
+            System.err.println("getPaletteIndex(old): arrayIndex (" + arrayIndex +
+                    ") out of bounds (length " + blockData.length +
+                    ") for index " + index + " with bits " + bits);
+
+            return 0;
         }
 
-        needsToUpdate = false;
+        long value = blockData[arrayIndex] >>> offset;
 
-        for (int x = 0; x < SIZE; x++)
+        int bitsInCurrentLong = 64 - offset;
+
+        if (bitsInCurrentLong < bits && (arrayIndex + 1) < blockData.length)
+            value |= blockData[arrayIndex + 1] << bitsInCurrentLong;
+
+        return (int)(value & ((1 << bits) - 1));
+    }
+
+    private void setPaletteIndex(int index, int paletteIndex)
+    {
+        int bitIndex = index * bitsPerBlock;
+        int arrayIndex = bitIndex / 64;
+        int offset = bitIndex % 64;
+
+        long mask = ((1L << bitsPerBlock) - 1L) << offset;
+        blockData[arrayIndex] = (blockData[arrayIndex] & ~mask) | (((long) paletteIndex << offset) & mask);
+
+        int bitsInCurrentLong = 64 - offset;
+
+        if (bitsInCurrentLong < bitsPerBlock)
         {
-            for (int y = 0; y < SIZE; y++)
+            if (arrayIndex + 1 < blockData.length)
             {
-                for (int z = 0; z < SIZE; z++)
-                {
-                    short blockID = getBlock(x, y, z);
-
-                    if (blockID == BlockRegistry.BLOCK_AIR.getId())
-                        continue;
-
-                    Block block = Objects.requireNonNull(BlockRegistry.get(blockID));
-
-                    if (block.updates())
-                        needsToUpdate = true;
-
-                    renderFaceIfNeeded(x, y, z, textureAtlas, block, renderingVoxelPositions);
-                }
+                mask = (1L << (bitsPerBlock - bitsInCurrentLong)) - 1L;
+                blockData[arrayIndex + 1] = (blockData[arrayIndex + 1] & ~mask) | ((long) paletteIndex >> bitsInCurrentLong);
             }
-        }
-
-        Mesh mesh = getGameObject().getComponent(Mesh.class);
-        VoxelMeshCollider collider = getGameObject().getComponent(VoxelMeshCollider.class);
-
-        if (mesh == null)
-        {
-            System.err.println("Mesh component missing from GameObject: '" + getGameObject().getName() + "'!");
-            return;
-        }
-
-        if (collider == null)
-        {
-            System.err.println("VoxelMeshCollider component missing from GameObject: '" + getGameObject().getName() + "'!");
-            return;
-        }
-
-        if (!vertices.isEmpty() && !indices.isEmpty())
-        {
-            mesh.setTransient(true);
-            collider.setTransient(true);
-
-            MainThreadExecutor.submit(() -> mesh.modify(
-                    vertList ->
-                    {
-                        vertList.clear();
-                        vertList.addAll(vertices);
-                    },
-                    idxList ->
-                    {
-                        idxList.clear();
-                        idxList.addAll(indices);
-                    }
-            ));
-
-            collider.setVoxels(renderingVoxelPositions);
-        }
-        else
-        {
-            MainThreadExecutor.submit(() -> mesh.modify
-            (
-                    List::clear,
-                    List::clear
-            ));
-
-            collider.setVoxels(Collections.emptyList());
+            else
+                System.err.println("setPaletteIndex: index " + index + " requires blockData[" + (arrayIndex+1) + "] but length is " + blockData.length);
         }
     }
 
-    private void addFace(@NotNull Vector3i position, @NotNull Vector3i normal, @NotNull Vector3f baseColor, @Nullable Vector2f[] uvs)
+    private void repackBlockData(int oldBits)
     {
-        synchronized (this)
+        int totalBlocks = SIZE * SIZE * SIZE;
+        int newLength = (totalBlocks * bitsPerBlock + 63) / 64;
+
+        long[] newBlockData = new long[newLength];
+
+        for (int i = 0; i < totalBlocks; i++)
         {
-            if (uvs == null)
-                return;
+            int paletteIndex = getPaletteIndex(i, oldBits);
 
-            Vector3i[] faceVertices = getFaceVerticesForNormal(position, normal);
+            int bitIndex = i * bitsPerBlock;
 
-            for (int i = 0; i < 4; i++)
-                vertices.add(Vertex.create(new Vector3f(faceVertices[i]), baseColor, new Vector3f(normal.x, normal.y, normal.z), uvs[i]));
+            int arrayIndex = bitIndex / 64;
+            int offset = bitIndex % 64;
 
-            int startIndex = this.vertices.size() - 4;
+            long mask = ((1L << bitsPerBlock) - 1L) << offset;
 
-            boolean isTop = (normal.x == 0 && normal.y == 1 && normal.z == 0);
-            boolean isBottom = (normal.x == 0 && normal.y == -1 && normal.z == 0);
+            newBlockData[arrayIndex] = (newBlockData[arrayIndex] & ~mask) | (((long) paletteIndex << offset) & mask);
 
-            if (isTop || isBottom) {
-                indices.add(startIndex);
-                indices.add(startIndex + 1);
-                indices.add(startIndex + 2);
-                indices.add(startIndex + 2);
-                indices.add(startIndex + 3);
-                indices.add(startIndex);
-            } else {
-                indices.add(startIndex);
-                indices.add(startIndex + 2);
-                indices.add(startIndex + 1);
-                indices.add(startIndex + 2);
-                indices.add(startIndex);
-                indices.add(startIndex + 3);
+            int bitsInCurrentLong = 64 - offset;
+
+            if (bitsInCurrentLong < bitsPerBlock)
+            {
+                int bitsLeft = bitsPerBlock - bitsInCurrentLong;
+
+                mask = (1L << bitsLeft) - 1L;
+
+                if (arrayIndex + 1 < newBlockData.length)
+                    newBlockData[arrayIndex + 1] = (newBlockData[arrayIndex + 1] & ~mask) | ((long) paletteIndex >> bitsInCurrentLong);
+                else
+                    System.err.println("repackBlockData: attempted write out-of-bounds for block " + i);
             }
         }
+
+        blockData = newBlockData;
     }
 
     private static float[] getAmbientOcclusionSubstituteLighting(@NotNull Vector3i normal)
@@ -437,147 +1110,87 @@ public class Chunk extends Component
         float[] ao;
 
         if (normal.y > 0)
-            ao = new float[]
-            {
-                1.0f,
-                1.0f,
-                1.0f,
-                1.0f
-            };
+            ao = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
         else if (normal.z < 0)
-            ao = new float[]
-            {
-                0.65f,
-                0.65f,
-                0.65f,
-                0.65f
-            };
+            ao = new float[] { 0.65f, 0.65f, 0.65f, 0.65f };
         else if (normal.x < 0)
-            ao = new float[]
-            {
-                0.85f,
-                0.85f,
-                0.85f,
-                0.85f
-            };
+            ao = new float[] { 0.85f, 0.85f, 0.85f, 0.85f };
         else
-            ao = new float[]
-            {
-                1.0f,
-                1.0f,
-                1.0f,
-                1.0f
-            };
+            ao = new float[] { 1.0f, 1.0f, 1.0f, 1.0f };
 
         return ao;
     }
 
-    private @NotNull Vector3i[] getFaceVerticesForNormal(@NotNull Vector3i position, @NotNull Vector3i normal)
+    private void addRenderingVoxelPosition(int x, int y, int z)
     {
-        int x = position.x;
-        int y = position.y;
-        int z = position.z;
+        Vector3f position = new Vector3f(x + 0.5f, y + 0.5f, z + 0.5f);
 
-        if (normal.x == 0 && normal.y == 0 && normal.z == 1)
-        {
-            return new Vector3i[]
-            {
-                new Vector3i(x, y, z + 1),
-                new Vector3i(x, y + 1, z + 1),
-                new Vector3i(x + 1, y + 1, z + 1),
-                new Vector3i(x + 1, y, z + 1)
-            };
-        }
-        else if (normal.x == 0 && normal.y == 0 && normal.z == -1)
-        {
-            return new Vector3i[]
-            {
-                new Vector3i(x + 1, y, z),
-                new Vector3i(x + 1, y + 1, z),
-                new Vector3i(x, y + 1, z),
-                new Vector3i(x, y, z)
-            };
-        }
-        else if (normal.x == 0 && normal.y == 1 && normal.z == 0)
-        {
-            return new Vector3i[]
-            {
-                new Vector3i(x, y + 1, z),
-                new Vector3i(x, y + 1, z + 1),
-                new Vector3i(x + 1, y + 1, z + 1),
-                new Vector3i(x + 1, y + 1, z)
-            };
-        }
-        else if (normal.x == 0 && normal.y == -1 && normal.z == 0)
-        {
-            return new Vector3i[]
-            {
-                new Vector3i(x + 1, y, z),
-                new Vector3i(x + 1, y, z + 1),
-                new Vector3i(x, y, z + 1),
-                new Vector3i(x, y, z)
-            };
-        }
-        else if (normal.x == 1 && normal.y == 0 && normal.z == 0)
-        {
-            return new Vector3i[]
-            {
-                new Vector3i(x + 1, y, z),
-                new Vector3i(x + 1, y, z + 1),
-                new Vector3i(x + 1, y + 1, z + 1),
-                new Vector3i(x + 1, y + 1, z)
-            };
-        }
-        else if (normal.x == -1 && normal.y == 0 && normal.z == 0)
-        {
-            return new Vector3i[]
-            {
-                new Vector3i(x, y + 1, z),
-                new Vector3i(x, y + 1, z + 1),
-                new Vector3i(x, y, z + 1),
-                new Vector3i(x, y, z)
-            };
-        }
-
-        return new Vector3i[]
-        {
-            new Vector3i(x, y, z),
-            new Vector3i(x, y, z),
-            new Vector3i(x, y, z),
-            new Vector3i(x, y, z)
-        };
+        if (!renderingVoxelPositions.contains(position))
+            renderingVoxelPositions.add(position);
     }
+
 
     public static @NotNull Chunk create()
     {
-        return create(new short[SIZE][SIZE][SIZE]);
+        short[][][] blocks = new short[SIZE][SIZE][SIZE];
+
+        for (int x = 0; x < SIZE; x++)
+        {
+            for (int y = 0; y < SIZE; y++)
+            {
+                for (int z = 0; z < SIZE; z++)
+                    blocks[x][y][z] = BlockRegistry.BLOCK_AIR.getId();
+            }
+        }
+
+        return create(blocks);
     }
 
     public static @NotNull Chunk create(short[][][] blocks)
     {
         Chunk result = new Chunk();
 
-        Map<Integer, Short> blockMap = new HashMap<>();
+        result.palette = new ArrayList<>();
 
-        for (int x = 0; x < blocks.length; x++)
+        short airId = BlockRegistry.BLOCK_AIR.getId();
+
+        result.palette.add(airId);
+
+        for (int x = 0; x < SIZE; x++)
         {
-            for (int y = 0; y < blocks[x].length; y++)
+            for (int y = 0; y < SIZE; y++)
             {
-                for (int z = 0; z < blocks[x][y].length; z++)
+                for (int z = 0; z < SIZE; z++)
                 {
                     short blockType = blocks[x][y][z];
 
-                    if (blockType != BlockRegistry.BLOCK_AIR.getId())
-                    {
-                        int index = toIndex(x, y, z);
-
-                        blockMap.put(index, blockType);
-                    }
+                    if (!result.palette.contains(blockType))
+                        result.palette.add(blockType);
                 }
             }
         }
 
-        result.blocks = blockMap;
+        result.bitsPerBlock = Math.max(1, Integer.SIZE - Integer.numberOfLeadingZeros(result.palette.size() - 1));
+
+        int totalBlocks = SIZE * SIZE * SIZE;
+        int arrayLength = (totalBlocks * result.bitsPerBlock + 63) / 64;
+
+        result.blockData = new long[arrayLength];
+
+        for (int x = 0; x < SIZE; x++)
+        {
+            for (int y = 0; y < SIZE; y++)
+            {
+                for (int z = 0; z < SIZE; z++)
+                {
+                    int index = toIndex(x, y, z);
+                    short blockType = blocks[x][y][z];
+                    int paletteIndex = result.palette.indexOf(blockType);
+
+                    result.setPaletteIndex(index, paletteIndex);
+                }
+            }
+        }
 
         return result;
     }

@@ -3,7 +3,7 @@ package com.thatsoulyguy.moonlander.util;
 import com.thatsoulyguy.moonlander.annotation.Static;
 import com.thatsoulyguy.moonlander.block.BlockRegistry;
 import com.thatsoulyguy.moonlander.render.Texture;
-import com.thatsoulyguy.moonlander.render.Vertex;
+import com.thatsoulyguy.moonlander.render.DefaultVertex;
 import com.thatsoulyguy.moonlander.world.Chunk;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2f;
@@ -320,7 +320,7 @@ public class DataAlgorithms
      * @param extrusionDepth the distance to extrude (e.g. 0.1f)
      * @return a new Mesh with front, back, and side faces
      */
-    public static @NotNull Pair<@NotNull List<Vertex>, @NotNull List<Integer>> extrudeTextureIntoMeshData(@NotNull Texture texture, float extrusionDepth)
+    public static @NotNull Pair<@NotNull List<DefaultVertex>, @NotNull List<Integer>> extrudeTextureIntoMeshData(@NotNull Texture texture, float extrusionDepth)
     {
         ByteBuffer pixelData = texture.getBuffer().duplicate().duplicate().order(ByteOrder.nativeOrder());
 
@@ -351,7 +351,7 @@ public class DataAlgorithms
 
         List<Integer> frontIndices = triangulatePolygon(contour);
 
-        List<Vertex> vertices = new ArrayList<>();
+        List<DefaultVertex> vertices = new ArrayList<>();
 
         for (Vector2f point : contour)
         {
@@ -361,20 +361,20 @@ public class DataAlgorithms
 
             Vector3f normal = new Vector3f(0.0f, 0.0f, 0.0f);
 
-            vertices.add(Vertex.create(position, new Vector3f(1.0f), normal, uv));
+            vertices.add(DefaultVertex.create(position, new Vector3f(1.0f), normal, uv));
         }
 
         int frontCount = vertices.size();
 
         for (int i = 0; i < frontCount; i++)
         {
-            Vertex frontVertex = vertices.get(i);
+            DefaultVertex frontVertex = vertices.get(i);
             Vector3f pos = new Vector3f(frontVertex.getPosition());
 
             pos.z += extrusionDepth;
 
             Vector3f normal = new Vector3f(0.0f, 0.0f, 1.0f);
-            vertices.add(Vertex.create(pos, new Vector3f(1.0f), normal, frontVertex.getUVs()));
+            vertices.add(DefaultVertex.create(pos, new Vector3f(1.0f), normal, frontVertex.getUVs()));
         }
 
         List<Integer> indices = getExtrudedIndices(frontIndices, frontCount, contour);

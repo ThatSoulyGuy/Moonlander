@@ -3,7 +3,7 @@ package com.thatsoulyguy.moonlander.entity.model;
 import com.thatsoulyguy.moonlander.annotation.CustomConstructor;
 import com.thatsoulyguy.moonlander.render.Mesh;
 import com.thatsoulyguy.moonlander.render.Texture;
-import com.thatsoulyguy.moonlander.render.Vertex;
+import com.thatsoulyguy.moonlander.render.DefaultVertex;
 import com.thatsoulyguy.moonlander.system.Component;
 import com.thatsoulyguy.moonlander.util.DataAlgorithms;
 import org.jetbrains.annotations.NotNull;
@@ -58,7 +58,7 @@ public class ModelPart extends Component
 
         assert textureDimensions != null;
 
-        List<Vertex> vertices = new ArrayList<>();
+        List<DefaultVertex> vertices = new ArrayList<>();
         List<Integer> indices = new ArrayList<>();
 
         for (final Cube cube : cubes)
@@ -95,10 +95,10 @@ public class ModelPart extends Component
                 Vector2f[] faceUV = faceUVs.get(faceName);
                 Vector3f normal = normals.get(f);
 
-                vertices.add(Vertex.create(new Vector3f(cube.getPosition()).add(faceVertices[0]), new Vector3f(1.0f, 1.0f, 1.0f), normal, faceUV[0]));
-                vertices.add(Vertex.create(new Vector3f(cube.getPosition()).add(faceVertices[1]), new Vector3f(1.0f, 1.0f, 1.0f), normal, faceUV[1]));
-                vertices.add(Vertex.create(new Vector3f(cube.getPosition()).add(faceVertices[2]), new Vector3f(1.0f, 1.0f, 1.0f), normal, faceUV[2]));
-                vertices.add(Vertex.create(new Vector3f(cube.getPosition()).add(faceVertices[3]), new Vector3f(1.0f, 1.0f, 1.0f), normal, faceUV[3]));
+                vertices.add(DefaultVertex.create(new Vector3f(cube.getPosition()).add(faceVertices[0]), new Vector3f(1.0f, 1.0f, 1.0f), normal, faceUV[0]));
+                vertices.add(DefaultVertex.create(new Vector3f(cube.getPosition()).add(faceVertices[1]), new Vector3f(1.0f, 1.0f, 1.0f), normal, faceUV[1]));
+                vertices.add(DefaultVertex.create(new Vector3f(cube.getPosition()).add(faceVertices[2]), new Vector3f(1.0f, 1.0f, 1.0f), normal, faceUV[2]));
+                vertices.add(DefaultVertex.create(new Vector3f(cube.getPosition()).add(faceVertices[3]), new Vector3f(1.0f, 1.0f, 1.0f), normal, faceUV[3]));
             }
 
             for (int f = 0; f < 6; f++)
