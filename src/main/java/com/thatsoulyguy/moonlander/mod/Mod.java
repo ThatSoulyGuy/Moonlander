@@ -14,6 +14,8 @@ public interface Mod
 
     @NotNull String getDescription();
 
+    void registerPatches();
+
     void preInitialize();
 
     void initialize();

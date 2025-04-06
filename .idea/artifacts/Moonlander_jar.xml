@@ -95,6 +95,12 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/library/lwjglx-debug-1.0.0-javadoc.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/library/lwjglx-debug-1.0.0-sources.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/library/lwjglx-debug-1.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/library/byte-buddy-1.17.5-javadoc.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/library/byte-buddy-1.17.5-sources.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/library/byte-buddy-1.17.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/library/byte-buddy-agent-1.17.5-javadoc.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/library/byte-buddy-agent-1.17.5-sources.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/library/byte-buddy-agent-1.17.5.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

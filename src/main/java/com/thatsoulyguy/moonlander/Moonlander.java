@@ -14,6 +14,10 @@ import com.thatsoulyguy.moonlander.core.Window;
 import com.thatsoulyguy.moonlander.crafting.CraftingRecipeRegistry;
 import com.thatsoulyguy.moonlander.input.InputManager;
 import com.thatsoulyguy.moonlander.item.ItemRegistry;
+import com.thatsoulyguy.moonlander.mod.ModManager;
+import com.thatsoulyguy.moonlander.mod.PatchFieldManager;
+import com.thatsoulyguy.moonlander.mod.PatchFunctionManager;
+import com.thatsoulyguy.moonlander.mod.PatchMethodAccessorManager;
 import com.thatsoulyguy.moonlander.render.*;
 import com.thatsoulyguy.moonlander.render.advanced.RenderPassManager;
 import com.thatsoulyguy.moonlander.render.advanced.core.renderpasses.GeometryRenderPass;
@@ -29,6 +33,7 @@ import com.thatsoulyguy.moonlander.util.AudioData;
 import com.thatsoulyguy.moonlander.world.TextureAtlas;
 import com.thatsoulyguy.moonlander.world.TextureAtlasManager;
 import com.thatsoulyguy.moonlander.world.World;
+import net.bytebuddy.agent.ByteBuddyAgent;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -208,6 +213,8 @@ public class Moonlander
 
         registerCollisionHandlers();
 
+        ModManager.preInitialize();
+
         InputManager.update();
 
         Time.reset();
@@ -215,6 +222,8 @@ public class Moonlander
 
     public void initialize()
     {
+        ModManager.initialize();
+
         Levels.createMainMenu();
     }
 
@@ -230,6 +239,8 @@ public class Moonlander
         GameObjectManager.updateMainThread();
         GameObjectManager.update();
 
+        ModManager.update();
+
         MainThreadExecutor.execute();
 
         InputManager.update();
@@ -242,6 +253,8 @@ public class Moonlander
         GameObjectManager.renderDefault(Camera.getLocalCamera());
 
         GameObjectManager.renderUI();
+
+        ModManager.render();
 
         Window.postRender();
     }
@@ -384,6 +397,8 @@ public class Moonlander
         if (Skybox.CURRENT_SKYBOX != null)
             Skybox.CURRENT_SKYBOX.uninitialize();
 
+        ModManager.uninitialize();
+
         GameObjectManager.uninitialize();
 
         AudioManager.uninitialize();
@@ -403,6 +418,16 @@ public class Moonlander
 
     public static void main(String[] args)
     {
+        ByteBuddyAgent.install();
+
+        ModManager.loadFromDirectory(FileHelper.getPersistentDataPath("Moonlander") + "/mods/");
+
+        ModManager.registerPatches();
+
+        PatchFieldManager.applyPatches();
+        PatchMethodAccessorManager.applyPatches();
+        PatchFunctionManager.applyPatches();
+
         try
         {
             Moonlander instantiation = new Moonlander();
