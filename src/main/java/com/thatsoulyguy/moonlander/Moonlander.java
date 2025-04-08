@@ -72,7 +72,7 @@ public class Moonlander
 
         MainThreadExecutor.initialize();
 
-        Window.initialize("Moonlander* 2.2.1-beta", windowSize);
+        Window.initialize("Moonlander* 2.3.2-beta", windowSize);
 
         DebugRenderer.initialize();
 
@@ -134,8 +134,8 @@ public class Moonlander
         TextureManager.register(Texture.create("ui.usage.pickaxe", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/usage_pickaxe.png")));
         TextureManager.register(Texture.create("ui.usage.sword", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, false, AssetPath.create("moonlander", "texture/ui/usage_sword.png")));
 
-        TextureAtlasManager.register(TextureAtlas.create("blocks", AssetPath.create("moonlander", "texture/block/")));
-        TextureAtlasManager.register(TextureAtlas.create("items", AssetPath.create("moonlander", "texture/item/")));
+        TextureAtlasManager.register(TextureAtlas.create("blocks", "texture/block/"));
+        TextureAtlasManager.register(TextureAtlas.create("items", "texture/item/"));
 
         Skybox.CURRENT_SKYBOX = Skybox.create(Texture.createCubeMap("skybox", Texture.Filter.NEAREST, Texture.Wrapping.REPEAT, List.of
         (

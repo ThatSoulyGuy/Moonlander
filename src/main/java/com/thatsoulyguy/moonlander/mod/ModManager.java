@@ -77,7 +77,11 @@ public class ModManager
 
                             if (Mod.class.isAssignableFrom(loadedClass) && !loadedClass.isInterface() && !Modifier.isAbstract(loadedClass.getModifiers()))
                             {
-                                register(((Class<? extends Mod>) loadedClass).getDeclaredConstructor().newInstance());
+                                Mod instantiation = ((Class<? extends Mod>) loadedClass).getDeclaredConstructor().newInstance();
+
+                                register(instantiation);
+
+                                System.out.println("Loaded mod '" + instantiation.getDisplayName() + "' (" + instantiation.getRegistryName() + ")!");
                             }
                         }
                     }
