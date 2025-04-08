@@ -12,7 +12,7 @@ A renamed project (Invasion2)
         * Classgraph (traversing files within a JAR file)
         * Jetbrains Annotations (@NotNull, @Nullable, etc)
 * ## Modding
-    * Thanks to Java, this game is fully moddable. The way mods work is that you link against the Moonlander jarfile, and then use the modding API. This whole game is designed around code reusability and modularity, meaning that this game was intended for modding from the very beginning. In order to learn how to make mods, you can look at the Wiki page on setup and creation.
+    * Thanks to Java, this game is fully moddable. The way mods work is that you link against the Moonlander jarfile, and then use the modding API. This whole game is designed around code reusability and modularity, meaning that this game was intended for modding from the very beginning. In order to learn how to make mods, you can look at the **Wiki** page on setup and creation.
 * ## Credits
     * Minecraft Texturepack 'Faithful'
     * Minecraft 1.8.9 audio assets
