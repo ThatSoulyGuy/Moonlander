@@ -11,7 +11,7 @@ in vec2 mergedUV;
 in vec2 atlasOffset;
 in vec2 atlasTileSize;
 
-const double pad = 0.001;
+const float pad = 0.001;
 
 uniform sampler2D diffuse;
 
@@ -20,11 +20,11 @@ void main()
     gPosition = vec4(fragmentPosition, 1.0);
     gNormal = vec4(normalize(normal), 1.0);
 
-    dvec2 uv = fract(dvec2(mergedUV.x, mergedUV.y));
+    vec2 uv = fract(vec2(mergedUV.x, mergedUV.y));
 
     uv = uv * (1.0 - 2.0 * pad) + pad;
 
-    dvec2 tiledUV = dvec2(atlasOffset) + uv * dvec2(atlasTileSize);
+    vec2 tiledUV = vec2(atlasOffset) + uv * vec2(atlasTileSize);
 
     gAlbedo = texture(diffuse, vec2(tiledUV)) * vec4(color, 1.0);
 }
