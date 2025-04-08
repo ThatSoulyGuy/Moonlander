@@ -1703,7 +1703,7 @@ public class ItemRegistry
 
     public static void register(@NotNull Item object)
     {
-        itemsByName.putIfAbsent(object.getDisplayName(), object);
+        itemsByName.putIfAbsent(object.getRegistryName(), object);
         itemsById.putIfAbsent(object.getId(), object);
     }
 
@@ -1714,7 +1714,7 @@ public class ItemRegistry
         if (item == null)
             return;
 
-        itemsByName.remove(item.getDisplayName());
+        itemsByName.remove(item.getRegistryName());
         itemsById.remove(item.getId());
     }
 

@@ -2,6 +2,8 @@ package com.thatsoulyguy.moonlander.world;
 
 import com.thatsoulyguy.moonlander.annotation.CustomConstructor;
 import com.thatsoulyguy.moonlander.annotation.EffectivelyNotNull;
+import com.thatsoulyguy.moonlander.mod.Mod;
+import com.thatsoulyguy.moonlander.mod.ModManager;
 import com.thatsoulyguy.moonlander.render.Texture;
 import com.thatsoulyguy.moonlander.system.Component;
 import com.thatsoulyguy.moonlander.util.AssetPath;
@@ -16,6 +18,7 @@ import org.lwjgl.system.MemoryStack;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
@@ -29,7 +32,6 @@ import java.util.concurrent.ConcurrentMap;
 public class TextureAtlas extends Component implements ManagerLinkedClass
 {
     private @EffectivelyNotNull String name;
-    private @EffectivelyNotNull AssetPath localDirectory;
     private @EffectivelyNotNull String directory;
 
     private static final int PADDING = 20;
@@ -296,17 +298,6 @@ public class TextureAtlas extends Component implements ManagerLinkedClass
         return flipped;
     }
 
-    public @NotNull AssetPath getLocalDirectory()
-    {
-        return localDirectory;
-    }
-
-    public void setLocalDirectory(@NotNull AssetPath localDirectory)
-    {
-        this.localDirectory = localDirectory;
-        this.directory = localDirectory.getFullPath();
-    }
-
     public @NotNull String getDirectory()
     {
         return directory;
@@ -385,14 +376,27 @@ public class TextureAtlas extends Component implements ManagerLinkedClass
         return atlasBuffer;
     }
 
-
     private List<String> listImageFiles(String directoryPath)
     {
         List<String> result;
 
-        try (ScanResult scanResult = new ClassGraph().acceptPaths(directoryPath).scan())
+        try (ScanResult scanResult = new ClassGraph().acceptPaths("assets/moonlander/" + directoryPath).scan())
         {
-            result = scanResult.getAllResources().getPaths();
+            result = new ArrayList<>(scanResult.getAllResources().getPaths());
+        }
+
+        for (Mod classInstance : ModManager.getAll())
+        {
+            Class<? extends Mod> clazz = classInstance.getClass();
+
+            try (ScanResult scanResult = new ClassGraph().overrideClasspath(clazz.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).acceptPaths("assets/" + classInstance.getRegistryName() + "/" + directory).scan())
+            {
+                result.addAll(scanResult.getAllResources().getPaths());
+            }
+            catch (URISyntaxException e)
+            {
+                throw new RuntimeException(e);
+            }
         }
 
         result.replaceAll(path -> "/" + path);
@@ -500,8 +504,29 @@ public class TextureAtlas extends Component implements ManagerLinkedClass
         {
             if (stream == null)
             {
-                System.err.println("Resource not found: " + resourcePath);
-                return null;
+                for (Class<? extends Mod> clazz : ModManager.getAll().stream().map(Mod::getClass).toList())
+                {
+                    try (InputStream stream2 = clazz.getResourceAsStream(resourcePath))
+                    {
+                        if (stream2 == null)
+                        {
+                            System.err.println("Resource not found (try 2): " + resourcePath);
+                            return null;
+                        }
+
+                        byte[] bytes = stream2.readAllBytes();
+
+                        ByteBuffer buffer = ByteBuffer.allocateDirect(bytes.length).order(ByteOrder.nativeOrder());
+                        buffer.put(bytes);
+                        buffer.flip();
+
+                        return buffer;
+                    }
+                    catch (Exception exception)
+                    {
+                        System.err.println("Failed to load resource (try 2): " + exception.getMessage());
+                    }
+                }
             }
 
             byte[] bytes = stream.readAllBytes();
@@ -538,12 +563,12 @@ public class TextureAtlas extends Component implements ManagerLinkedClass
             outputTexture.uninitialize_NoOverride();
     }
 
-    public static @NotNull TextureAtlas create(@NotNull String name, @NotNull AssetPath localPath)
+    public static @NotNull TextureAtlas create(@NotNull String name, @NotNull String directory)
     {
         TextureAtlas result = new TextureAtlas();
 
         result.setName(name);
-        result.setLocalDirectory(localPath);
+        result.directory = directory;
 
         result.generate();
 

@@ -1880,7 +1880,7 @@ public class BlockRegistry
 
     public static void register(@NotNull Block object)
     {
-        blocksByName.putIfAbsent(object.getDisplayName(), object);
+        blocksByName.putIfAbsent(object.getRegistryName(), object);
         blocksById.putIfAbsent(object.getId(), object);
     }
 
@@ -1891,7 +1891,7 @@ public class BlockRegistry
         if (block == null)
             return;
 
-        blocksByName.remove(block.getDisplayName());
+        blocksByName.remove(block.getRegistryName());
         blocksById.remove(block.getId());
     }
 

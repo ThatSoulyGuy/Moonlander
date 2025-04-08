@@ -1,6 +1,8 @@
 package com.thatsoulyguy.moonlander.util;
 
 import com.thatsoulyguy.moonlander.annotation.Static;
+import com.thatsoulyguy.moonlander.mod.Mod;
+import com.thatsoulyguy.moonlander.mod.ModManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,9 +68,22 @@ public class FileHelper
             while ((line = reader.readLine()) != null)
                 result.append(line).append("\n");
         }
-        catch (IOException e)
+        catch (IOException _)
         {
-            System.err.println("Couldn't find the file at " + path);
+            for (Class<? extends Mod> clazz : ModManager.getAll().stream().map(Mod::getClass).toList())
+            {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(clazz.getResourceAsStream(path)))))
+                {
+                    String line;
+
+                    while ((line = reader.readLine()) != null)
+                        result.append(line).append("\n");
+                }
+                catch (IOException e)
+                {
+                    System.err.println("Couldn't find the file at " + path);
+                }
+            }
         }
 
         return result.toString();
