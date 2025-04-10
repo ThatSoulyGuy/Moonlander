@@ -124,7 +124,20 @@ public class Mesh extends Component
 
         GL41.glBindVertexArray(vao);
 
-        VertexLayout layout = vertices.isEmpty() ? null : vertices.getFirst().getVertexLayout();
+        List<Vertex> localVertices;
+        List<Integer> localIndices;
+
+        synchronized (vertices)
+        {
+            localVertices = new ArrayList<>(vertices);
+        }
+
+        synchronized (indices)
+        {
+            localIndices = new ArrayList<>(indices);
+        }
+
+        VertexLayout layout = localVertices.isEmpty() ? null : localVertices.getFirst().getVertexLayout();
 
         if (layout != null)
         {
@@ -146,7 +159,7 @@ public class Mesh extends Component
         shaderCalls.forEach(call -> call.accept(shader));
         shaderCalls.clear();
 
-        GL41.glDrawElements(GL41.GL_TRIANGLES, indices.size(), GL41.GL_UNSIGNED_INT, 0);
+        GL41.glDrawElements(GL41.GL_TRIANGLES, localIndices.size(), GL41.GL_UNSIGNED_INT, 0);
 
         shader.unbind();
         texture.unbind();

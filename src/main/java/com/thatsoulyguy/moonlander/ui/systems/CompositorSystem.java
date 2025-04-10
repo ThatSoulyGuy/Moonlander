@@ -58,7 +58,7 @@ public class CompositorSystem extends Component
                 resultSlot = recipe.getResult().item().getId();
                 resultSlotCount = recipe.getResult().count();
 
-                Inventory.buildSlot("result", new Inventory.SlotData((short) 0, (byte) 0), instance.getGameObject());
+                Inventory.buildSlot("result", new Inventory.SlotData(resultSlot, resultSlotCount), instance.getGameObject());
 
                 wasMatch = true;
                 break;

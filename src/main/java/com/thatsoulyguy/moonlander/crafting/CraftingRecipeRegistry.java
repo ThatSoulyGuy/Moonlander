@@ -7,6 +7,7 @@ import com.thatsoulyguy.moonlander.item.ItemRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -473,49 +474,6 @@ public class CraftingRecipeRegistry
         }
     };
 
-    public static final @NotNull CraftingRecipe REFINED_ALUMINUM_INGOT_AND_MOON_ROCK_AND_IRON_INGOT_TO_FUEL_REFINER = new CraftingRecipe()
-    {
-        @Override
-        public @NotNull String getRegistryName()
-        {
-            return "recipe_refined_aluminum_ingot_and_moon_rock_and_iron_ingot_to_fuel_refiner";
-        }
-
-        @Override
-        public @NotNull Map<Character, Item> getKeyDefinitions()
-        {
-            return Map.of
-            (
-                'a', ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT,
-                'm', ItemRegistry.ITEM_MOON_ROCK_BLOCK,
-                'i', ItemRegistry.ITEM_IRON_INGOT
-            );
-        }
-
-        @Override
-        public char[][] getRecipeGrid()
-        {
-            return new char[][]
-            {
-                new char[] { 'a', 'a', 'a' },
-                new char[] { 'm', 'm', 'm' },
-                new char[] { 'i', 'i', 'i' }
-            };
-        }
-
-        @Override
-        public @NotNull Result getResult()
-        {
-            return new Result(ItemRegistry.ITEM_FUEL_REFINER, (byte) 1);
-        }
-
-        @Override
-        public boolean isCompositorRecipe()
-        {
-            return false;
-        }
-    };
-
     public static final @NotNull CraftingRecipe REFINED_ALUMINUM_INGOT_TO_ALUMINUM_BLOCK = new CraftingRecipe()
     {
         @Override
@@ -581,6 +539,49 @@ public class CraftingRecipeRegistry
             {
                 new char[] { 'i', 'i', 'i' },
                 new char[] { 'i', 'i', 'i' },
+                new char[] { 'i', 'i', 'i' }
+            };
+        }
+
+        @Override
+        public @NotNull Result getResult()
+        {
+            return new Result(ItemRegistry.ITEM_IRON_BLOCK, (byte) 1);
+        }
+
+        @Override
+        public boolean isCompositorRecipe()
+        {
+            return false;
+        }
+    };
+
+    public static final @NotNull CraftingRecipe REFINED_ALUMINUM_INGOT_AND_MOON_ROCK_AND_IRON_INGOT_TO_FUEL_REFINER = new CraftingRecipe()
+    {
+        @Override
+        public @NotNull String getRegistryName()
+        {
+            return "recipe_refined_aluminum_ingot_and_moon_rock_and_iron_ingot_to_fuel_refiner";
+        }
+
+        @Override
+        public @NotNull Map<Character, Item> getKeyDefinitions()
+        {
+            return Map.of
+            (
+                'a', ItemRegistry.ITEM_REFINED_ALUMINUM_INGOT,
+                'm', ItemRegistry.ITEM_MOON_ROCK_BLOCK,
+                'i', ItemRegistry.ITEM_IRON_INGOT
+            );
+        }
+
+        @Override
+        public char[][] getRecipeGrid()
+        {
+            return new char[][]
+            {
+                new char[] { 'a', 'a', 'a' },
+                new char[] { 'm', 'm', 'm' },
                 new char[] { 'i', 'i', 'i' }
             };
         }
@@ -724,8 +725,8 @@ public class CraftingRecipeRegistry
         }
     };
 
-    private static final @NotNull ConcurrentMap<String, CraftingRecipe> recipesByName = new ConcurrentHashMap<>();
-    private static final @NotNull ConcurrentMap<Short, CraftingRecipe> recipesById = new ConcurrentHashMap<>();
+    private static final @NotNull Map<String, CraftingRecipe> recipesByName = new LinkedHashMap<>();
+    private static final @NotNull Map<Short, CraftingRecipe> recipesById = new LinkedHashMap<>();
     
     private CraftingRecipeRegistry() { }
 

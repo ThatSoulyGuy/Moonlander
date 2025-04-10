@@ -1010,12 +1010,21 @@ public class BlockRegistry
         {
             bubbleMap.put(globalBlockPosition, OxygenBubble.createGameObject("oxygen_bubble_" + globalBlockPosition.x + "_" + globalBlockPosition.y + "_" + globalBlockPosition.z, new Vector3f(globalBlockPosition)));
             bubbleMap.get(globalBlockPosition).getComponentNotNull(OxygenBubble.class).setOxygenActive(false);
+            bubbleMap.get(globalBlockPosition).setTransient(true);
             coalConsumptionMap.put(globalBlockPosition, 0);
         }
 
         @Override
         public void onTick(@NotNull World world, @NotNull Chunk chunk, @NotNull Vector3i globalBlockPosition)
         {
+            if (!bubbleMap.containsKey(globalBlockPosition))
+            {
+                bubbleMap.put(globalBlockPosition, OxygenBubble.createGameObject("oxygen_bubble_" + globalBlockPosition.x + "_" + globalBlockPosition.y + "_" + globalBlockPosition.z, new Vector3f(globalBlockPosition)));
+                bubbleMap.get(globalBlockPosition).getComponentNotNull(OxygenBubble.class).setOxygenActive(false);
+                bubbleMap.get(globalBlockPosition).setTransient(true);
+                coalConsumptionMap.put(globalBlockPosition, 0);
+            }
+
             bubbleMap.get(globalBlockPosition).getComponentNotNull(OxygenBubble.class).setOxygenActive(coalConsumptionMap.get(globalBlockPosition) > 0);
 
             if (coalConsumptionCooldownTimer < 0)
@@ -1455,6 +1464,28 @@ public class BlockRegistry
         {
             if (interactor instanceof EntityPlayer player)
             {
+                Inventory.SlotData slot = player.getInventory().getCurrentlySelectedSlot();
+
+                if (slot.id() == ItemRegistry.ITEM_MOON_ROCK_BLOCK.getId() && !moonRockHasBeenSupplied.containsKey(globalBlockPosition))
+                {
+                    moonRockHasBeenSupplied.put(globalBlockPosition, true);
+
+                    if (slot.count() > 1)
+                        player.getInventory().setSlot(new Vector2i(0, player.getInventory().currentlySelectedSlotIndex), new Inventory.SlotData(slot.id(), (byte) (slot.count() - 1)));
+                    else
+                        player.getInventory().setSlot(new Vector2i(0, player.getInventory().currentlySelectedSlotIndex), new Inventory.SlotData(ItemRegistry.ITEM_AIR.getId(), (byte) 1));
+                }
+                else if (slot.id() == ItemRegistry.ITEM_OIL_BUCKET.getId() && !oilHasBeenSupplied.containsKey(globalBlockPosition))
+                {
+                    oilHasBeenSupplied.put(globalBlockPosition, true);
+
+                    if (slot.count() > 1)
+                        player.getInventory().setSlot(new Vector2i(0, player.getInventory().currentlySelectedSlotIndex), new Inventory.SlotData(slot.id(), (byte) (slot.count() - 1)));
+                    else
+                        player.getInventory().setSlot(new Vector2i(0, player.getInventory().currentlySelectedSlotIndex), new Inventory.SlotData(ItemRegistry.ITEM_EMPTY_BUCKET.getId(), (byte) 1));
+                }
+
+                lastInteractor = player;
             }
         }
 
@@ -1518,6 +1549,8 @@ public class BlockRegistry
 
             if (moonRockHasBeenSupplied.get(globalBlockPosition) && oilHasBeenSupplied.get(globalBlockPosition))
             {
+                lastInteractor.getInventory().addItem(ItemRegistry.ITEM_FUEL_BUCKET.getId(), (byte) 1);
+
                 moonRockHasBeenSupplied.remove(globalBlockPosition);
                 oilHasBeenSupplied.remove(globalBlockPosition);
             }
