@@ -59,148 +59,104 @@ public class Rigidbody extends Component
     @Override
     public void update()
     {
-        Collider self = getGameObject().getComponent(BoxCollider.class);
-
-        if (self == null)
-        {
-            System.err.println("Collider component missing from GameObject: '" + getGameObject().getName() + "'!");
-            return;
-        }
+        float dt = Time.getDeltaTime();
 
         if (!isGrounded)
-            desiredVelocity.y += GRAVITY * Time.getDeltaTime();
+            desiredVelocity.y += GRAVITY * dt;
 
-        desiredVelocity.x *= (float) Math.pow(DRAG, Time.getDeltaTime());
-        desiredVelocity.z *= (float) Math.pow(DRAG, Time.getDeltaTime());
+        desiredVelocity.x *= (float)Math.pow(DRAG, dt);
+        desiredVelocity.z *= (float)Math.pow(DRAG, dt);
 
-        Vector3f currentPos = getGameObject().getTransform().getWorldPosition();
-        previousPosition.set(currentPos);
-
-        Vector3f newPosition = new Vector3f(
-                currentPos.x + desiredVelocity.x * Time.getDeltaTime(),
-                currentPos.y + desiredVelocity.y * Time.getDeltaTime(),
-                currentPos.z + desiredVelocity.z * Time.getDeltaTime()
-        );
-
-        getGameObject().getTransform().setLocalPosition(newPosition);
-
+        BoxCollider self = getGameObject().getComponent(BoxCollider.class);
         List<Collider> colliders = ColliderManager.getAll().stream()
                 .filter(c -> c != self)
-                .filter(c -> c.getPosition().distance(getGameObject().getTransform().getWorldPosition()) < 32)
+                .filter(c -> c.getPosition()
+                        .distance(getGameObject().getTransform().getWorldPosition()) < 32)
                 .toList();
 
-        boolean groundCheckHit = false;
-        boolean collidedFromBelow = false;
+        previousPosition.set(getGameObject().getTransform().getWorldPosition());
 
-        Vector3f totalResolution = new Vector3f();
+        float dx = desiredVelocity.x * dt;
+        float dz = desiredVelocity.z * dt;
+        float dy = desiredVelocity.y * dt;
 
-        for (int iteration = 0; iteration < 10; iteration++)
-        {
-            boolean resolvedAny = false;
+        resolveAxis(dx, 0, self, colliders);
+        resolveAxis(dz, 2, self, colliders);
 
-            for (Collider collider : colliders)
-            {
-                if (self.intersects(collider))
-                {
-                    Vector3f resolution = self.resolve(collider, true);
-
-                    if (resolution.length() > 0.00001f)
-                    {
-                        resolvedAny = true;
-
-                        Vector3f normal = new Vector3f(resolution).normalize();
-
-                        Rigidbody otherRb = collider.getGameObject().getComponent(Rigidbody.class);
-
-                        if (otherRb != null)
-                        {
-                            Vector3f vA = new Vector3f(desiredVelocity);
-                            Vector3f vB = otherRb.getDesiredVelocity();
-
-                            Vector3f relativeVelocity = new Vector3f(vA).sub(vB);
-                            float velAlongNormal = relativeVelocity.dot(normal);
-
-                            if (velAlongNormal < 0)
-                            {
-                                float restitution = 0.5f;
-
-                                float impulseScalar = -(1 + restitution) * velAlongNormal / 2.0f;
-                                Vector3f impulse = new Vector3f(normal).mul(impulseScalar);
-
-                                desiredVelocity.add(impulse);
-
-                                otherRb.setDesiredVelocity(new Vector3f(vB).sub(impulse));
-                            }
-
-                            Vector3f halfResolution = new Vector3f(resolution).mul(0.5f);
-
-                            getGameObject().getTransform().translate(halfResolution);
-                            otherRb.getGameObject().getTransform().translate(new Vector3f(halfResolution).negate());
-                        }
-                        else
-                        {
-                            getGameObject().getTransform().translate(resolution);
-
-                            float dot = desiredVelocity.dot(normal);
-                            Vector3f correction = new Vector3f(normal).mul(dot);
-
-                            desiredVelocity.sub(correction);
-                        }
-
-                        if (resolution.y > 0)
-                            collidedFromBelow = true;
-                    }
-                }
-            }
-
-            if (!resolvedAny)
-                break;
-
-            totalResolution.add(desiredVelocity);
-
-            if (totalResolution.length() > 10.0f)
-            {
-                System.err.println("Warning: Excessive collision resolution detected! Total Resolution: " + totalResolution);
-                break;
-            }
-        }
-        // Ground check using a separate, small collider.
-        for (Collider collider : colliders)
-        {
-            Vector3f boxPosition = groundedCheck.getPosition();
-            Vector3f boxSize = groundedCheck.getSize();
-
-            Vector3f boxMin = new Vector3f(boxPosition).sub(new Vector3f(boxSize).mul(0.5f));
-            Vector3f boxMax = new Vector3f(boxPosition).add(new Vector3f(boxSize).mul(0.5f));
-
-            if (collider instanceof VoxelMeshCollider meshCollider)
-            {
-                for (Vector3f voxel : meshCollider.getVoxels())
-                {
-                    Vector3f voxelWorldPosition = new Vector3f(meshCollider.getPosition()).add(voxel);
-
-                    Vector3f voxelMin = new Vector3f(voxelWorldPosition).sub(0.5f, 0.5f, 0.5f);
-                    Vector3f voxelMax = new Vector3f(voxelWorldPosition).add(0.5f, 0.5f, 0.5f);
-
-                    if (Collider.intersectsGeneric(boxMin, boxMax, voxelMin, voxelMax))
-                    {
-                        groundCheckHit = true;
-                        break;
-                    }
-                }
-
-                if (groundCheckHit)
-                    break;
-            }
-        }
-
-        isGrounded = collidedFromBelow || groundCheckHit;
+        isGrounded = resolveAxis(dy, 1, self, colliders);
 
         if (isGrounded)
-            desiredVelocity.y = 0.0f;
+            desiredVelocity.y = 0f;
 
         currentPosition.set(getGameObject().getTransform().getWorldPosition());
     }
+
+    private boolean resolveAxis(float displacement, int axis, BoxCollider self, List<Collider> colliders)
+    {
+        final float EPS = 1e-5f;
+
+        Vector3f move = new Vector3f();
+
+        if (axis == 0)
+            move.x = displacement;
+        else if (axis == 1)
+            move.y = displacement;
+        else
+            move.z = displacement;
+
+        getGameObject().getTransform().translate(move);
+
+        Vector3f totalCorr = new Vector3f();
+
+        for (Collider other : colliders)
+        {
+            Vector3f corr;
+
+            if (other instanceof VoxelMeshCollider vm)
+                corr = Collider.resolveAllCollisions(self, vm);
+            else
+            {
+                if (!self.intersects(other)) continue;
+                corr = self.resolve(other, true);
+            }
+
+            if (corr.length() < EPS)
+                continue;
+
+            float c = (axis == 0 ? corr.x : axis == 1 ? corr.y : corr.z);
+
+            Vector3f axisCorr = new Vector3f();
+
+            if (axis == 0)
+                axisCorr.x = c;
+            else if (axis == 1)
+                axisCorr.y = c;
+            else
+                axisCorr.z = c;
+
+            totalCorr.add(axisCorr);
+        }
+
+        if (totalCorr.length() < EPS)
+            return false;
+
+        getGameObject().getTransform().translate(totalCorr);
+
+        if (axis == 1 && totalCorr.y > EPS)
+            return true;
+
+        Vector3f normal = new Vector3f(totalCorr).normalize();
+        float velAlong = desiredVelocity.dot(normal);
+
+        if (velAlong < 0f)
+        {
+            Vector3f proj = new Vector3f(normal).mul(velAlong);
+            desiredVelocity.sub(proj);
+        }
+
+        return false;
+    }
+
 
     /**
      * Calculates and returns the actual movement vector that was applied during the current update.
