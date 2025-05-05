@@ -72,7 +72,7 @@ public class Moonlander
 
         MainThreadExecutor.initialize();
 
-        Window.initialize("Moonlander* 2.3.5-beta", windowSize);
+        Window.initialize("Moonlander* 2.4.6-beta", windowSize);
 
         DebugRenderer.initialize();
 
